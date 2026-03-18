@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8"/>
@@ -208,7 +208,16 @@ async function addSale(){
   const now=new Date();setSyncUI("saving");
   await addDoc(salesCol,{store:S.sel,amount:amt,emp:S.empSel,type:S.saleType,date:today(),time:now.toLocaleTimeString("en",{hour:"2-digit",minute:"2-digit"}),createdAt:serverTimestamp()});
   document.getElementById("inp-amount").value="";
-  startCountdown(); // ابدأ العداد التنازلي
+
+  // تحقق لو كل المحلات سجلت — ابدأ العداد بس عندها
+  const td2=today();
+  // انتظر Firebase يحدث S.sales أولاً
+  setTimeout(()=>{
+    const storesNow=new Set(S.sales.filter(x=>x.date===td2&&x.type==="store").map(x=>x.store));
+    const allNow=STORES.every(s=>storesNow.has(s.id));
+    if(allNow && !pointsTimer) startCountdown();
+  },2000);
+
   await checkAndAwardPoints();
 }
 async function delSale(id){if(S.role!=="owner")return;if(!confirm("حذف المبيعة؟"))return;await deleteDoc(doc(db,"shop_sales",id));}
@@ -969,8 +978,7 @@ function renderReport(){
   });
   const mx=Math.max(...storeTotals.map(x=>x.total),1);
   const periodBtns=[{v:"today",l:"📅 اليوم"},{v:"week",l:"📅 الأسبوع"},{v:"month",l:"📅 الشهر"},{v:"all",l:"📅 الكل"}]
-    .map(f=>`<button class="date-btn ${S.repPeriod===f.v?"active":""}" onclick="window._setPeriod('${f.v}')">${f.l}</button>`).join("");
-  const sBtns=[{v:"all",l:"🏪 الكل"},{v:1,l:"🏬 محل 1"},{v:2,l:"🏪 محل 2"},{v:3,l:"🛍️ محل 3"}]
+    .map(f=>`<button class="date-btn ${S.repPeriod===f.v?"active":""}" onclick="window._setPeriod('${f.v}')">${f.l}</button>`).join("");  const sBtns=[{v:"all",l:"🏪 الكل"},{v:1,l:"🏬 محل 1"},{v:2,l:"🏪 محل 2"},{v:3,l:"🛍️ محل 3"}]
     .map(f=>`<button class="filter-btn ${S.repStore===f.v?"active":""}" onclick="window._repStore(${JSON.stringify(f.v)})">${f.l}</button>`).join("");
   const tBtns=[{v:"all",l:"📦 الكل"},{v:"store",l:"🏬 محل"},{v:"delivery",l:"🚚 توصيل"}]
     .map(f=>`<button class="filter-btn ${S.repType===f.v?"active":""}" onclick="window._repType('${f.v}')">${f.l}</button>`).join("");
@@ -1006,8 +1014,7 @@ function renderReport(){
       <div><div class="lbl">من</div><input class="inp" type="date" value="${S.repFrom}" style="width:auto" onchange="S.repPeriod='custom';S.repFrom=this.value;render()"/></div>
       <div style="color:#8888aa;padding-top:22px">←</div>
       <div><div class="lbl">إلى</div><input class="inp" type="date" value="${S.repTo}" style="width:auto" onchange="S.repPeriod='custom';S.repTo=this.value;render()"/></div>
-    </div>
-    <div class="lbl" style="margin-bottom:7px">المحل</div>
+    </div>    <div class="lbl" style="margin-bottom:7px">المحل</div>
     <div class="filter-row" style="margin-bottom:12px">${sBtns}</div>
     <div class="lbl" style="margin-bottom:7px">النوع</div>
     <div class="filter-row">${tBtns}</div>
