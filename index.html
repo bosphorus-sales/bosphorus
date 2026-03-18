@@ -988,22 +988,7 @@ function renderReport(){
   });
   const mx=Math.max(...storeTotals.map(x=>x.total),1);
   const periodBtns=[{v:"today",l:"📅 اليوم"},{v:"week",l:"📅 الأسبوع"},{v:"month",l:"📅 الشهر"},{v:"all",l:"📅 الكل"}]
-    .map(f=>`<button class="date-btn ${S.repPeriod===f.v?"active":""}" onclick="window._setPeriod('${f.v}')">${f.l}</button>`).join("");
-
-  // حقول التاريخ اليدوي — مستقلة عن الأزرار
-  const dateInputs=`<div class="filter-row" style="margin-bottom:12px;align-items:center">
-    <div>
-      <div class="lbl">من</div>
-      <input class="inp" type="date" id="date-from" value="${S.repFrom}" style="width:auto"
-        onchange="S.repPeriod='custom';S.repFrom=this.value;window._applyDates()"/>
-    </div>
-    <div style="color:#8888aa;padding-top:22px">←</div>
-    <div>
-      <div class="lbl">إلى</div>
-      <input class="inp" type="date" id="date-to" value="${S.repTo}" style="width:auto"
-        onchange="S.repPeriod='custom';S.repTo=this.value;window._applyDates()"/>
-    </div>
-  </div>`;  const sBtns=[{v:"all",l:"🏪 الكل"},{v:1,l:"🏬 محل 1"},{v:2,l:"🏪 محل 2"},{v:3,l:"🛍️ محل 3"}]
+    .map(f=>`<button class="date-btn ${S.repPeriod===f.v?"active":""}" onclick="window._setPeriod('${f.v}')">${f.l}</button>`).join("");  const sBtns=[{v:"all",l:"🏪 الكل"},{v:1,l:"🏬 محل 1"},{v:2,l:"🏪 محل 2"},{v:3,l:"🛍️ محل 3"}]
     .map(f=>`<button class="filter-btn ${S.repStore===f.v?"active":""}" onclick="window._repStore(${JSON.stringify(f.v)})">${f.l}</button>`).join("");
   const tBtns=[{v:"all",l:"📦 الكل"},{v:"store",l:"🏬 محل"},{v:"delivery",l:"🚚 توصيل"}]
     .map(f=>`<button class="filter-btn ${S.repType===f.v?"active":""}" onclick="window._repType('${f.v}')">${f.l}</button>`).join("");
@@ -1035,7 +1020,11 @@ function renderReport(){
     <div style="font-weight:700;font-size:14px;margin-bottom:14px">🔍 فلترة التقرير</div>
     <div class="lbl" style="margin-bottom:8px">الفترة الزمنية</div>
     <div class="filter-row" style="margin-bottom:14px">${periodBtns}</div>
-    ${dateInputs}    <div class="lbl" style="margin-bottom:7px">المحل</div>
+    <div class="filter-row" style="margin-bottom:12px;align-items:center">
+      <div><div class="lbl">من</div><input class="inp" type="date" value="${S.repFrom}" style="width:auto" onchange="window._setFrom(this.value)"/></div>
+      <div style="color:#8888aa;padding-top:22px">←</div>
+      <div><div class="lbl">إلى</div><input class="inp" type="date" value="${S.repTo}" style="width:auto" onchange="window._setTo(this.value)"/></div>
+    </div>    <div class="lbl" style="margin-bottom:7px">المحل</div>
     <div class="filter-row" style="margin-bottom:12px">${sBtns}</div>
     <div class="lbl" style="margin-bottom:7px">النوع</div>
     <div class="filter-row">${tBtns}</div>
@@ -1073,16 +1062,6 @@ window._openSaleEdit=id=>{S.editSaleId=id;S.modal=null;render();};
 window._saveSaleEdit=saveSaleEdit;
 window._closeModal=closeModal;
 window._empMenu=toggleEmpMenu; window._emp=selectEmp;
-window._applyDates=()=>{
-  const f=document.getElementById("date-from")?.value;
-  const t=document.getElementById("date-to")?.value;
-  if(f)S.repFrom=f;
-  if(t)S.repTo=t;
-  S.repPeriod="custom";
-  // أعد رسم التقرير فقط بدون إعادة رسم كامل
-  const main=document.querySelector(".main");
-  if(main&&S.tab==="report")main.innerHTML=renderReport();
-};
 window._setFrom=v=>{S.repPeriod="custom";S.repFrom=v;render();};
 window._setTo=v=>{S.repPeriod="custom";S.repTo=v;render();};
 window._repFrom=v=>{S.repPeriod="custom";S.repFrom=v;render();};
