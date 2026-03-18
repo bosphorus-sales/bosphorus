@@ -168,7 +168,17 @@ function setSyncUI(s){const dot=document.getElementById("sync-dot"),txt=document
 onSnapshot(query(salesCol,orderBy("createdAt","desc")),snap=>{
   S.sales=snap.docs.map(d=>({...d.data(),id:d.id}));
   S.loaded=true;setSyncUI("ok");
-  checkAndAwardPoints();
+
+  // تحقق من حالة المحلات عند كل تحديث
+  const td=today();
+  const storesNow=new Set(S.sales.filter(x=>x.date===td&&x.type==="store").map(x=>x.store));
+  const allNow=STORES.every(s=>storesNow.has(s.id));
+  // ابدأ العداد بس لو كل المحلات سجلت وما في عداد شغال وما أُعطيت النقاط
+  if(allNow&&!countdownInterval&&countdownSecs===0){
+    getDoc(doc(db,"winners",`winner_${td}`)).then(ws=>{
+      if(!ws.exists())startCountdown();
+    });
+  }
   render();
 },()=>setSyncUI("error"));
 onSnapshot(walletsCol,snap=>{S.wallets={};snap.docs.forEach(d=>{S.wallets[d.id]={...d.data(),id:d.id};});render();});
@@ -1011,9 +1021,9 @@ function renderReport(){
     <div class="lbl" style="margin-bottom:8px">الفترة الزمنية</div>
     <div class="filter-row" style="margin-bottom:14px">${periodBtns}</div>
     <div class="filter-row" style="margin-bottom:12px;align-items:center">
-      <div><div class="lbl">من</div><input class="inp" type="date" value="${S.repFrom}" style="width:auto" onchange="S.repPeriod='custom';S.repFrom=this.value;render()"/></div>
+      <div><div class="lbl">من</div><input class="inp" type="date" value="${S.repFrom}" style="width:auto" onchange="window._setFrom(this.value)"/></div>
       <div style="color:#8888aa;padding-top:22px">←</div>
-      <div><div class="lbl">إلى</div><input class="inp" type="date" value="${S.repTo}" style="width:auto" onchange="S.repPeriod='custom';S.repTo=this.value;render()"/></div>
+      <div><div class="lbl">إلى</div><input class="inp" type="date" value="${S.repTo}" style="width:auto" onchange="window._setTo(this.value)"/></div>
     </div>    <div class="lbl" style="margin-bottom:7px">المحل</div>
     <div class="filter-row" style="margin-bottom:12px">${sBtns}</div>
     <div class="lbl" style="margin-bottom:7px">النوع</div>
@@ -1052,6 +1062,8 @@ window._openSaleEdit=id=>{S.editSaleId=id;S.modal=null;render();};
 window._saveSaleEdit=saveSaleEdit;
 window._closeModal=closeModal;
 window._empMenu=toggleEmpMenu; window._emp=selectEmp;
+window._setFrom=v=>{S.repPeriod="custom";S.repFrom=v;render();};
+window._setTo=v=>{S.repPeriod="custom";S.repTo=v;render();};
 window._repFrom=v=>{S.repPeriod="custom";S.repFrom=v;render();};
 window._repTo=v=>{S.repPeriod="custom";S.repTo=v;render();};
 window._repStore=v=>{S.repStore=(v==="all"?"all":Number(v)||v);render();};
