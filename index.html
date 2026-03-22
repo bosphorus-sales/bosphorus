@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8"/>
@@ -131,563 +130,773 @@ const txCol=collection(db,"wallet_tx");
 const attendCol=collection(db,"attendance");
 const notifsCol=collection(db,"notifications");
 
-const STORES=[{id:1,name:“محل 1”,icon:“🏬”,color:”#a78bfa”},{id:2,name:“محل 2”,icon:“🏪”,color:”#10B981”},{id:3,name:“محل 3”,icon:“🛍️”,color:”#F59E0B”}];
-const EMPS=[[“عمار”,“👨‍💼”],[“جعفر”,“👨‍💼”],[“مثنى”,“👨‍💼”],[“نوره”,“👩‍💼”]];
-const EMP_PASS={“عمار”:“111”,“جعفر”:“222”,“مثنى”:“333”,“نوره”:“444”};
-
-// ✅ إصلاح 1: مثنى أصبح محل 2
-const EMP_STORE={“عمار”:1,“نوره”:2,“جعفر”:3,“مثنى”:2};
-
-const SALARIES={“عمار”:200000,“جعفر”:250000,“مثنى”:250000,“نوره”:200000};
-const EMP_ICONS={“عمار”:“👨‍💼”,“جعفر”:“👨‍💼”,“مثنى”:“👨‍💼”,“نوره”:“👩‍💼”};
-const EMP_COLORS={“عمار”:”#a78bfa”,“جعفر”:”#10B981”,“مثنى”:”#38bdf8”,“نوره”:”#F59E0B”};
-const PASS={owner:“0000”};
+const STORES=[{id:1,name:"محل 1",icon:"🏬",color:"#a78bfa"},{id:2,name:"محل 2",icon:"🏪",color:"#10B981"},{id:3,name:"محل 3",icon:"🛍️",color:"#F59E0B"}];
+const EMPS=[["عمار","👨‍💼"],["جعفر","👨‍💼"],["مثنى","👨‍💼"],["نوره","👩‍💼"]];
+const EMP_PASS={"عمار":"111","جعفر":"222","مثنى":"333","نوره":"444"};
+const EMP_STORE={"عمار":1,"نوره":2,"جعفر":3,"مثنى":null};
+const SALARIES={"عمار":200000,"جعفر":250000,"مثنى":250000,"نوره":200000};
+const EMP_ICONS={"عمار":"👨‍💼","جعفر":"👨‍💼","مثنى":"👨‍💼","نوره":"👩‍💼"};
+const EMP_COLORS={"عمار":"#a78bfa","جعفر":"#10B981","مثنى":"#38bdf8","نوره":"#F59E0B"};
+const PASS={owner:"0000"};
 const POINTS_PER_WIN=5;
 const POINT_VALUE=1000;
-const WORK_START=“12:00”;
+const WORK_START="12:00";
 const SHOP_LAT=33.31033;
 const SHOP_LNG=44.32380;
 const MAX_DISTANCE=100;
 
-function today(){return new Date().toLocaleDateString(“en-CA”);}
-function fmt(n){return Number(n||0).toLocaleString(“en-IQ”)+” د.ع”;}
-function fmtPts(n){return Number(n||0)+” نقطة”;}
+function today(){return new Date().toLocaleDateString("en-CA");}
+function fmt(n){return Number(n||0).toLocaleString("en-IQ")+" د.ع";}
+function fmtPts(n){return Number(n||0)+" نقطة";}
 function calcDistance(lat1,lon1,lat2,lon2){const R=6371000,dLat=(lat2-lat1)*Math.PI/180,dLon=(lon2-lon1)*Math.PI/180;const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));}
-function timeToMins(t){const[h,m]=t.split(”:”).map(Number);return h*60+m;}
-function getWeekStart(){const d=new Date(),day=d.getDay(),diff=d.getDate()-((day+6)%7);const mon=new Date(d);mon.setDate(diff);return mon.toLocaleDateString(“en-CA”);}
+function timeToMins(t){const[h,m]=t.split(":").map(Number);return h*60+m;}
+function getWeekStart(){const d=new Date(),day=d.getDay(),diff=d.getDate()-((day+6)%7);const mon=new Date(d);mon.setDate(diff);return mon.toLocaleDateString("en-CA");}
 
 let S={
-loggedIn:false,role:null,empName:null,
-tab:“pos”,sel:1,saleType:“store”,
-sales:[],wallets:{},txs:[],attendance:[],notifs:[],
-empSel:””,loaded:false,
-editId:null,editSaleId:null,
-repFrom:today(),repTo:today(),repStore:“all”,repType:“all”,repPeriod:“today”,
-modal:null,gpsLoading:false,pendingNotif:null
+  loggedIn:false,role:null,empName:null,
+  tab:"pos",sel:1,saleType:"store",
+  sales:[],wallets:{},txs:[],attendance:[],notifs:[],
+  empSel:"",loaded:false,
+  editId:null,editSaleId:null,
+  repFrom:today(),repTo:today(),repStore:"all",repType:"all",repPeriod:"today",
+  modal:null,gpsLoading:false,pendingNotif:null
 };
 
-function setSyncUI(s){const dot=document.getElementById(“sync-dot”),txt=document.getElementById(“sync-txt”);if(!dot||!txt)return;if(s===“ok”){dot.className=“dot dot-green”;txt.textContent=“متصل”;}else if(s===“saving”){dot.className=“dot dot-yellow”;txt.textContent=“جاري الحفظ…”;}else{dot.className=“dot dot-red”;txt.textContent=“غير متصل”;}}
+function setSyncUI(s){const dot=document.getElementById("sync-dot"),txt=document.getElementById("sync-txt");if(!dot||!txt)return;if(s==="ok"){dot.className="dot dot-green";txt.textContent="متصل";}else if(s==="saving"){dot.className="dot dot-yellow";txt.textContent="جاري الحفظ...";}else{dot.className="dot dot-red";txt.textContent="غير متصل";}}
 
 // ===== Listeners =====
-onSnapshot(query(salesCol,orderBy(“createdAt”,“desc”)),snap=>{
-S.sales=snap.docs.map(d=>({…d.data(),id:d.id}));
-S.loaded=true;
-setSyncUI(“ok”);
+onSnapshot(query(salesCol,orderBy("createdAt","desc")),snap=>{
+  S.sales=snap.docs.map(d=>({...d.data(),id:d.id}));
+  S.loaded=true;setSyncUI("ok");
 
-// ✅ إصلاح 2: تحقق من اكتمال التسجيل وأعطِ النقاط للأعلى مبيع
-const td=today();
-const todayStoreSales=S.sales.filter(x=>x.date===td&&x.type===“store”);
-const storesNow=new Set(todayStoreSales.map(x=>x.store));
-const allReady=STORES.every(s=>storesNow.has(s.id));
-
-if(allReady&&!countdownInterval&&countdownSecs===0){
-getDoc(doc(db,“winners”,`winner_${td}`)).then(ws=>{
-if(!ws.exists()) startCountdown();
-});
-}
-render();
-},()=>setSyncUI(“error”));
-
-onSnapshot(walletsCol,snap=>{S.wallets={};snap.docs.forEach(d=>{S.wallets[d.id]={…d.data(),id:d.id};});render();});
-onSnapshot(query(txCol,orderBy(“createdAt”,“desc”)),snap=>{S.txs=snap.docs.map(d=>({…d.data(),id:d.id}));render();});
-onSnapshot(query(attendCol,orderBy(“createdAt”,“desc”)),snap=>{S.attendance=snap.docs.map(d=>({…d.data(),id:d.id}));render();});
-onSnapshot(query(notifsCol,orderBy(“createdAt”,“desc”)),snap=>{
-S.notifs=snap.docs.map(d=>({…d.data(),id:d.id}));
-if(S.loggedIn&&S.empName&&!S.pendingNotif){
-const unread=S.notifs.find(n=>n.type===“broadcast”&&!(n.readBy||{})[S.empName]);
-if(unread)S.pendingNotif=unread;
-}
-render();
+  // تحقق من حالة المحلات عند كل تحديث
+  const td=today();
+  const storesNow=new Set(S.sales.filter(x=>x.date===td&&x.type==="store").map(x=>x.store));
+  const allNow=STORES.every(s=>storesNow.has(s.id));
+  // ابدأ العداد بس لو كل المحلات سجلت وما في عداد شغال وما أُعطيت النقاط
+  if(allNow&&!countdownInterval&&countdownSecs===0){
+    getDoc(doc(db,"winners",`winner_${td}`)).then(ws=>{
+      if(!ws.exists())startCountdown();
+    });
+  }
+  render();
+},()=>setSyncUI("error"));
+onSnapshot(walletsCol,snap=>{S.wallets={};snap.docs.forEach(d=>{S.wallets[d.id]={...d.data(),id:d.id};});render();});
+onSnapshot(query(txCol,orderBy("createdAt","desc")),snap=>{S.txs=snap.docs.map(d=>({...d.data(),id:d.id}));render();});
+onSnapshot(query(attendCol,orderBy("createdAt","desc")),snap=>{S.attendance=snap.docs.map(d=>({...d.data(),id:d.id}));render();});
+onSnapshot(query(notifsCol,orderBy("createdAt","desc")),snap=>{
+  S.notifs=snap.docs.map(d=>({...d.data(),id:d.id}));
+  if(S.loggedIn&&S.empName&&!S.pendingNotif){
+    const unread=S.notifs.find(n=>n.type==="broadcast"&&!(n.readBy||{})[S.empName]);
+    if(unread)S.pendingNotif=unread;
+  }
+  render();
 });
 
-async function initWallets(){for(const[name]of EMPS){const ref=doc(db,“wallets”,name);const snap=await getDoc(ref);if(!snap.exists())await setDoc(ref,{name,balance:0,points:0,createdAt:serverTimestamp()});}}
+async function initWallets(){for(const[name]of EMPS){const ref=doc(db,"wallets",name);const snap=await getDoc(ref);if(!snap.exists())await setDoc(ref,{name,balance:0,points:0,createdAt:serverTimestamp()});}}
 initWallets();
 
 // ===== Auth =====
 function tryLogin(){
-const pass=document.getElementById(“pass-inp”).value.trim();
-const err=document.getElementById(“login-err”);
-if(pass===PASS.owner){S.loggedIn=true;S.role=“owner”;S.empName=null;render();return;}
-for(const[name,p]of Object.entries(EMP_PASS)){
-if(pass===p){
-S.loggedIn=true;S.role=“employee”;S.empName=name;S.empSel=name;S.tab=“pos”;
-const unread=S.notifs.find(n=>n.type===“broadcast”&&!(n.readBy||{})[name]);
-if(unread)S.pendingNotif=unread;
-render();return;
+  const pass=document.getElementById("pass-inp").value.trim();
+  const err=document.getElementById("login-err");
+  if(pass===PASS.owner){S.loggedIn=true;S.role="owner";S.empName=null;render();return;}
+  for(const[name,p]of Object.entries(EMP_PASS)){
+    if(pass===p){S.loggedIn=true;S.role="employee";S.empName=name;S.empSel=name;S.tab="pos";
+      const unread=S.notifs.find(n=>n.type==="broadcast"&&!(n.readBy||{})[name]);
+      if(unread)S.pendingNotif=unread;render();return;}
+  }
+  err.textContent="❌ كلمة المرور غلط";document.getElementById("pass-inp").value="";
 }
-}
-err.textContent=“❌ كلمة المرور غلط”;document.getElementById(“pass-inp”).value=””;
-}
-function logout(){S.loggedIn=false;S.role=null;S.empName=null;S.empSel=””;S.tab=“pos”;S.pendingNotif=null;render();}
+function logout(){S.loggedIn=false;S.role=null;S.empName=null;S.empSel="";S.tab="pos";S.pendingNotif=null;render();}
 
 // ===== Sales =====
 async function addSale(){
-const amt=parseFloat(document.getElementById(“inp-amount”)?.value);
-if(!amt||amt<=0){alert(“أدخل مبلغ صحيح!”);return;}
-if(!S.empSel){alert(“اختر اسم الموظف!”);return;}
-const now=new Date();
-setSyncUI(“saving”);
-await addDoc(salesCol,{
-store:S.sel,amount:amt,emp:S.empSel,type:S.saleType,
-date:today(),time:now.toLocaleTimeString(“en”,{hour:“2-digit”,minute:“2-digit”}),
-createdAt:serverTimestamp()
-});
-document.getElementById(“inp-amount”).value=””;
-// ملاحظة: النقاط تُحسب تلقائياً عبر onSnapshot بعد اكتمال الكل
+  const amt=parseFloat(document.getElementById("inp-amount")?.value);
+  if(!amt||amt<=0){alert("أدخل مبلغ صحيح!");return;}
+  if(!S.empSel){alert("اختر اسم الموظف!");return;}
+  const now=new Date();setSyncUI("saving");
+  await addDoc(salesCol,{store:S.sel,amount:amt,emp:S.empSel,type:S.saleType,date:today(),time:now.toLocaleTimeString("en",{hour:"2-digit",minute:"2-digit"}),createdAt:serverTimestamp()});
+  document.getElementById("inp-amount").value="";
+
+  // تحقق لو كل المحلات سجلت — ابدأ العداد بس عندها
+  const td2=today();
+  // انتظر Firebase يحدث S.sales أولاً
+  setTimeout(()=>{
+    const storesNow=new Set(S.sales.filter(x=>x.date===td2&&x.type==="store").map(x=>x.store));
+    const allNow=STORES.every(s=>storesNow.has(s.id));
+    if(allNow && !pointsTimer) startCountdown();
+  },2000);
+
+  await checkAndAwardPoints();
 }
-
-async function delSale(id){if(S.role!==“owner”)return;if(!confirm(“حذف المبيعة؟”))return;await deleteDoc(doc(db,“shop_sales”,id));}
-
+async function delSale(id){if(S.role!=="owner")return;if(!confirm("حذف المبيعة؟"))return;await deleteDoc(doc(db,"shop_sales",id));}
 async function saveEdit(){
-const amt=parseFloat(document.getElementById(“edit-amount”)?.value);
-const emp=document.getElementById(“edit-emp”)?.value;
-const type=document.getElementById(“edit-type”)?.value;
-const store=parseInt(document.getElementById(“edit-store”)?.value);
-if(!amt||amt<=0){alert(“أدخل مبلغ صحيح!”);return;}
-await updateDoc(doc(db,“shop_sales”,S.editId),{amount:amt,emp,type,store});
-S.editId=null;S.modal=null;render();
+  const amt=parseFloat(document.getElementById("edit-amount")?.value);
+  const emp=document.getElementById("edit-emp")?.value;
+  const type=document.getElementById("edit-type")?.value;
+  const store=parseInt(document.getElementById("edit-store")?.value);
+  if(!amt||amt<=0){alert("أدخل مبلغ صحيح!");return;}
+  await updateDoc(doc(db,"shop_sales",S.editId),{amount:amt,emp,type,store});
+  S.editId=null;S.modal=null;render();
 }
 
+// تعديل مبيعة من الإعدادات (تاريخ + مبلغ)
 async function saveSaleEdit(){
-const newDate=document.getElementById(“se-date”)?.value;
-const newAmt=parseFloat(document.getElementById(“se-amount”)?.value);
-if(!newDate){alert(“اختر تاريخ!”);return;}
-if(!newAmt||newAmt<=0){alert(“أدخل مبلغ صحيح!”);return;}
-if(!confirm(“تعديل المبيعة؟”))return;
-setSyncUI(“saving”);
-await updateDoc(doc(db,“shop_sales”,S.editSaleId),{date:newDate,amount:newAmt});
-S.editSaleId=null;S.modal=null;render();
-alert(“✅ تم تعديل المبيعة”);
+  const newDate=document.getElementById("se-date")?.value;
+  const newAmt=parseFloat(document.getElementById("se-amount")?.value);
+  if(!newDate){alert("اختر تاريخ!");return;}
+  if(!newAmt||newAmt<=0){alert("أدخل مبلغ صحيح!");return;}
+  if(!confirm(`تعديل المبيعة؟`))return;
+  setSyncUI("saving");
+  await updateDoc(doc(db,"shop_sales",S.editSaleId),{date:newDate,amount:newAmt});
+  S.editSaleId=null;S.modal=null;render();
+  alert("✅ تم تعديل المبيعة");
 }
 
-// ===== ✅ إصلاح 2: النقاط للأعلى مبيع بعد اكتمال الجميع =====
-// هذه الدالة تُستدعى فقط من onSnapshot بعد ما يكتمل تسجيل كل المحلات
+// ===== Points =====
 async function checkAndAwardPoints(){
-const td=today();
-
-// تحقق إن ما أُعطيت النقاط اليوم
-const winnerRef=doc(db,“winners”,`winner_${td}`);
-const winnerSnap=await getDoc(winnerRef);
-if(winnerSnap.exists()) return; // النقاط أُعطيت مسبقاً
-
-// احسب مجموع مبيعات المحل فقط (بدون توصيل) لكل موظف
-const empTotals={};
-S.sales.filter(x=>x.date===td&&x.type===“store”).forEach(x=>{
-empTotals[x.emp]=(empTotals[x.emp]||0)+x.amount;
-});
-
-const ranked=Object.entries(empTotals).sort((a,b)=>b[1]-a[1]);
-if(!ranked.length) return;
-
-const winner=ranked[0][0]; // الأعلى مبيعاً
-
-// تحقق من حد النقاط الأسبوعي
-const weekStart=getWeekStart();
-const weekPoints=S.txs.filter(x=>x.emp===winner&&x.type===“points”&&x.amount>0&&x.date>=weekStart)
-.reduce((a,b)=>a+(b.amount||0),0);
-
-if(weekPoints>=25){
-// سجّل الفائز بدون نقاط (وصل للحد الأسبوعي)
-await setDoc(winnerRef,{emp:winner,date:td,pointsAwarded:false,updatedAt:serverTimestamp()});
-return;
+  const td=today();
+  const empTotals={};
+  S.sales.filter(x=>x.date===td&&x.type==="store").forEach(x=>{empTotals[x.emp]=(empTotals[x.emp]||0)+x.amount;});
+  const ranked=Object.entries(empTotals).sort((a,b)=>b[1]-a[1]);
+  if(!ranked.length)return;
+  const winner=ranked[0][0];
+  const winnerRef=doc(db,"winners",`winner_${td}`);
+  const winnerSnap=await getDoc(winnerRef);
+  if(winnerSnap.exists())return;
+  const weekStart=getWeekStart();
+  const weekPoints=S.txs.filter(x=>x.emp===winner&&x.type==="points"&&x.amount>0&&x.date>=weekStart).reduce((a,b)=>a+(b.amount||0),0);
+  if(weekPoints>=25){await setDoc(winnerRef,{emp:winner,date:td,pointsAwarded:false,updatedAt:serverTimestamp()});return;}
+  const wRef=doc(db,"wallets",winner);
+  const wSnap=await getDoc(wRef);
+  if(wSnap.exists()){
+    await updateDoc(wRef,{points:(wSnap.data().points||0)+POINTS_PER_WIN});
+    await addDoc(txCol,{emp:winner,type:"points",amount:POINTS_PER_WIN,note:`🏆 فائز ${td} +${POINTS_PER_WIN} نقاط`,date:td,createdAt:serverTimestamp()});
+    await setDoc(winnerRef,{emp:winner,date:td,pointsAwarded:true,updatedAt:serverTimestamp()});
+    await addDoc(notifsCol,{type:"points",to:winner,msg:`🏆 مبروك! فزت باليوم وحصلت على ${POINTS_PER_WIN} نقاط`,date:td,readBy:{},createdAt:serverTimestamp()});
+  }
 }
 
-// أضف النقاط للفائز
-const wRef=doc(db,“wallets”,winner);
-const wSnap=await getDoc(wRef);
-if(wSnap.exists()){
-await updateDoc(wRef,{points:(wSnap.data().points||0)+POINTS_PER_WIN});
-await addDoc(txCol,{
-emp:winner,type:“points”,amount:POINTS_PER_WIN,
-note:`🏆 فائز ${td} (أعلى مبيعات محل) +${POINTS_PER_WIN} نقاط`,
-date:td,createdAt:serverTimestamp()
-});
-await setDoc(winnerRef,{emp:winner,date:td,pointsAwarded:true,updatedAt:serverTimestamp()});
-await addDoc(notifsCol,{
-type:“points”,to:winner,
-msg:`🏆 مبروك ${winner}! فزت باليوم بأعلى مبيعات محل وحصلت على ${POINTS_PER_WIN} نقاط`,
-date:td,readBy:{},createdAt:serverTimestamp()
-});
-}
-}
-
-// عداد تنازلي — يبدأ بعد اكتمال التسجيل، ثم يعطي النقاط
+// عداد تنازلي للسلايد
 let countdownInterval=null;
 let countdownSecs=0;
-
 function startCountdown(){
-countdownSecs=5*60; // 5 دقائق
-if(countdownInterval) clearInterval(countdownInterval);
-countdownInterval=setInterval(async()=>{
-countdownSecs–;
-if(countdownSecs<=0){
-clearInterval(countdownInterval);
-countdownInterval=null;
-countdownSecs=0;
-// ✅ أعطِ النقاط للأعلى مبيع الآن
-await checkAndAwardPoints();
+  countdownSecs=5*60;
+  if(countdownInterval)clearInterval(countdownInterval);
+  countdownInterval=setInterval(()=>{
+    countdownSecs--;
+    if(countdownSecs<=0){clearInterval(countdownInterval);countdownInterval=null;countdownSecs=0;}
+    // تحديث العداد بالسلايد فقط بدون إعادة رسم كامل
+    const el=document.getElementById("countdown-el");
+    if(el){
+      if(countdownSecs>0){
+        const m=Math.floor(countdownSecs/60),s=countdownSecs%60;
+        el.textContent=`⏳ النقاط تُضاف بعد ${m}:${String(s).padStart(2,"0")}`;
+      } else {
+        el.textContent="🏆 جاري احتساب الفائز...";
+      }
+    }
+  },1000);
 }
-const el=document.getElementById(“countdown-el”);
-if(el){
-if(countdownSecs>0){
-const m=Math.floor(countdownSecs/60),s=countdownSecs%60;
-el.textContent=`⏳ النقاط تُضاف للأعلى مبيع بعد ${m}:${String(s).padStart(2,"0")}`;
-} else {
-el.textContent=“🏆 جاري احتساب الفائز…”;
-}
-}
-},1000);
-}
-
 async function managePoints(empName,pts,add){
-const w=S.wallets[empName]||{points:0};
-const cur=w.points||0;
-const newPts=add?cur+pts:Math.max(0,cur-pts);
-await updateDoc(doc(db,“wallets”,empName),{points:newPts});
-await addDoc(txCol,{emp:empName,type:“points”,amount:add?pts:-pts,note:`${add?"➕ إضافة":"➖ خصم"} نقاط من المالك`,date:today(),createdAt:serverTimestamp()});
-S.modal=null;render();
-alert(`✅ ${add?"أضيفت":"حُذفت"} ${pts} نقطة ${add?"لـ":"من"} ${empName}`);
+  const w=S.wallets[empName]||{points:0};
+  const cur=w.points||0;
+  const newPts=add?cur+pts:Math.max(0,cur-pts);
+  await updateDoc(doc(db,"wallets",empName),{points:newPts});
+  await addDoc(txCol,{emp:empName,type:"points",amount:add?pts:-pts,note:`${add?"➕ إضافة":"➖ خصم"} نقاط من المالك`,date:today(),createdAt:serverTimestamp()});
+  S.modal=null;render();
+  alert(`✅ ${add?"أضيفت":"حُذفت"} ${pts} نقطة ${add?"لـ":"من"} ${empName}`);
 }
 
 // ===== Wallets =====
 async function addSalary(empName){
-const amt=SALARIES[empName]||0;
-const ref=doc(db,“wallets”,empName);const snap=await getDoc(ref);
-await updateDoc(ref,{balance:(snap.data()?.balance||0)+amt});
-await addDoc(txCol,{emp:empName,type:“salary”,amount:amt,note:“راتب أسبوعي 💰”,date:today(),createdAt:serverTimestamp()});
-await addDoc(notifsCol,{type:“salary”,to:empName,msg:`💰 تم إضافة راتبك الأسبوعي ${fmt(amt)}`,date:today(),readBy:{},createdAt:serverTimestamp()});
-alert(`✅ تم إضافة راتب ${fmt(amt)} لـ ${empName}`);
+  const amt=SALARIES[empName]||0;
+  const ref=doc(db,"wallets",empName);const snap=await getDoc(ref);
+  await updateDoc(ref,{balance:(snap.data()?.balance||0)+amt});
+  await addDoc(txCol,{emp:empName,type:"salary",amount:amt,note:"راتب أسبوعي 💰",date:today(),createdAt:serverTimestamp()});
+  await addDoc(notifsCol,{type:"salary",to:empName,msg:`💰 تم إضافة راتبك الأسبوعي ${fmt(amt)}`,date:today(),readBy:{},createdAt:serverTimestamp()});
+  alert(`✅ تم إضافة راتب ${fmt(amt)} لـ ${empName}`);
 }
-async function addSalaryAll(){if(!confirm(“إضافة رواتب لجميع الموظفين؟”))return;for(const[name]of EMPS)await addSalary(name);}
-
+async function addSalaryAll(){if(!confirm("إضافة رواتب لجميع الموظفين؟"))return;for(const[name]of EMPS)await addSalary(name);}
 async function convertPoints(empName){
-const w=S.wallets[empName];if(!w||!w.points){alert(“لا توجد نقاط!”);return;}
-const pts=w.points,amt=pts*POINT_VALUE;
-if(!confirm(`تحويل ${pts} نقطة = ${fmt(amt)}؟`))return;
-await updateDoc(doc(db,“wallets”,empName),{points:0,balance:(w.balance||0)+amt});
-await addDoc(txCol,{emp:empName,type:“convert”,amount:amt,note:`تحويل ${pts} نقطة 🎯`,date:today(),createdAt:serverTimestamp()});
-await addDoc(notifsCol,{type:“convert”,to:empName,msg:`🎯 تم تحويل ${pts} نقطة إلى ${fmt(amt)}`,date:today(),readBy:{},createdAt:serverTimestamp()});
+  const w=S.wallets[empName];if(!w||!w.points){alert("لا توجد نقاط!");return;}
+  const pts=w.points,amt=pts*POINT_VALUE;if(!confirm(`تحويل ${pts} نقطة = ${fmt(amt)}؟`))return;
+  await updateDoc(doc(db,"wallets",empName),{points:0,balance:(w.balance||0)+amt});
+  await addDoc(txCol,{emp:empName,type:"convert",amount:amt,note:`تحويل ${pts} نقطة 🎯`,date:today(),createdAt:serverTimestamp()});
+  await addDoc(notifsCol,{type:"convert",to:empName,msg:`🎯 تم تحويل ${pts} نقطة إلى ${fmt(amt)}`,date:today(),readBy:{},createdAt:serverTimestamp()});
 }
-
 async function addMoney(empName,amt,note){
-const ref=doc(db,“wallets”,empName);const snap=await getDoc(ref);
-await updateDoc(ref,{balance:(snap.data()?.balance||0)+amt});
-await addDoc(txCol,{emp:empName,type:“add”,amount:amt,note:note||“إضافة أموال 💵”,date:today(),createdAt:serverTimestamp()});
-await addDoc(notifsCol,{type:“add”,to:empName,msg:`💵 تم إضافة ${fmt(amt)} إلى محفظتك`,date:today(),readBy:{},createdAt:serverTimestamp()});
-S.modal=null;render();alert(`✅ تم إضافة ${fmt(amt)} لـ ${empName}`);
+  const ref=doc(db,"wallets",empName);const snap=await getDoc(ref);
+  await updateDoc(ref,{balance:(snap.data()?.balance||0)+amt});
+  await addDoc(txCol,{emp:empName,type:"add",amount:amt,note:note||"إضافة أموال 💵",date:today(),createdAt:serverTimestamp()});
+  await addDoc(notifsCol,{type:"add",to:empName,msg:`💵 تم إضافة ${fmt(amt)} إلى محفظتك`,date:today(),readBy:{},createdAt:serverTimestamp()});
+  S.modal=null;render();alert(`✅ تم إضافة ${fmt(amt)} لـ ${empName}`);
 }
-
 async function doWithdraw(empName,amt,note){
-const w=S.wallets[empName];if(!w||(w.balance||0)<amt){alert(“الرصيد غير كافي!”);return;}
-await updateDoc(doc(db,“wallets”,empName),{balance:(w.balance||0)-amt});
-await addDoc(txCol,{emp:empName,type:“withdraw”,amount:amt,note:note||“سحب”,date:today(),createdAt:serverTimestamp()});
-await addDoc(notifsCol,{type:“withdraw”,to:empName,msg:`💸 تم سحب ${fmt(amt)} من محفظتك`,date:today(),readBy:{},createdAt:serverTimestamp()});
-S.modal=null;render();
+  const w=S.wallets[empName];if(!w||(w.balance||0)<amt){alert("الرصيد غير كافي!");return;}
+  await updateDoc(doc(db,"wallets",empName),{balance:(w.balance||0)-amt});
+  await addDoc(txCol,{emp:empName,type:"withdraw",amount:amt,note:note||"سحب",date:today(),createdAt:serverTimestamp()});
+  await addDoc(notifsCol,{type:"withdraw",to:empName,msg:`💸 تم سحب ${fmt(amt)} من محفظتك`,date:today(),readBy:{},createdAt:serverTimestamp()});
+  S.modal=null;render();
 }
-
 async function resetWallet(empName){
-if(!confirm(`تصفير محفظة ${empName}؟`))return;
-await updateDoc(doc(db,“wallets”,empName),{balance:0,points:0});
-await addDoc(txCol,{emp:empName,type:“reset”,amount:0,note:“تصفير 🔄”,date:today(),createdAt:serverTimestamp()});
+  if(!confirm(`تصفير محفظة ${empName}؟`))return;
+  await updateDoc(doc(db,"wallets",empName),{balance:0,points:0});
+  await addDoc(txCol,{emp:empName,type:"reset",amount:0,note:"تصفير 🔄",date:today(),createdAt:serverTimestamp()});
 }
 
+// حذف معاملة مع تعديل الرصيد/النقاط
 async function deleteTx(id){
-if(!confirm(“حذف هذه المعاملة وعكس تأثيرها على الرصيد؟”))return;
-const tx=S.txs.find(x=>x.id===id);if(!tx)return;
-const wRef=doc(db,“wallets”,tx.emp);
-const wSnap=await getDoc(wRef);if(!wSnap.exists())return;
-const w=wSnap.data();
-if(tx.type===“salary”||tx.type===“add”){
-await updateDoc(wRef,{balance:Math.max(0,(w.balance||0)-tx.amount)});
-} else if(tx.type===“withdraw”){
-await updateDoc(wRef,{balance:(w.balance||0)+tx.amount});
-} else if(tx.type===“points”){
-if(tx.amount>0){await updateDoc(wRef,{points:Math.max(0,(w.points||0)-tx.amount)});}
-else{await updateDoc(wRef,{points:(w.points||0)+Math.abs(tx.amount)});}
-} else if(tx.type===“convert”){
-const ptsBack=Math.round(tx.amount/POINT_VALUE);
-await updateDoc(wRef,{balance:Math.max(0,(w.balance||0)-tx.amount),points:(w.points||0)+ptsBack});
-}
-await deleteDoc(doc(db,“wallet_tx”,id));
+  if(!confirm("حذف هذه المعاملة وعكس تأثيرها على الرصيد؟"))return;
+  const tx=S.txs.find(x=>x.id===id);if(!tx)return;
+  const wRef=doc(db,"wallets",tx.emp);
+  const wSnap=await getDoc(wRef);if(!wSnap.exists())return;
+  const w=wSnap.data();
+  // عكس التأثير
+  if(tx.type==="salary"||tx.type==="add"){
+    await updateDoc(wRef,{balance:Math.max(0,(w.balance||0)-tx.amount)});
+  } else if(tx.type==="withdraw"){
+    await updateDoc(wRef,{balance:(w.balance||0)+tx.amount});
+  } else if(tx.type==="points"){
+    if(tx.amount>0){await updateDoc(wRef,{points:Math.max(0,(w.points||0)-tx.amount)});}
+    else{await updateDoc(wRef,{points:(w.points||0)+Math.abs(tx.amount)});}
+  } else if(tx.type==="convert"){
+    // عكس تحويل نقاط: نرجع النقاط ونسحب المبلغ
+    const ptsBack=Math.round(tx.amount/POINT_VALUE);
+    await updateDoc(wRef,{balance:Math.max(0,(w.balance||0)-tx.amount),points:(w.points||0)+ptsBack});
+  }
+  await deleteDoc(doc(db,"wallet_tx",id));
 }
 
 async function sendBroadcast(){
-const msg=document.getElementById(“broadcast-msg”)?.value?.trim();
-if(!msg){alert(“اكتب رسالة!”);return;}
-await addDoc(notifsCol,{type:“broadcast”,to:“all”,msg,date:today(),readBy:{},createdAt:serverTimestamp()});
-S.modal=null;render();alert(“✅ تم إرسال الرسالة”);
+  const msg=document.getElementById("broadcast-msg")?.value?.trim();
+  if(!msg){alert("اكتب رسالة!");return;}
+  await addDoc(notifsCol,{type:"broadcast",to:"all",msg,date:today(),readBy:{},createdAt:serverTimestamp()});
+  S.modal=null;render();alert("✅ تم إرسال الرسالة");
 }
-async function markNotifRead(id,empName){const ref=doc(db,“notifications”,id);const snap=await getDoc(ref);if(snap.exists()){const rb=snap.data().readBy||{};rb[empName]=true;await updateDoc(ref,{readBy:rb});}}
+async function markNotifRead(id,empName){const ref=doc(db,"notifications",id);const snap=await getDoc(ref);if(snap.exists()){const rb=snap.data().readBy||{};rb[empName]=true;await updateDoc(ref,{readBy:rb});}}
 async function dismissPendingNotif(){if(S.pendingNotif&&S.empName){await markNotifRead(S.pendingNotif.id,S.empName);S.pendingNotif=null;render();}}
-async function markAllRead(){const myN=S.notifs.filter(n=>(n.to===S.empName||n.to===“all”)&&!(n.readBy||{})[S.empName]);for(const n of myN)await markNotifRead(n.id,S.empName);}
+async function markAllRead(){const myN=S.notifs.filter(n=>(n.to===S.empName||n.to==="all")&&!(n.readBy||{})[S.empName]);for(const n of myN)await markNotifRead(n.id,S.empName);}
 
 async function punchIn(){
-const empName=S.empName;if(!empName){alert(“لازم تسجل دخول بباسورد الموظف!”);return;}
-const td=today();const existing=S.attendance.find(x=>x.emp===empName&&x.date===td&&x.punchIn&&!x.punchOut);
-if(existing){alert(“أنت مسجل حضور بالفعل!”);return;}
-S.gpsLoading=true;render();
-navigator.geolocation.getCurrentPosition(async pos=>{
-const dist=calcDistance(pos.coords.latitude,pos.coords.longitude,SHOP_LAT,SHOP_LNG);
-S.gpsLoading=false;
-if(dist>MAX_DISTANCE){alert(`❌ أنت بعيد ${Math.round(dist)} متر!\nالمسموح: ${MAX_DISTANCE} متر`);render();return;}
-const now=new Date();const timeStr=now.toLocaleTimeString(“en”,{hour:“2-digit”,minute:“2-digit”});
-const nowMins=now.getHours()*60+now.getMinutes();const lateBy=Math.max(0,nowMins-timeToMins(WORK_START));
-await addDoc(attendCol,{emp:empName,date:td,punchIn:timeStr,punchOut:null,punchInMins:nowMins,punchOutMins:null,lateBy,hours:null,createdAt:serverTimestamp()});
-render();alert(`✅ تم تسجيل الحضور\n${timeStr}\n${lateBy>0?`⚠️ متأخر ${lateBy} دقيقة`:"🟢 في الوقت"}`);
-},()=>{S.gpsLoading=false;render();alert(“❌ تعذر الحصول على موقعك!”);},{enableHighAccuracy:true,timeout:10000});
+  const empName=S.empName;if(!empName){alert("لازم تسجل دخول بباسورد الموظف!");return;}
+  const td=today();const existing=S.attendance.find(x=>x.emp===empName&&x.date===td&&x.punchIn&&!x.punchOut);
+  if(existing){alert("أنت مسجل حضور بالفعل!");return;}
+  S.gpsLoading=true;render();
+  navigator.geolocation.getCurrentPosition(async pos=>{
+    const dist=calcDistance(pos.coords.latitude,pos.coords.longitude,SHOP_LAT,SHOP_LNG);
+    S.gpsLoading=false;
+    if(dist>MAX_DISTANCE){alert(`❌ أنت بعيد ${Math.round(dist)} متر!\nالمسموح: ${MAX_DISTANCE} متر`);render();return;}
+    const now=new Date();const timeStr=now.toLocaleTimeString("en",{hour:"2-digit",minute:"2-digit"});
+    const nowMins=now.getHours()*60+now.getMinutes();const lateBy=Math.max(0,nowMins-timeToMins(WORK_START));
+    await addDoc(attendCol,{emp:empName,date:td,punchIn:timeStr,punchOut:null,punchInMins:nowMins,punchOutMins:null,lateBy,hours:null,createdAt:serverTimestamp()});
+    render();alert(`✅ تم تسجيل الحضور\n${timeStr}\n${lateBy>0?`⚠️ متأخر ${lateBy} دقيقة`:"🟢 في الوقت"}`);
+  },()=>{S.gpsLoading=false;render();alert("❌ تعذر الحصول على موقعك!");},{enableHighAccuracy:true,timeout:10000});
 }
-
 async function punchOut(){
-const empName=S.empName;if(!empName){alert(“لازم تسجل دخول بباسورد الموظف!”);return;}
-const td=today();const existing=S.attendance.find(x=>x.emp===empName&&x.date===td&&x.punchIn&&!x.punchOut);
-if(!existing){alert(“ما عندك بصمة حضور اليوم!”);return;}
-S.gpsLoading=true;render();
-navigator.geolocation.getCurrentPosition(async pos=>{
-const dist=calcDistance(pos.coords.latitude,pos.coords.longitude,SHOP_LAT,SHOP_LNG);
-S.gpsLoading=false;
-if(dist>MAX_DISTANCE){alert(`❌ أنت بعيد ${Math.round(dist)} متر!`);render();return;}
-const now=new Date();const timeStr=now.toLocaleTimeString(“en”,{hour:“2-digit”,minute:“2-digit”});
-const nowMins=now.getHours()*60+now.getMinutes();const hrs=Math.round((nowMins-existing.punchInMins)/60*10)/10;
-await updateDoc(doc(db,“attendance”,existing.id),{punchOut:timeStr,punchOutMins:nowMins,hours:hrs});
-render();alert(`✅ تم تسجيل الخروج\n${timeStr}\nساعات الدوام: ${hrs} ساعة`);
-},()=>{S.gpsLoading=false;render();alert(“❌ تعذر الحصول على موقعك!”);},{enableHighAccuracy:true,timeout:10000});
+  const empName=S.empName;if(!empName){alert("لازم تسجل دخول بباسورد الموظف!");return;}
+  const td=today();const existing=S.attendance.find(x=>x.emp===empName&&x.date===td&&x.punchIn&&!x.punchOut);
+  if(!existing){alert("ما عندك بصمة حضور اليوم!");return;}
+  S.gpsLoading=true;render();
+  navigator.geolocation.getCurrentPosition(async pos=>{
+    const dist=calcDistance(pos.coords.latitude,pos.coords.longitude,SHOP_LAT,SHOP_LNG);
+    S.gpsLoading=false;
+    if(dist>MAX_DISTANCE){alert(`❌ أنت بعيد ${Math.round(dist)} متر!`);render();return;}
+    const now=new Date();const timeStr=now.toLocaleTimeString("en",{hour:"2-digit",minute:"2-digit"});
+    const nowMins=now.getHours()*60+now.getMinutes();const hrs=Math.round((nowMins-existing.punchInMins)/60*10)/10;
+    await updateDoc(doc(db,"attendance",existing.id),{punchOut:timeStr,punchOutMins:nowMins,hours:hrs});
+    render();alert(`✅ تم تسجيل الخروج\n${timeStr}\nساعات الدوام: ${hrs} ساعة`);
+  },()=>{S.gpsLoading=false;render();alert("❌ تعذر الحصول على موقعك!");},{enableHighAccuracy:true,timeout:10000});
 }
 
-function switchTab(t){if(t===“report”&&S.role!==“owner”){alert(“هذا القسم للمالك فقط!”);return;}S.tab=t;render();}
+function switchTab(t){if(t==="report"&&S.role!=="owner"){alert("هذا القسم للمالك فقط!");return;}S.tab=t;render();}
 function selectStore(id){S.sel=id;render();}
 function setSaleType(t){S.saleType=t;render();}
 function toggleEmpMenu(){
-const m=document.getElementById(“emp-menu”);if(!m)return;
-const open=m.style.display===“block”;m.style.display=open?“none”:“block”;
-if(!open)setTimeout(()=>{document.addEventListener(“click”,e=>{if(!document.getElementById(“emp-menu”)?.contains(e.target)){const m=document.getElementById(“emp-menu”);if(m)m.style.display=“none”;}},{once:true});},0);
+  const m=document.getElementById("emp-menu");if(!m)return;
+  const open=m.style.display==="block";m.style.display=open?"none":"block";
+  if(!open)setTimeout(()=>{document.addEventListener("click",e=>{if(!document.getElementById("emp-menu")?.contains(e.target)){const m=document.getElementById("emp-menu");if(m)m.style.display="none";}},{once:true});},0);
 }
-function selectEmp(name,icon){S.empSel=name;const lb=document.getElementById(“emp-label”);if(lb)lb.textContent=icon+” “+name;const m=document.getElementById(“emp-menu”);if(m)m.style.display=“none”;render();}
+function selectEmp(name,icon){S.empSel=name;const lb=document.getElementById("emp-label");if(lb)lb.textContent=icon+" "+name;const m=document.getElementById("emp-menu");if(m)m.style.display="none";render();}
 function setRepPeriod(p){
-S.repPeriod=p;
-if(p===“today”){S.repFrom=today();S.repTo=today();}
-else if(p===“week”){S.repFrom=getWeekStart();S.repTo=today();}
-else if(p===“month”){const d=new Date();S.repFrom=new Date(d.getFullYear(),d.getMonth(),1).toLocaleDateString(“en-CA”);S.repTo=today();}
-else if(p===“all”){S.repFrom=“2020-01-01”;S.repTo=today();}
-render();
+  S.repPeriod=p;
+  if(p==="today"){S.repFrom=today();S.repTo=today();}
+  else if(p==="week"){S.repFrom=getWeekStart();S.repTo=today();}
+  else if(p==="month"){const d=new Date();S.repFrom=new Date(d.getFullYear(),d.getMonth(),1).toLocaleDateString("en-CA");S.repTo=today();}
+  else if(p==="all"){S.repFrom="2020-01-01";S.repTo=today();}
+  render();
 }
 function closeModal(){S.modal=null;S.editId=null;S.editSaleId=null;render();}
 
 // ===== RENDER =====
 function render(){
-const root=document.getElementById(“root”);if(!root)return;
-if(!S.loggedIn){root.innerHTML=renderLogin();return;}
-if(S.pendingNotif){root.innerHTML=renderApp()+renderBroadcastAlert();return;}
-if(S.modal||S.editId||S.editSaleId){root.innerHTML=renderApp()+renderModal();return;}
-root.innerHTML=renderApp();
+  const root=document.getElementById("root");if(!root)return;
+  if(!S.loggedIn){root.innerHTML=renderLogin();return;}
+  if(S.pendingNotif){root.innerHTML=renderApp()+renderBroadcastAlert();return;}
+  if(S.modal||S.editId||S.editSaleId){root.innerHTML=renderApp()+renderModal();return;}
+  root.innerHTML=renderApp();
 }
 
 function renderLogin(){
-return`<div class="login-wrap"><div class="login-box">
-<div style="font-size:48px;margin-bottom:14px">🏪</div>
-<div style="font-size:21px;font-weight:900;margin-bottom:5px">نظام مبيعات البسفور</div>
-<div style="font-size:12px;color:#8888aa;margin-bottom:28px">أدخل كلمة المرور للدخول</div>
-<input class="login-inp" id="pass-inp" type="password" placeholder="••••" onkeydown="if(event.key==='Enter')window._login()"/>
-<button class="login-btn" onclick="window._login()">🔐 دخول</button>
-<div style="color:#EF4444;font-size:13px;min-height:18px;margin-top:4px" id="login-err"></div>
-
+  return`<div class="login-wrap"><div class="login-box">
+    <div style="font-size:48px;margin-bottom:14px">🏪</div>
+    <div style="font-size:21px;font-weight:900;margin-bottom:5px">نظام مبيعات البسفور</div>
+    <div style="font-size:12px;color:#8888aa;margin-bottom:28px">أدخل كلمة المرور للدخول</div>
+    <input class="login-inp" id="pass-inp" type="password" placeholder="••••" onkeydown="if(event.key==='Enter')window._login()"/>
+    <button class="login-btn" onclick="window._login()">🔐 دخول</button>
+    <div style="color:#EF4444;font-size:13px;min-height:18px;margin-top:4px" id="login-err"></div>
   </div></div>`;
 }
 
 function renderBroadcastAlert(){
-const n=S.pendingNotif;
-return`<div class="overlay"><div class="modal" style="text-align:center;border-color:#a78bfa66">
-<div style="font-size:40px;margin-bottom:12px">📢</div>
-<div style="font-weight:900;font-size:17px;margin-bottom:8px">رسالة من المالك</div>
-<div style="background:#0d0d1a;border-radius:12px;padding:16px;margin-bottom:20px;font-size:15px;line-height:1.7;border:1px solid #a78bfa33">${n.msg}</div>
-<div style="font-size:11px;color:#8888aa;margin-bottom:20px">${n.date||””}</div>
-<button class="btn btn-p" style="width:100%;padding:14px;font-size:15px" onclick="window._dismissNotif()">✅ حسناً، فهمت</button>
-
+  const n=S.pendingNotif;
+  return`<div class="overlay"><div class="modal" style="text-align:center;border-color:#a78bfa66">
+    <div style="font-size:40px;margin-bottom:12px">📢</div>
+    <div style="font-weight:900;font-size:17px;margin-bottom:8px">رسالة من المالك</div>
+    <div style="background:#0d0d1a;border-radius:12px;padding:16px;margin-bottom:20px;font-size:15px;line-height:1.7;border:1px solid #a78bfa33">${n.msg}</div>
+    <div style="font-size:11px;color:#8888aa;margin-bottom:20px">${n.date||""}</div>
+    <button class="btn btn-p" style="width:100%;padding:14px;font-size:15px" onclick="window._dismissNotif()">✅ حسناً، فهمت</button>
   </div></div>`;
 }
 
 function renderWinnerBanner(){
-const td=today(),empTotals={};
-// الفائز يُحسب على مبيعات المحل فقط (بدون توصيل)
-S.sales.filter(x=>x.date===td&&x.type===“store”).forEach(x=>{empTotals[x.emp]=(empTotals[x.emp]||0)+x.amount;});
-let ranked=Object.entries(empTotals).sort((a,b)=>b[1]-a[1]);
-let label=td;
-if(!ranked.length){
-const allDates=[…new Set(S.sales.filter(x=>x.type===“store”).map(x=>x.date))].sort((a,b)=>b.localeCompare(a));
-for(const d of allDates){if(d===td)continue;const prev={};S.sales.filter(x=>x.date===d&&x.type===“store”).forEach(x=>{prev[x.emp]=(prev[x.emp]||0)+x.amount;});if(Object.keys(prev).length){ranked=Object.entries(prev).sort((a,b)=>b[1]-a[1]);label=d;break;}}
-}
-const storesWithSales=new Set(S.sales.filter(x=>x.date===td&&x.type===“store”).map(x=>x.store));
-const allReady=STORES.every(s=>storesWithSales.has(s.id));
-const storeStatus=STORES.map(s=>storesWithSales.has(s.id)?`<span style="color:#10B981">${s.icon}✓</span>`:`<span style="color:#EF4444">${s.icon}⏳</span>`).join(” “);
-const isToday=label===td;
-const countdownHtml=countdownSecs>0&&allReady&&isToday
-?`<span id="countdown-el" style="background:#ffffff22;padding:3px 10px;border-radius:20px;font-size:12px">⏳ النقاط تُضاف للأعلى مبيع بعد ${Math.floor(countdownSecs/60)}:${String(countdownSecs%60).padStart(2,"0")}</span>`
-:allReady&&isToday
-?`<span id="countdown-el" style="background:#10B98133;padding:3px 10px;border-radius:20px;font-size:12px;color:#10B981">✅ كل المحلات سجلت</span>`
-:isToday
-?`<span id="countdown-el" style="background:#ffffff22;padding:3px 10px;border-radius:20px;font-size:12px">${storeStatus} ينتظر اكتمال التسجيل</span>`
-:`<span id="countdown-el"></span>`;
-const medals=[“🥇”,“🥈”,“🥉”];
-if(!ranked.length)return`<div class="winner-banner"><div class="winner-fixed-item">🏪 <b>نظام مبيعات البسفور</b> <span style="color:#ffd700;margin:0 10px">✦</span> سجّل مبيعات لتظهر قائمة الفائزين 🏆</div></div>`;
-const items=ranked.map(([name,amt],i)=>` <div class="winner-fixed-item"> <span class="winner-crown">${medals[i]||"🏅"}</span> <span>${i===0?`👑 ${isToday?“الفائز”:“فائز “+label}`:("المركز "+(i+1))}: <b>${name}</b></span> <span style="color:#ffd700;margin:0 6px">${fmt(amt)}</span> ${i===0&&isToday?countdownHtml:""} ${i<ranked.length-1?`<span style="color:#ffffff55;margin:0 12px;font-size:18px">✦</span>`:""} </div>`).join(””);
-return`<div class="winner-banner">${items}</div>`;
+  const td=today(),empTotals={};
+  S.sales.filter(x=>x.date===td&&x.type==="store").forEach(x=>{empTotals[x.emp]=(empTotals[x.emp]||0)+x.amount;});
+  let ranked=Object.entries(empTotals).sort((a,b)=>b[1]-a[1]);
+  let label=td;
+  if(!ranked.length){
+    const allDates=[...new Set(S.sales.filter(x=>x.type==="store").map(x=>x.date))].sort((a,b)=>b.localeCompare(a));
+    for(const d of allDates){if(d===td)continue;const prev={};S.sales.filter(x=>x.date===d&&x.type==="store").forEach(x=>{prev[x.emp]=(prev[x.emp]||0)+x.amount;});if(Object.keys(prev).length){ranked=Object.entries(prev).sort((a,b)=>b[1]-a[1]);label=d;break;}}
+  }
+  const storesWithSales=new Set(S.sales.filter(x=>x.date===td&&x.type==="store").map(x=>x.store));
+  const allReady=STORES.every(s=>storesWithSales.has(s.id));
+  const storeStatus=STORES.map(s=>storesWithSales.has(s.id)?`<span style="color:#10B981">${s.icon}✓</span>`:`<span style="color:#EF4444">${s.icon}⏳</span>`).join(" ");
+  const isToday=label===td;
+  const countdownHtml=countdownSecs>0&&allReady&&isToday
+    ?`<span id="countdown-el" style="background:#ffffff22;padding:3px 10px;border-radius:20px;font-size:12px">⏳ نقاط بعد ${Math.floor(countdownSecs/60)}:${String(countdownSecs%60).padStart(2,"0")}</span>`
+    :allReady&&isToday
+    ?`<span id="countdown-el" style="background:#10B98133;padding:3px 10px;border-radius:20px;font-size:12px;color:#10B981">✅ كل المحلات سجلت</span>`
+    :isToday
+    ?`<span id="countdown-el" style="background:#ffffff22;padding:3px 10px;border-radius:20px;font-size:12px">${storeStatus} ينتظر اكتمال التسجيل</span>`
+    :`<span id="countdown-el"></span>`;
+  const medals=["🥇","🥈","🥉"];
+  if(!ranked.length)return`<div class="winner-banner"><div class="winner-fixed-item">🏪 <b>نظام مبيعات البسفور</b> <span style="color:#ffd700;margin:0 10px">✦</span> سجّل مبيعات لتظهر قائمة الفائزين 🏆</div></div>`;
+  const items=ranked.map(([name,amt],i)=>`
+    <div class="winner-fixed-item">
+      <span class="winner-crown">${medals[i]||"🏅"}</span>
+      <span>${i===0?`👑 ${isToday?"الفائز":"فائز "+label}`:("المركز "+(i+1))}: <b>${name}</b></span>
+      <span style="color:#ffd700;margin:0 6px">${fmt(amt)}</span>
+      ${i===0&&isToday?countdownHtml:""}
+      ${i<ranked.length-1?`<span style="color:#ffffff55;margin:0 12px;font-size:18px">✦</span>`:""}
+    </div>`).join("");
+  return`<div class="winner-banner">${items}</div>`;
 }
 
 function renderApp(){
-const isOwner=S.role===“owner”,isEmpWallet=S.role===“employee”&&S.empName;
-const myStore=isEmpWallet?EMP_STORE[S.empName]:null,canSell=isEmpWallet&&myStore!==null;
-if(!S.loaded)return`<div class="header"><div class="logo">🏪 <span>نظام مبيعات</span> البسفور</div></div><div class="loading"><div class="spinner"></div><div style="color:#8888aa">جاري تحميل البيانات...</div></div>`;
-const unreadCount=isEmpWallet?S.notifs.filter(n=>(n.to===S.empName||n.to===“all”)&&!(n.readBy||{})[S.empName]).length:0;
-const roleLabel=isOwner?`<span style="background:#a78bfa22;border:1px solid #a78bfa44;color:#a78bfa;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700">👑 مالك</span>`:isEmpWallet?`<span style="background:#F59E0B22;border:1px solid #F59E0B44;color:#F59E0B;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700">💼 ${S.empName}</span>`:`<span style="background:#10B98122;border:1px solid #10B98144;color:#10B981;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700">👨‍💼 موظف</span>`;
-const tabs=isOwner
-?`<button class="tab ${S.tab==="pos"?"active":""}" onclick="window._tab('pos')">🛒 مبيعات</button> <button class="tab ${S.tab==="report"?"active":""}" onclick="window._tab('report')">📊 تقارير</button> <button class="tab ${S.tab==="wallets"?"active":""}" onclick="window._tab('wallets')">💰 محافظ</button> <button class="tab ${S.tab==="attend"?"active":""}" onclick="window._tab('attend')">📍 حضور</button> <button class="tab ${S.tab==="broadcast"?"active":""}" onclick="window._tab('broadcast')">📢 رسائل</button> <button class="tab ${S.tab==="settings"?"active":""}" onclick="window._tab('settings')">⚙️ إعدادات</button>`
-:isEmpWallet
-?`${canSell?`<button class=“tab ${S.tab===“pos”?“active”:””}” onclick=“window._tab(‘pos’)”>🛒 مبيعات محل ${myStore}</button>`:""} <button class="tab ${S.tab==="mywallet"?"active":""}" onclick="window._tab('mywallet')">💼 محفظتي</button> <button class="tab ${S.tab==="myattend"?"active":""}" onclick="window._tab('myattend')">📍 حضوري</button> <button class="tab ${S.tab==="notifs"?"active":""}" onclick="window._tab('notifs')" style="position:relative">🔔 الإشعارات${unreadCount>0?`<span class="notif-badge">${unreadCount}</span>`:""}</button>`
-:`<button class="tab ${S.tab==="pos"?"active":""}" onclick="window._tab('pos')">🛒 تسجيل مبيعات</button>`;
-let content=””;
-if(S.tab===“pos”&&(!isEmpWallet||canSell))content=renderPOS(myStore);
-else if(S.tab===“report”&&isOwner)content=renderReport();
-else if(S.tab===“wallets”&&isOwner)content=renderWallets();
-else if(S.tab===“attend”&&isOwner)content=renderAttendAdmin();
-else if(S.tab===“broadcast”&&isOwner)content=renderBroadcast();
-else if(S.tab===“settings”&&isOwner)content=renderSettings();
-else if(S.tab===“mywallet”&&isEmpWallet)content=renderMyWallet(S.empName);
-else if(S.tab===“myattend”&&isEmpWallet)content=renderMyAttend(S.empName);
-else if(S.tab===“notifs”&&isEmpWallet)content=renderMyNotifs(S.empName);
-else if(isEmpWallet)content=renderMyWallet(S.empName);
-else content=renderPOS(null);
-return` ${renderWinnerBanner()} <div class="header"> <div class="logo">🏪 <span>نظام مبيعات</span> البسفور</div> <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"> ${roleLabel} <div class="sync-pill"><div class="dot dot-green" id="sync-dot"></div><span id="sync-txt">متصل</span></div> <div class="date-badge">${new Date().toLocaleDateString("ar-IQ",{weekday:"long",year:"numeric",month:"long",day:"numeric"})}</div> <button class="btn btn-g" style="padding:5px 12px;font-size:12px" onclick="window._logout()">🚪 خروج</button> </div> </div> <div class="tabs">${tabs}</div> <div class="main">${content}</div>`;
+  const isOwner=S.role==="owner",isEmpWallet=S.role==="employee"&&S.empName;
+  const myStore=isEmpWallet?EMP_STORE[S.empName]:null,canSell=isEmpWallet&&myStore!==null;
+  if(!S.loaded)return`<div class="header"><div class="logo">🏪 <span>نظام مبيعات</span> البسفور</div></div><div class="loading"><div class="spinner"></div><div style="color:#8888aa">جاري تحميل البيانات...</div></div>`;
+  const unreadCount=isEmpWallet?S.notifs.filter(n=>(n.to===S.empName||n.to==="all")&&!(n.readBy||{})[S.empName]).length:0;
+  const roleLabel=isOwner?`<span style="background:#a78bfa22;border:1px solid #a78bfa44;color:#a78bfa;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700">👑 مالك</span>`:isEmpWallet?`<span style="background:#F59E0B22;border:1px solid #F59E0B44;color:#F59E0B;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700">💼 ${S.empName}</span>`:`<span style="background:#10B98122;border:1px solid #10B98144;color:#10B981;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700">👨‍💼 موظف</span>`;
+  const tabs=isOwner
+    ?`<button class="tab ${S.tab==="pos"?"active":""}" onclick="window._tab('pos')">🛒 مبيعات</button>
+       <button class="tab ${S.tab==="report"?"active":""}" onclick="window._tab('report')">📊 تقارير</button>
+       <button class="tab ${S.tab==="wallets"?"active":""}" onclick="window._tab('wallets')">💰 محافظ</button>
+       <button class="tab ${S.tab==="attend"?"active":""}" onclick="window._tab('attend')">📍 حضور</button>
+       <button class="tab ${S.tab==="broadcast"?"active":""}" onclick="window._tab('broadcast')">📢 رسائل</button>
+       <button class="tab ${S.tab==="settings"?"active":""}" onclick="window._tab('settings')">⚙️ إعدادات</button>`
+    :isEmpWallet
+    ?`${canSell?`<button class="tab ${S.tab==="pos"?"active":""}" onclick="window._tab('pos')">🛒 مبيعات محل ${myStore}</button>`:""}
+       <button class="tab ${S.tab==="mywallet"?"active":""}" onclick="window._tab('mywallet')">💼 محفظتي</button>
+       <button class="tab ${S.tab==="myattend"?"active":""}" onclick="window._tab('myattend')">📍 حضوري</button>
+       <button class="tab ${S.tab==="notifs"?"active":""}" onclick="window._tab('notifs')" style="position:relative">🔔 الإشعارات${unreadCount>0?`<span class="notif-badge">${unreadCount}</span>`:""}</button>`
+    :`<button class="tab ${S.tab==="pos"?"active":""}" onclick="window._tab('pos')">🛒 تسجيل مبيعات</button>`;
+  let content="";
+  if(S.tab==="pos"&&(!isEmpWallet||canSell))content=renderPOS(myStore);
+  else if(S.tab==="report"&&isOwner)content=renderReport();
+  else if(S.tab==="wallets"&&isOwner)content=renderWallets();
+  else if(S.tab==="attend"&&isOwner)content=renderAttendAdmin();
+  else if(S.tab==="broadcast"&&isOwner)content=renderBroadcast();
+  else if(S.tab==="settings"&&isOwner)content=renderSettings();
+  else if(S.tab==="mywallet"&&isEmpWallet)content=renderMyWallet(S.empName);
+  else if(S.tab==="myattend"&&isEmpWallet)content=renderMyAttend(S.empName);
+  else if(S.tab==="notifs"&&isEmpWallet)content=renderMyNotifs(S.empName);
+  else if(isEmpWallet)content=renderMyWallet(S.empName);
+  else content=renderPOS(null);
+  return`
+  ${renderWinnerBanner()}
+  <div class="header">
+    <div class="logo">🏪 <span>نظام مبيعات</span> البسفور</div>
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      ${roleLabel}
+      <div class="sync-pill"><div class="dot dot-green" id="sync-dot"></div><span id="sync-txt">متصل</span></div>
+      <div class="date-badge">${new Date().toLocaleDateString("ar-IQ",{weekday:"long",year:"numeric",month:"long",day:"numeric"})}</div>
+      <button class="btn btn-g" style="padding:5px 12px;font-size:12px" onclick="window._logout()">🚪 خروج</button>
+    </div>
+  </div>
+  <div class="tabs">${tabs}</div>
+  <div class="main">${content}</div>`;
 }
 
 function storeSums(storeId,from,to){
-const items=S.sales.filter(x=>x.store===storeId&&x.date>=from&&x.date<=to);
-const shop=items.filter(x=>x.type===“store”).reduce((a,b)=>a+b.amount,0);
-const del=items.filter(x=>x.type===“delivery”).reduce((a,b)=>a+b.amount,0);
-return{shop,del,total:shop+del,count:items.length,items};
+  const items=S.sales.filter(x=>x.store===storeId&&x.date>=from&&x.date<=to);
+  const shop=items.filter(x=>x.type==="store").reduce((a,b)=>a+b.amount,0);
+  const del=items.filter(x=>x.type==="delivery").reduce((a,b)=>a+b.amount,0);
+  return{shop,del,total:shop+del,count:items.length,items};
 }
 
 function renderPOS(myStore){
-const td=today(),isOwner=S.role===“owner”,isEmp=!!S.empName;
-if(isEmp&&myStore&&S.sel!==myStore)S.sel=myStore;
-if(isEmp&&!S.empSel)S.empSel=S.empName;
-const todaySales=S.sales.filter(x=>x.date===td&&x.type===“store”);
-let displayDate=td;
-let isDisplayToday=true;
-if(todaySales.length===0){
-const allDates=[…new Set(S.sales.map(x=>x.date))].sort((a,b)=>b.localeCompare(a));
-if(allDates.length>0&&allDates[0]!==td){displayDate=allDates[0];isDisplayToday=false;}
-}
-const cards=STORES.map(s=>{
-const{shop,del,total,count}=storeSums(s.id,displayDate,displayDate);
-const isMyStore=myStore===s.id,canClick=isOwner||(isEmp&&isMyStore);
-return`<div class="store-card ${S.sel===s.id?"selected":""}" onclick="${canClick?`window._store(${s.id})`:"void(0)"}" style="${!canClick?"cursor:default;opacity:.75":""}"> <div class="sel-dot"></div> <div class="s-icon">${s.icon}</div> <div class="s-name">${s.name}${isMyStore&&isEmp?" ⭐":""}</div> <div class="s-sub">${isDisplayToday?"اليوم":"آخر يوم: "+displayDate}: ${count} فاتورة</div> <div class="s-mini-grid"> <div class="s-mini"><div class="s-mini-lbl">🏬 المحل</div><div class="s-mini-val" style="color:${s.color}">${fmt(shop)}</div></div> <div class="s-mini"><div class="s-mini-lbl">🚚 توصيل</div><div class="s-mini-val" style="color:#38bdf8">${fmt(del)}</div></div> </div> <div class="s-total">المجموع: <span style="color:${s.color}">${fmt(total)}</span></div> </div>`;
-}).join(””);
-const sel=STORES.find(s=>s.id===S.sel);
-const canEditThisStore=isOwner||(isEmp&&myStore===S.sel);
-const{shop,del,total,items:logs}=storeSums(S.sel,td,td);
-const displayLogs=logs.length>0?logs:S.sales.filter(x=>x.store===S.sel).slice(0,20);
-const empLabel=S.empSel?(EMPS.find(e=>e[0]===S.empSel)||[””,“👤”])[1]+” “+S.empSel:“👤 اختر موظف”;
-const empItems=EMPS.map(([n,ic])=>`<div class="emp-item" onclick="window._emp('${n}','${ic}')">${ic} ${n}</div>`).join(””);
-const rows=displayLogs.length===0?`<tr><td colspan="6" style="text-align:center;padding:30px;color:#555577">لا توجد مبيعات</td></tr>`:
-displayLogs.map(x=>`<tr> <td style="color:#8888aa;font-size:11px">${x.date!==td?`<span style="color:#F59E0B">${x.date}</span>`:""} ${x.time||""}</td><td>${x.emp||"—"}</td> <td><span class="type-badge ${x.type==="store"?"badge-store":"badge-delivery"}">${x.type==="store"?"🏬":"🚚"}</span></td> <td style="font-weight:700;color:${x.type==="store"?sel.color:"#38bdf8"}">${fmt(x.amount)}</td> ${isOwner?`<td><button class="btn-edit" onclick="window._edit('${x.id}')">✏️</button></td><td><button class="btn-del" onclick="window._del('${x.id}')">🗑</button></td>`:"<td></td><td></td>"} </tr>`).join(””);
-const formHtml=canEditThisStore?` <div class="type-tabs"> <button class="type-tab ${S.saleType==="store"?"active-store":""}" onclick="window._type('store')">🏬 مبيعات المحل</button> <button class="type-tab ${S.saleType==="delivery"?"active-delivery":""}" onclick="window._type('delivery')">🚚 مبيعات التوصيل</button> </div> <div class="sale-summary"> <div class="sum-box"><div class="sum-lbl">🏬 المحل</div><div class="sum-val" style="color:${sel.color}">${fmt(shop)}</div></div> <div class="sum-box"><div class="sum-lbl">🚚 توصيل</div><div class="sum-val" style="color:#38bdf8">${fmt(del)}</div></div> <div class="sum-box" style="border-color:#a78bfa44"><div class="sum-lbl">💰 مجموع</div><div class="sum-val">${fmt(total)}</div></div> </div> <div class="pos-row"> <div><div class="lbl">المبلغ (د.ع) *</div> <input class="inp" id="inp-amount" type="number" placeholder="25000" min="0" onkeydown="if(event.key==='Enter')window._add()" style="border-color:${S.saleType==="store"?"#a78bfa66":"#38bdf866"}"/> </div> <div><div class="lbl">الموظف *</div> <div style="position:relative"> <button id="emp-btn" type="button" class="inp" onclick="window._empMenu()" style="cursor:pointer;display:flex;align-items:center;justify-content:space-between"> <span id="emp-label">${empLabel}</span><span style="font-size:11px;color:#8888aa">▼</span> </button> <div id="emp-menu" class="emp-menu">${empItems}</div> </div> </div> <div><div class="lbl">&nbsp;</div> <button class="btn btn-p" onclick="window._add()" style="background:${S.saleType==="store"?"linear-gradient(135deg,#a78bfa,#7c3aed)":"linear-gradient(135deg,#38bdf8,#0284c7)"}">✅ تسجيل</button> </div> </div>`
-:`<div style="background:#a78bfa11;border:1px solid #a78bfa33;border-radius:12px;padding:14px;text-align:center;color:#8888aa;font-size:13px;margin-bottom:16px">👁 وضع المشاهدة فقط</div> <div class="sale-summary"> <div class="sum-box"><div class="sum-lbl">🏬 المحل</div><div class="sum-val" style="color:${sel.color}">${fmt(shop)}</div></div> <div class="sum-box"><div class="sum-lbl">🚚 توصيل</div><div class="sum-val" style="color:#38bdf8">${fmt(del)}</div></div> <div class="sum-box" style="border-color:#a78bfa44"><div class="sum-lbl">💰 مجموع</div><div class="sum-val">${fmt(total)}</div></div> </div>`;
-return`<div class="stores-grid">${cards}</div> <div class="pos-box"> <div class="pos-title">${sel.icon} ${sel.name} ${canEditThisStore?"":"👁"}</div> ${formHtml} <table><thead><tr><th>الوقت</th><th>الموظف</th><th>النوع</th><th>المبلغ</th>${isOwner?"<th>✏️</th><th>🗑</th>":""}</tr></thead><tbody>${rows}</tbody></table> </div>`;
+  const td=today(),isOwner=S.role==="owner",isEmp=!!S.empName;
+  if(isEmp&&myStore&&S.sel!==myStore)S.sel=myStore;
+  if(isEmp&&!S.empSel)S.empSel=S.empName;
+
+  // لو ما في مبيعات اليوم، بين آخر يوم فيه مبيعات بالبطاقات
+  const todaySales=S.sales.filter(x=>x.date===td&&x.type==="store");
+  let displayDate=td;
+  let isDisplayToday=true;
+  if(todaySales.length===0){
+    const allDates=[...new Set(S.sales.map(x=>x.date))].sort((a,b)=>b.localeCompare(a));
+    if(allDates.length>0&&allDates[0]!==td){displayDate=allDates[0];isDisplayToday=false;}
+  }
+
+  const cards=STORES.map(s=>{
+    const{shop,del,total,count}=storeSums(s.id,displayDate,displayDate);
+    const isMyStore=myStore===s.id,canClick=isOwner||(isEmp&&isMyStore);
+    return`<div class="store-card ${S.sel===s.id?"selected":""}" onclick="${canClick?`window._store(${s.id})`:"void(0)"}" style="${!canClick?"cursor:default;opacity:.75":""}">
+      <div class="sel-dot"></div>
+      <div class="s-icon">${s.icon}</div>
+      <div class="s-name">${s.name}${isMyStore&&isEmp?" ⭐":""}</div>
+      <div class="s-sub">${isDisplayToday?"اليوم":"آخر يوم: "+displayDate}: ${count} فاتورة</div>
+      <div class="s-mini-grid">
+        <div class="s-mini"><div class="s-mini-lbl">🏬 المحل</div><div class="s-mini-val" style="color:${s.color}">${fmt(shop)}</div></div>
+        <div class="s-mini"><div class="s-mini-lbl">🚚 توصيل</div><div class="s-mini-val" style="color:#38bdf8">${fmt(del)}</div></div>
+      </div>
+      <div class="s-total">المجموع: <span style="color:${s.color}">${fmt(total)}</span></div>
+    </div>`;
+  }).join("");
+  const sel=STORES.find(s=>s.id===S.sel);
+  const canEditThisStore=isOwner||(isEmp&&myStore===S.sel);
+  // فورم التسجيل دايماً يبين اليوم الحالي
+  const{shop,del,total,items:logs}=storeSums(S.sel,td,td);
+  // لو ما في مبيعات اليوم بالمحل المختار، بين آخر يوم
+  const displayLogs=logs.length>0?logs:S.sales.filter(x=>x.store===S.sel).slice(0,20);
+  const empLabel=S.empSel?(EMPS.find(e=>e[0]===S.empSel)||["","👤"])[1]+" "+S.empSel:"👤 اختر موظف";
+  const empItems=EMPS.map(([n,ic])=>`<div class="emp-item" onclick="window._emp('${n}','${ic}')">${ic} ${n}</div>`).join("");
+  const rows=displayLogs.length===0?`<tr><td colspan="6" class="empty" style="text-align:center;padding:30px;color:#555577">لا توجد مبيعات</td></tr>`:
+    displayLogs.map(x=>`<tr>
+      <td style="color:#8888aa;font-size:11px">${x.date!==td?`<span style="color:#F59E0B">${x.date}</span>`:""} ${x.time||""}</td><td>${x.emp||"—"}</td>
+      <td><span class="type-badge ${x.type==="store"?"badge-store":"badge-delivery"}">${x.type==="store"?"🏬":"🚚"}</span></td>
+      <td style="font-weight:700;color:${x.type==="store"?sel.color:"#38bdf8"}">${fmt(x.amount)}</td>
+      ${isOwner?`<td><button class="btn-edit" onclick="window._edit('${x.id}')">✏️</button></td><td><button class="btn-del" onclick="window._del('${x.id}')">🗑</button></td>`:"<td></td><td></td>"}
+    </tr>`).join("");
+  const formHtml=canEditThisStore?`
+    <div class="type-tabs">
+      <button class="type-tab ${S.saleType==="store"?"active-store":""}" onclick="window._type('store')">🏬 مبيعات المحل</button>
+      <button class="type-tab ${S.saleType==="delivery"?"active-delivery":""}" onclick="window._type('delivery')">🚚 مبيعات التوصيل</button>
+    </div>
+    <div class="sale-summary">
+      <div class="sum-box"><div class="sum-lbl">🏬 المحل</div><div class="sum-val" style="color:${sel.color}">${fmt(shop)}</div></div>
+      <div class="sum-box"><div class="sum-lbl">🚚 توصيل</div><div class="sum-val" style="color:#38bdf8">${fmt(del)}</div></div>
+      <div class="sum-box" style="border-color:#a78bfa44"><div class="sum-lbl">💰 مجموع</div><div class="sum-val">${fmt(total)}</div></div>
+    </div>
+    <div class="pos-row">
+      <div><div class="lbl">المبلغ (د.ع) *</div>
+        <input class="inp" id="inp-amount" type="number" placeholder="25000" min="0" onkeydown="if(event.key==='Enter')window._add()" style="border-color:${S.saleType==="store"?"#a78bfa66":"#38bdf866"}"/>
+      </div>
+      <div><div class="lbl">الموظف *</div>
+        <div style="position:relative">
+          <button id="emp-btn" type="button" class="inp" onclick="window._empMenu()" style="cursor:pointer;display:flex;align-items:center;justify-content:space-between">
+            <span id="emp-label">${empLabel}</span><span style="font-size:11px;color:#8888aa">▼</span>
+          </button>
+          <div id="emp-menu" class="emp-menu">${empItems}</div>
+        </div>
+      </div>
+      <div><div class="lbl">&nbsp;</div>
+        <button class="btn btn-p" onclick="window._add()" style="background:${S.saleType==="store"?"linear-gradient(135deg,#a78bfa,#7c3aed)":"linear-gradient(135deg,#38bdf8,#0284c7)"}">✅ تسجيل</button>
+      </div>
+    </div>`
+  :`<div style="background:#a78bfa11;border:1px solid #a78bfa33;border-radius:12px;padding:14px;text-align:center;color:#8888aa;font-size:13px;margin-bottom:16px">👁 وضع المشاهدة فقط</div>
+    <div class="sale-summary">
+      <div class="sum-box"><div class="sum-lbl">🏬 المحل</div><div class="sum-val" style="color:${sel.color}">${fmt(shop)}</div></div>
+      <div class="sum-box"><div class="sum-lbl">🚚 توصيل</div><div class="sum-val" style="color:#38bdf8">${fmt(del)}</div></div>
+      <div class="sum-box" style="border-color:#a78bfa44"><div class="sum-lbl">💰 مجموع</div><div class="sum-val">${fmt(total)}</div></div>
+    </div>`;
+  return`<div class="stores-grid">${cards}</div>
+  <div class="pos-box">
+    <div class="pos-title">${sel.icon} ${sel.name} ${canEditThisStore?"":"👁"}</div>
+    ${formHtml}
+    <table><thead><tr><th>الوقت</th><th>الموظف</th><th>النوع</th><th>المبلغ</th>${isOwner?"<th>✏️</th><th>🗑</th>":""}</tr></thead><tbody>${rows}</tbody></table>
+  </div>`;
 }
 
 function renderModal(){
-const m=S.modal;
-if(S.editId){
-const sale=S.sales.find(x=>x.id===S.editId);if(!sale)return””;
-return`<div class="overlay" onclick="if(event.target===this)window._closeModal()"> <div class="modal"> <div class="modal-title">✏️ تعديل المبيعة</div> <div class="form-row"><div class="lbl">المحل</div><select class="inp" id="edit-store">${STORES.map(s=>`<option value=”${s.id}” ${sale.store===s.id?“selected”:””}>${s.icon} ${s.name}</option>`).join("")}</select></div> <div class="form-row"><div class="lbl">الموظف</div><select class="inp" id="edit-emp">${EMPS.map(([n,ic])=>`<option value=”${n}” ${sale.emp===n?“selected”:””}>${ic} ${n}</option>`).join("")}</select></div> <div class="form-row"><div class="lbl">النوع</div><select class="inp" id="edit-type"><option value="store" ${sale.type==="store"?"selected":""}>🏬 محل</option><option value="delivery" ${sale.type==="delivery"?"selected":""}>🚚 توصيل</option></select></div> <div class="form-row"><div class="lbl">المبلغ (د.ع)</div><input class="inp" id="edit-amount" type="number" value="${sale.amount}"/></div> <div class="form-actions"> <button class="btn btn-g" onclick="window._closeModal()">إلغاء</button> <button class="btn btn-p" onclick="window._saveEdit()">💾 حفظ</button> </div> </div> </div>`;
-}
-if(S.editSaleId){
-const sale=S.sales.find(x=>x.id===S.editSaleId);if(!sale)return””;
-return`<div class="overlay" onclick="if(event.target===this)window._closeModal()"> <div class="modal"> <div class="modal-title">⚙️ تعديل المبيعة</div> <div style="background:#0d0d1a;border-radius:10px;padding:12px;margin-bottom:16px;font-size:13px;color:#8888aa"> ${STORES.find(s=>s.id===sale.store)?.icon||""} ${STORES.find(s=>s.id===sale.store)?.name||""} · ${sale.emp||""} · ${sale.time||""} </div> <div class="form-row"><div class="lbl">التاريخ</div><input class="inp" id="se-date" type="date" value="${sale.date}"/></div> <div class="form-row"><div class="lbl">المبلغ (د.ع)</div><input class="inp" id="se-amount" type="number" value="${sale.amount}"/></div> <div class="form-actions"> <button class="btn btn-g" onclick="window._closeModal()">إلغاء</button> <button class="btn btn-p" onclick="window._saveSaleEdit()">💾 حفظ</button> </div> </div> </div>`;
-}
-if(!m)return””;
-if(m.type===“addmoney”){
-return`<div class="overlay" onclick="if(event.target===this)window._closeModal()"> <div class="modal"> <div class="modal-title">💵 إضافة أموال — ${m.emp}</div> <div style="background:#0d0d1a;border-radius:12px;padding:14px;margin-bottom:18px;text-align:center"> <div style="font-size:12px;color:#8888aa;margin-bottom:4px">الرصيد الحالي</div> <div style="font-size:22px;font-weight:900;color:#10B981">${fmt((S.wallets[m.emp]||{}).balance||0)}</div> </div> <div class="form-row"><div class="lbl">المبلغ (د.ع)</div><input class="inp" id="am-amount" type="number" placeholder="50000"/></div> <div class="form-row"><div class="lbl">السبب</div><select class="inp" id="am-note"><option>إضافة أموال 💵</option><option>مكافأة 🎁</option><option>عمولة ⭐</option><option>أخرى</option></select></div> <div class="form-actions"> <button class="btn btn-g" onclick="window._closeModal()">إلغاء</button> <button class="btn btn-green" onclick="window._doAddMoney()">✅ إضافة</button> </div> </div> </div>`;
-}
-if(m.type===“withdraw”){
-return`<div class="overlay" onclick="if(event.target===this)window._closeModal()"> <div class="modal"> <div class="modal-title">💸 سحب / سلفة — ${m.emp}</div> <div style="background:#0d0d1a;border-radius:12px;padding:14px;margin-bottom:18px;text-align:center"> <div style="font-size:12px;color:#8888aa;margin-bottom:4px">الرصيد الحالي</div> <div style="font-size:22px;font-weight:900;color:#10B981">${fmt((S.wallets[m.emp]||{}).balance||0)}</div> </div> <div class="form-row"><div class="lbl">المبلغ (د.ع)</div><input class="inp" id="wd-amount" type="number" placeholder="50000"/></div> <div class="form-row"><div class="lbl">السبب</div><select class="inp" id="wd-note"><option>سلفة 💸</option><option>سحب راتب 💰</option><option>مصاريف 📦</option><option>أخرى</option></select></div> <div class="form-actions"> <button class="btn btn-g" onclick="window._closeModal()">إلغاء</button> <button class="btn btn-red" onclick="window._doWithdraw()">💸 تأكيد</button> </div> </div> </div>`;
-}
-if(m.type===“managepoints”){
-const w=S.wallets[m.emp]||{points:0};
-return`<div class="overlay" onclick="if(event.target===this)window._closeModal()"> <div class="modal"> <div class="modal-title">🏅 إدارة النقاط — ${m.emp}</div> <div style="background:#0d0d1a;border-radius:12px;padding:14px;margin-bottom:18px;text-align:center"> <div style="font-size:12px;color:#8888aa;margin-bottom:4px">النقاط الحالية</div> <div style="font-size:28px;font-weight:900;color:#F59E0B">${w.points||0} نقطة</div> <div style="font-size:12px;color:#8888aa;margin-top:4px">= ${fmt((w.points||0)*POINT_VALUE)}</div> </div> <div class="form-row"><div class="lbl">عدد النقاط</div><input class="inp" id="pts-amount" type="number" placeholder="5" min="1"/></div> <div class="form-actions"> <button class="btn btn-g" onclick="window._closeModal()">إلغاء</button> <button class="btn btn-red" onclick="window._managePoints('${m.emp}',false)">➖ حذف نقاط</button> <button class="btn btn-yellow" onclick="window._managePoints('${m.emp}',true)">➕ إضافة نقاط</button> </div> </div> </div>`;
-}
-return””;
+  const m=S.modal;
+  // تعديل مبيعة من جدول المبيعات
+  if(S.editId){
+    const sale=S.sales.find(x=>x.id===S.editId);if(!sale)return"";
+    return`<div class="overlay" onclick="if(event.target===this)window._closeModal()">
+      <div class="modal">
+        <div class="modal-title">✏️ تعديل المبيعة</div>
+        <div class="form-row"><div class="lbl">المحل</div><select class="inp" id="edit-store">${STORES.map(s=>`<option value="${s.id}" ${sale.store===s.id?"selected":""}>${s.icon} ${s.name}</option>`).join("")}</select></div>
+        <div class="form-row"><div class="lbl">الموظف</div><select class="inp" id="edit-emp">${EMPS.map(([n,ic])=>`<option value="${n}" ${sale.emp===n?"selected":""}>${ic} ${n}</option>`).join("")}</select></div>
+        <div class="form-row"><div class="lbl">النوع</div><select class="inp" id="edit-type"><option value="store" ${sale.type==="store"?"selected":""}>🏬 محل</option><option value="delivery" ${sale.type==="delivery"?"selected":""}>🚚 توصيل</option></select></div>
+        <div class="form-row"><div class="lbl">المبلغ (د.ع)</div><input class="inp" id="edit-amount" type="number" value="${sale.amount}"/></div>
+        <div class="form-actions">
+          <button class="btn btn-g" onclick="window._closeModal()">إلغاء</button>
+          <button class="btn btn-p" onclick="window._saveEdit()">💾 حفظ</button>
+        </div>
+      </div>
+    </div>`;
+  }
+  // تعديل مبيعة من الإعدادات (تاريخ + مبلغ)
+  if(S.editSaleId){
+    const sale=S.sales.find(x=>x.id===S.editSaleId);if(!sale)return"";
+    return`<div class="overlay" onclick="if(event.target===this)window._closeModal()">
+      <div class="modal">
+        <div class="modal-title">⚙️ تعديل المبيعة</div>
+        <div style="background:#0d0d1a;border-radius:10px;padding:12px;margin-bottom:16px;font-size:13px;color:#8888aa">
+          ${STORES.find(s=>s.id===sale.store)?.icon||""} ${STORES.find(s=>s.id===sale.store)?.name||""} · ${sale.emp||""} · ${sale.time||""}
+        </div>
+        <div class="form-row"><div class="lbl">التاريخ</div><input class="inp" id="se-date" type="date" value="${sale.date}"/></div>
+        <div class="form-row"><div class="lbl">المبلغ (د.ع)</div><input class="inp" id="se-amount" type="number" value="${sale.amount}"/></div>
+        <div class="form-actions">
+          <button class="btn btn-g" onclick="window._closeModal()">إلغاء</button>
+          <button class="btn btn-p" onclick="window._saveSaleEdit()">💾 حفظ</button>
+        </div>
+      </div>
+    </div>`;
+  }
+  if(!m)return"";
+  if(m.type==="addmoney"){
+    return`<div class="overlay" onclick="if(event.target===this)window._closeModal()">
+      <div class="modal">
+        <div class="modal-title">💵 إضافة أموال — ${m.emp}</div>
+        <div style="background:#0d0d1a;border-radius:12px;padding:14px;margin-bottom:18px;text-align:center">
+          <div style="font-size:12px;color:#8888aa;margin-bottom:4px">الرصيد الحالي</div>
+          <div style="font-size:22px;font-weight:900;color:#10B981">${fmt((S.wallets[m.emp]||{}).balance||0)}</div>
+        </div>
+        <div class="form-row"><div class="lbl">المبلغ (د.ع)</div><input class="inp" id="am-amount" type="number" placeholder="50000"/></div>
+        <div class="form-row"><div class="lbl">السبب</div><select class="inp" id="am-note"><option>إضافة أموال 💵</option><option>مكافأة 🎁</option><option>عمولة ⭐</option><option>أخرى</option></select></div>
+        <div class="form-actions">
+          <button class="btn btn-g" onclick="window._closeModal()">إلغاء</button>
+          <button class="btn btn-green" onclick="window._doAddMoney()">✅ إضافة</button>
+        </div>
+      </div>
+    </div>`;
+  }
+  if(m.type==="withdraw"){
+    return`<div class="overlay" onclick="if(event.target===this)window._closeModal()">
+      <div class="modal">
+        <div class="modal-title">💸 سحب / سلفة — ${m.emp}</div>
+        <div style="background:#0d0d1a;border-radius:12px;padding:14px;margin-bottom:18px;text-align:center">
+          <div style="font-size:12px;color:#8888aa;margin-bottom:4px">الرصيد الحالي</div>
+          <div style="font-size:22px;font-weight:900;color:#10B981">${fmt((S.wallets[m.emp]||{}).balance||0)}</div>
+        </div>
+        <div class="form-row"><div class="lbl">المبلغ (د.ع)</div><input class="inp" id="wd-amount" type="number" placeholder="50000"/></div>
+        <div class="form-row"><div class="lbl">السبب</div><select class="inp" id="wd-note"><option>سلفة 💸</option><option>سحب راتب 💰</option><option>مصاريف 📦</option><option>أخرى</option></select></div>
+        <div class="form-actions">
+          <button class="btn btn-g" onclick="window._closeModal()">إلغاء</button>
+          <button class="btn btn-red" onclick="window._doWithdraw()">💸 تأكيد</button>
+        </div>
+      </div>
+    </div>`;
+  }
+  if(m.type==="managepoints"){
+    const w=S.wallets[m.emp]||{points:0};
+    return`<div class="overlay" onclick="if(event.target===this)window._closeModal()">
+      <div class="modal">
+        <div class="modal-title">🏅 إدارة النقاط — ${m.emp}</div>
+        <div style="background:#0d0d1a;border-radius:12px;padding:14px;margin-bottom:18px;text-align:center">
+          <div style="font-size:12px;color:#8888aa;margin-bottom:4px">النقاط الحالية</div>
+          <div style="font-size:28px;font-weight:900;color:#F59E0B">${w.points||0} نقطة</div>
+          <div style="font-size:12px;color:#8888aa;margin-top:4px">= ${fmt((w.points||0)*POINT_VALUE)}</div>
+        </div>
+        <div class="form-row"><div class="lbl">عدد النقاط</div><input class="inp" id="pts-amount" type="number" placeholder="5" min="1"/></div>
+        <div class="form-actions">
+          <button class="btn btn-g" onclick="window._closeModal()">إلغاء</button>
+          <button class="btn btn-red" onclick="window._managePoints('${m.emp}',false)">➖ حذف نقاط</button>
+          <button class="btn btn-yellow" onclick="window._managePoints('${m.emp}',true)">➕ إضافة نقاط</button>
+        </div>
+      </div>
+    </div>`;
+  }
+  return"";
 }
 
 function renderSettings(){
-const recent=[…S.sales].sort((a,b)=>b.date.localeCompare(a.date)||(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0)).slice(0,50);
-const rows=recent.length===0?`<div style="text-align:center;padding:30px;color:#555577">لا توجد مبيعات</div>`:
-recent.map(x=>{
-const st=STORES.find(s=>s.id===x.store)||STORES[0];
-return`<tr> <td style="color:#8888aa;font-size:11px;white-space:nowrap">${x.date}<br/>${x.time||""}</td> <td style="font-size:12px">${st.icon} ${st.name}<br/><span style="color:#8888aa">${x.emp||"—"}</span></td> <td style="font-weight:700;color:${x.type==="store"?st.color:"#38bdf8"}">${fmt(x.amount)}</td> <td><button class="btn-edit" onclick="window._openSaleEdit('${x.id}')">✏️ تعديل</button></td> </tr>`;
-}).join(””);
-return` <div style="font-size:16px;font-weight:900;margin-bottom:20px">⚙️ إعدادات — تعديل المبيعات</div> <div class="pos-box" style="margin-bottom:20px"> <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px"> <div style="font-size:28px">📅</div> <div> <div style="font-weight:700;font-size:15px">تعديل تاريخ ومبلغ المبيعة</div> <div style="font-size:12px;color:#8888aa;margin-top:3px">اضغط ✏️ تعديل بجانب أي مبيعة</div> </div> </div> <div style="background:#a78bfa11;border:1px solid #a78bfa33;border-radius:10px;padding:12px;font-size:12px;color:#a78bfa;margin-bottom:16px"> ⚠️ للمالك فقط — يستخدم في حالة تسجيل المبيعة بتاريخ أو مبلغ خاطئ </div> <table> <thead><tr><th>التاريخ والوقت</th><th>المحل / الموظف</th><th>المبلغ</th><th>تعديل</th></tr></thead> <tbody>${rows}</tbody> </table> </div>`;
+  const recent=[...S.sales].sort((a,b)=>b.date.localeCompare(a.date)||(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0)).slice(0,50);
+  const rows=recent.length===0?`<div class="empty" style="text-align:center;padding:30px;color:#555577">لا توجد مبيعات</div>`:
+    recent.map(x=>{
+      const st=STORES.find(s=>s.id===x.store)||STORES[0];
+      return`<tr>
+        <td style="color:#8888aa;font-size:11px;white-space:nowrap">${x.date}<br/>${x.time||""}</td>
+        <td style="font-size:12px">${st.icon} ${st.name}<br/><span style="color:#8888aa">${x.emp||"—"}</span></td>
+        <td style="font-weight:700;color:${x.type==="store"?st.color:"#38bdf8"}">${fmt(x.amount)}</td>
+        <td><button class="btn-edit" onclick="window._openSaleEdit('${x.id}')">✏️ تعديل</button></td>
+      </tr>`;
+    }).join("");
+  return`
+  <div style="font-size:16px;font-weight:900;margin-bottom:20px">⚙️ إعدادات — تعديل المبيعات</div>
+  <div class="pos-box" style="margin-bottom:20px">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+      <div style="font-size:28px">📅</div>
+      <div>
+        <div style="font-weight:700;font-size:15px">تعديل تاريخ ومبلغ المبيعة</div>
+        <div style="font-size:12px;color:#8888aa;margin-top:3px">اضغط ✏️ تعديل بجانب أي مبيعة</div>
+      </div>
+    </div>
+    <div style="background:#a78bfa11;border:1px solid #a78bfa33;border-radius:10px;padding:12px;font-size:12px;color:#a78bfa;margin-bottom:16px">
+      ⚠️ للمالك فقط — يستخدم في حالة تسجيل المبيعة بتاريخ أو مبلغ خاطئ
+    </div>
+    <table>
+      <thead><tr><th>التاريخ والوقت</th><th>المحل / الموظف</th><th>المبلغ</th><th>تعديل</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  </div>`;
 }
 
 function renderBroadcast(){
-const broadcasts=S.notifs.filter(n=>n.type===“broadcast”).slice(0,20);
-const rows=broadcasts.length===0?`<div style="text-align:center;padding:30px;color:#555577">لا توجد رسائل</div>`:
-broadcasts.map(n=>`<div class="notif-item"> <div style="flex:1"> <div style="font-weight:700;margin-bottom:6px;font-size:14px">📢 ${n.msg}</div> <div style="font-size:11px;color:#8888aa">${n.date} · قرأها ${Object.keys(n.readBy||{}).length} موظف</div> </div> </div>`).join(””);
-return` <div style="font-size:16px;font-weight:900;margin-bottom:20px">📢 إرسال رسائل للموظفين</div> <div class="pos-box" style="margin-bottom:24px"> <div class="pos-title">✍️ رسالة جديدة</div> <div class="form-row"><textarea class="inp" id="broadcast-msg" rows="4" placeholder="اكتب رسالتك هنا..." style="resize:vertical"></textarea></div> <button class="btn btn-p" style="width:100%;padding:14px;font-size:15px" onclick="window._sendBroadcast()">📢 إرسال للجميع</button> </div> <div class="chart-box"><div style="font-weight:700;margin-bottom:16px;font-size:14px">📋 الرسائل السابقة</div>${rows}</div>`;
+  const broadcasts=S.notifs.filter(n=>n.type==="broadcast").slice(0,20);
+  const rows=broadcasts.length===0?`<div class="empty" style="text-align:center;padding:30px;color:#555577">لا توجد رسائل</div>`:
+    broadcasts.map(n=>`<div class="notif-item">
+      <div style="flex:1">
+        <div style="font-weight:700;margin-bottom:6px;font-size:14px">📢 ${n.msg}</div>
+        <div style="font-size:11px;color:#8888aa">${n.date} · قرأها ${Object.keys(n.readBy||{}).length} موظف</div>
+      </div>
+    </div>`).join("");
+  return`
+  <div style="font-size:16px;font-weight:900;margin-bottom:20px">📢 إرسال رسائل للموظفين</div>
+  <div class="pos-box" style="margin-bottom:24px">
+    <div class="pos-title">✍️ رسالة جديدة</div>
+    <div class="form-row"><textarea class="inp" id="broadcast-msg" rows="4" placeholder="اكتب رسالتك هنا..." style="resize:vertical"></textarea></div>
+    <button class="btn btn-p" style="width:100%;padding:14px;font-size:15px" onclick="window._sendBroadcast()">📢 إرسال للجميع</button>
+  </div>
+  <div class="chart-box"><div style="font-weight:700;margin-bottom:16px;font-size:14px">📋 الرسائل السابقة</div>${rows}</div>`;
 }
 
 function renderMyNotifs(empName){
-const myNotifs=S.notifs.filter(n=>n.to===empName||n.to===“all”).slice(0,30);
-const unread=myNotifs.filter(n=>!(n.readBy||{})[empName]).length;
-const rows=myNotifs.length===0?`<div style="text-align:center;padding:30px;color:#555577">لا توجد إشعارات</div>`:
-myNotifs.map(n=>{
-const isRead=(n.readBy||{})[empName];
-const icons={salary:“💰”,points:“🏆”,withdraw:“💸”,convert:“🎯”,add:“💵”,broadcast:“📢”,reset:“🔄”}[n.type]||“🔔”;
-return`<div class="notif-item ${!isRead?"notif-unread":""}"> ${!isRead?`<div class="notif-dot"></div>`:`<div style="width:8px"></div>`} <div style="flex:1"><div style="font-size:14px;margin-bottom:4px">${icons} ${n.msg}</div><div style="font-size:11px;color:#8888aa">${n.date||""}</div></div> </div>`;
-}).join(””);
-return` <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px"> <div style="font-size:16px;font-weight:900">🔔 الإشعارات ${unread>0?`<span style="background:#EF4444;color:#fff;padding:2px 8px;border-radius:20px;font-size:12px">${unread}</span>`:""}</div> ${unread>0?`<button class="btn btn-g" style="font-size:12px" onclick="window._markAllRead()">✓ قراءة الكل</button>`:""} </div>${rows}`;
+  const myNotifs=S.notifs.filter(n=>n.to===empName||n.to==="all").slice(0,30);
+  const unread=myNotifs.filter(n=>!(n.readBy||{})[empName]).length;
+  const rows=myNotifs.length===0?`<div class="empty" style="text-align:center;padding:30px;color:#555577">لا توجد إشعارات</div>`:
+    myNotifs.map(n=>{
+      const isRead=(n.readBy||{})[empName];
+      const icons={salary:"💰",points:"🏆",withdraw:"💸",convert:"🎯",add:"💵",broadcast:"📢",reset:"🔄"}[n.type]||"🔔";
+      return`<div class="notif-item ${!isRead?"notif-unread":""}">
+        ${!isRead?`<div class="notif-dot"></div>`:`<div style="width:8px"></div>`}
+        <div style="flex:1"><div style="font-size:14px;margin-bottom:4px">${icons} ${n.msg}</div><div style="font-size:11px;color:#8888aa">${n.date||""}</div></div>
+      </div>`;
+    }).join("");
+  return`
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+    <div style="font-size:16px;font-weight:900">🔔 الإشعارات ${unread>0?`<span style="background:#EF4444;color:#fff;padding:2px 8px;border-radius:20px;font-size:12px">${unread}</span>`:""}</div>
+    ${unread>0?`<button class="btn btn-g" style="font-size:12px" onclick="window._markAllRead()">✓ قراءة الكل</button>`:""}
+  </div>${rows}`;
 }
 
 function renderWallets(){
-const cards=EMPS.map(([name,icon])=>{
-const w=S.wallets[name]||{balance:0,points:0};const c=EMP_COLORS[name]||”#a78bfa”;
-const myTxs=S.txs.filter(x=>x.emp===name).slice(0,8);
-const txRows=myTxs.length===0?`<div style="padding:12px;text-align:center;color:#555577;font-size:12px">لا توجد معاملات</div>`:
-myTxs.map(x=>{
-const cls={salary:“tx-salary”,points:“tx-points”,withdraw:“tx-withdraw”,convert:“tx-convert”,add:“tx-add”,reset:“tx-reset”}[x.type]||””;
-return`<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #2a2a4a22;font-size:12px"> <div style="display:flex;flex-direction:column;gap:3px"> <span class="tx-badge ${cls}">${x.note||x.type}</span> <span style="font-size:10px;color:#555577">${x.date||""}</span> </div> <div style="display:flex;align-items:center;gap:8px"> <span style="color:${x.type==="withdraw"||x.type==="reset"?"#EF4444":"#10B981"};font-weight:700"> ${x.type==="withdraw"?"- ":x.type==="points"&&x.amount<0?"- ":"+ "}${x.type==="points"?fmtPts(Math.abs(x.amount)):fmt(Math.abs(x.amount))} </span> <button onclick="window._delTx('${x.id}')" style="background:#EF444415;border:1px solid #EF444433;color:#EF4444;border-radius:6px;padding:2px 7px;cursor:pointer;font-size:11px">🗑</button> </div> </div>`;
-}).join(””);
-return`<div class="wallet-card" style="border-color:${c}44"> <div class="wc-name" style="color:${c}">${icon} ${name}</div> <div class="wc-row"><span class="wc-lbl">💰 الرصيد</span><span class="wc-val" style="color:${c}">${fmt(w.balance||0)}</span></div> <div class="wc-row" style="border:none"><span class="wc-lbl">🏅 النقاط</span><span style="font-size:15px;font-weight:700;color:#F59E0B">${w.points||0} نقطة = ${fmt((w.points||0)*POINT_VALUE)}</span></div> <div class="wc-actions"> <button class="wc-btn btn-green" onclick="window._salary('${name}')">💰 راتب</button> <button class="wc-btn btn-yellow" onclick="window._convert('${name}')">🎯 نقاط</button> <button class="wc-btn" style="background:#F59E0B15;border:1px solid #F59E0B44;color:#F59E0B" onclick="window._openManagePoints('${name}')">🏅 ±نقاط</button> <button class="wc-btn" style="background:#10B98115;border:1px solid #10B98144;color:#10B981" onclick="window._openAddMoney('${name}')">💵 إضافة</button> <button class="wc-btn" style="background:#38bdf815;border:1px solid #38bdf844;color:#38bdf8" onclick="window._openWithdraw('${name}')">💸 سحب</button> <button class="wc-btn btn-red" onclick="window._reset('${name}')">🔄 تصفير</button> </div> <div style="margin-top:12px;border-top:1px solid #2a2a4a;padding-top:10px"> <div style="font-size:11px;color:#8888aa;margin-bottom:6px">آخر المعاملات</div>${txRows} </div> </div>`;
-}).join(””);
-return` <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:10px"> <div style="font-size:16px;font-weight:900">💰 إدارة المحافظ</div> <button class="btn btn-green" onclick="window._salaryAll()">💰 رواتب الجمعة للجميع</button> </div> <div class="wallet-grid">${cards}</div>`;
+  const cards=EMPS.map(([name,icon])=>{
+    const w=S.wallets[name]||{balance:0,points:0};const c=EMP_COLORS[name]||"#a78bfa";
+    const myTxs=S.txs.filter(x=>x.emp===name).slice(0,8);
+    const txRows=myTxs.length===0?`<div style="padding:12px;text-align:center;color:#555577;font-size:12px">لا توجد معاملات</div>`:
+      myTxs.map(x=>{
+        const cls={salary:"tx-salary",points:"tx-points",withdraw:"tx-withdraw",convert:"tx-convert",add:"tx-add",reset:"tx-reset"}[x.type]||"";
+        return`<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #2a2a4a22;font-size:12px">
+          <div style="display:flex;flex-direction:column;gap:3px">
+            <span class="tx-badge ${cls}">${x.note||x.type}</span>
+            <span style="font-size:10px;color:#555577">${x.date||""}</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="color:${x.type==="withdraw"||x.type==="reset"?"#EF4444":"#10B981"};font-weight:700">
+              ${x.type==="withdraw"?"- ":x.type==="points"&&x.amount<0?"- ":"+ "}${x.type==="points"?fmtPts(Math.abs(x.amount)):fmt(Math.abs(x.amount))}
+            </span>
+            <button onclick="window._delTx('${x.id}')" style="background:#EF444415;border:1px solid #EF444433;color:#EF4444;border-radius:6px;padding:2px 7px;cursor:pointer;font-size:11px">🗑</button>
+          </div>
+        </div>`;
+      }).join("");
+    return`<div class="wallet-card" style="border-color:${c}44">
+      <div class="wc-name" style="color:${c}">${icon} ${name}</div>
+      <div class="wc-row"><span class="wc-lbl">💰 الرصيد</span><span class="wc-val" style="color:${c}">${fmt(w.balance||0)}</span></div>
+      <div class="wc-row" style="border:none"><span class="wc-lbl">🏅 النقاط</span><span style="font-size:15px;font-weight:700;color:#F59E0B">${w.points||0} نقطة = ${fmt((w.points||0)*POINT_VALUE)}</span></div>
+      <div class="wc-actions">
+        <button class="wc-btn btn-green" onclick="window._salary('${name}')">💰 راتب</button>
+        <button class="wc-btn btn-yellow" onclick="window._convert('${name}')">🎯 نقاط</button>
+        <button class="wc-btn" style="background:#F59E0B15;border:1px solid #F59E0B44;color:#F59E0B" onclick="window._openManagePoints('${name}')">🏅 ±نقاط</button>
+        <button class="wc-btn" style="background:#10B98115;border:1px solid #10B98144;color:#10B981" onclick="window._openAddMoney('${name}')">💵 إضافة</button>
+        <button class="wc-btn" style="background:#38bdf815;border:1px solid #38bdf844;color:#38bdf8" onclick="window._openWithdraw('${name}')">💸 سحب</button>
+        <button class="wc-btn btn-red" onclick="window._reset('${name}')">🔄 تصفير</button>
+      </div>
+      <div style="margin-top:12px;border-top:1px solid #2a2a4a;padding-top:10px">
+        <div style="font-size:11px;color:#8888aa;margin-bottom:6px">آخر المعاملات</div>${txRows}
+      </div>
+    </div>`;
+  }).join("");
+  return`
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:10px">
+    <div style="font-size:16px;font-weight:900">💰 إدارة المحافظ</div>
+    <button class="btn btn-green" onclick="window._salaryAll()">💰 رواتب الجمعة للجميع</button>
+  </div>
+  <div class="wallet-grid">${cards}</div>`;
 }
 
 function renderMyWallet(empName){
-const w=S.wallets[empName]||{balance:0,points:0};const c=EMP_COLORS[empName]||”#a78bfa”;const icon=EMP_ICONS[empName]||“👤”;
-const myTxs=S.txs.filter(x=>x.emp===empName);
-const txRows=myTxs.length===0?`<div style="text-align:center;padding:30px;color:#555577">لا توجد معاملات</div>`:
-myTxs.map(x=>{
-const cls={salary:“tx-salary”,points:“tx-points”,withdraw:“tx-withdraw”,convert:“tx-convert”,add:“tx-add”,reset:“tx-reset”}[x.type]||””;
-return`<tr> <td style="color:#8888aa;font-size:11px">${x.date||""}</td> <td><span class="tx-badge ${cls}">${x.note||x.type}</span></td> <td style="font-weight:700;color:${x.type==="withdraw"||x.type==="reset"?"#EF4444":"#10B981"};text-align:left"> ${x.type==="withdraw"?"- ":x.type==="points"&&x.amount<0?"- ":"+ "}${x.type==="points"?fmtPts(Math.abs(x.amount)):fmt(Math.abs(x.amount))} </td> </tr>`;
-}).join(””);
-return`<div style="max-width:480px;margin:0 auto"> <div class="wallet-card" style="border-color:${c}55;margin-bottom:20px"> <div style="text-align:center;margin-bottom:20px"> <div style="font-size:48px">${icon}</div> <div style="font-size:20px;font-weight:900;color:${c};margin-top:8px">${empName}</div> <div style="font-size:12px;color:#8888aa">محفظتي الشخصية</div> </div> <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px"> <div style="background:#0d0d1a;border-radius:14px;padding:18px;text-align:center;border:1px solid ${c}44"> <div style="font-size:12px;color:#8888aa;margin-bottom:6px">💰 رصيدي</div> <div style="font-size:22px;font-weight:900;color:${c}">${fmt(w.balance||0)}</div> </div> <div style="background:#0d0d1a;border-radius:14px;padding:18px;text-align:center;border:1px solid #F59E0B44"> <div style="font-size:12px;color:#8888aa;margin-bottom:6px">🏅 نقاطي</div> <div style="font-size:22px;font-weight:900;color:#F59E0B">${w.points||0}</div> <div style="font-size:11px;color:#8888aa;margin-top:4px">= ${fmt((w.points||0)*POINT_VALUE)}</div> </div> </div> <div style="display:flex;gap:10px"> <button class="btn btn-yellow" style="flex:1" onclick="window._convert('${empName}')">🎯 تحويل نقاط</button> <button class="btn" style="flex:1;background:#38bdf815;border:1px solid #38bdf844;color:#38bdf8" onclick="window._openWithdraw('${empName}')">💸 طلب سلفة</button> </div> </div> <div class="detail-box"> <div style="font-weight:700;margin-bottom:14px;font-size:14px">📋 سجل المعاملات</div> ${myTxs.length===0?`<div style="text-align:center;padding:30px;color:#555577">لا توجد معاملات</div>`:`<table><thead><tr><th>التاريخ</th><th>النوع</th><th>المبلغ</th></tr></thead><tbody>${txRows}</tbody></table>`}
-</div>
-
+  const w=S.wallets[empName]||{balance:0,points:0};const c=EMP_COLORS[empName]||"#a78bfa";const icon=EMP_ICONS[empName]||"👤";
+  const myTxs=S.txs.filter(x=>x.emp===empName);
+  const txRows=myTxs.length===0?`<div style="text-align:center;padding:30px;color:#555577">لا توجد معاملات</div>`:
+    myTxs.map(x=>{
+      const cls={salary:"tx-salary",points:"tx-points",withdraw:"tx-withdraw",convert:"tx-convert",add:"tx-add",reset:"tx-reset"}[x.type]||"";
+      return`<tr>
+        <td style="color:#8888aa;font-size:11px">${x.date||""}</td>
+        <td><span class="tx-badge ${cls}">${x.note||x.type}</span></td>
+        <td style="font-weight:700;color:${x.type==="withdraw"||x.type==="reset"?"#EF4444":"#10B981"};text-align:left">
+          ${x.type==="withdraw"?"- ":x.type==="points"&&x.amount<0?"- ":"+ "}${x.type==="points"?fmtPts(Math.abs(x.amount)):fmt(Math.abs(x.amount))}
+        </td>
+      </tr>`;
+    }).join("");
+  return`<div style="max-width:480px;margin:0 auto">
+    <div class="wallet-card" style="border-color:${c}55;margin-bottom:20px">
+      <div style="text-align:center;margin-bottom:20px">
+        <div style="font-size:48px">${icon}</div>
+        <div style="font-size:20px;font-weight:900;color:${c};margin-top:8px">${empName}</div>
+        <div style="font-size:12px;color:#8888aa">محفظتي الشخصية</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
+        <div style="background:#0d0d1a;border-radius:14px;padding:18px;text-align:center;border:1px solid ${c}44">
+          <div style="font-size:12px;color:#8888aa;margin-bottom:6px">💰 رصيدي</div>
+          <div style="font-size:22px;font-weight:900;color:${c}">${fmt(w.balance||0)}</div>
+        </div>
+        <div style="background:#0d0d1a;border-radius:14px;padding:18px;text-align:center;border:1px solid #F59E0B44">
+          <div style="font-size:12px;color:#8888aa;margin-bottom:6px">🏅 نقاطي</div>
+          <div style="font-size:22px;font-weight:900;color:#F59E0B">${w.points||0}</div>
+          <div style="font-size:11px;color:#8888aa;margin-top:4px">= ${fmt((w.points||0)*POINT_VALUE)}</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-yellow" style="flex:1" onclick="window._convert('${empName}')">🎯 تحويل نقاط</button>
+        <button class="btn" style="flex:1;background:#38bdf815;border:1px solid #38bdf844;color:#38bdf8" onclick="window._openWithdraw('${empName}')">💸 طلب سلفة</button>
+      </div>
+    </div>
+    <div class="detail-box">
+      <div style="font-weight:700;margin-bottom:14px;font-size:14px">📋 سجل المعاملات</div>
+      ${myTxs.length===0?`<div style="text-align:center;padding:30px;color:#555577">لا توجد معاملات</div>`:`<table><thead><tr><th>التاريخ</th><th>النوع</th><th>المبلغ</th></tr></thead><tbody>${txRows}</tbody></table>`}
+    </div>
   </div>`;
 }
 
 function renderMyAttend(empName){
-const c=EMP_COLORS[empName]||”#a78bfa”;const td=today();
-const todayRec=S.attendance.find(x=>x.emp===empName&&x.date===td);
-const myRecs=[…S.attendance.filter(x=>x.emp===empName)].sort((a,b)=>b.date.localeCompare(a.date));
-const statusBox=todayRec
-?todayRec.punchOut
-?`<div style="background:#10B98118;border:1px solid #10B98144;border-radius:14px;padding:18px;text-align:center;margin-bottom:20px"><div style="font-size:32px;margin-bottom:8px">✅</div><div style="font-weight:700;color:#10B981;font-size:16px">اكتمل دوامك اليوم</div><div style="font-size:13px;color:#8888aa;margin-top:6px">حضور: ${todayRec.punchIn} — خروج: ${todayRec.punchOut}</div><div style="font-size:13px;color:#10B981;margin-top:4px">⏱ ${todayRec.hours} ساعة</div></div>`
-:`<div style="background:#F59E0B18;border:1px solid #F59E0B44;border-radius:14px;padding:18px;text-align:center;margin-bottom:20px"><div style="font-size:32px;margin-bottom:8px">⏳</div><div style="font-weight:700;color:#F59E0B;font-size:16px">أنت في الدوام الآن</div><div style="font-size:13px;color:#8888aa;margin-top:6px">بصمة الحضور: ${todayRec.punchIn}</div>${todayRec.lateBy>0?`<div style="font-size:12px;color:#EF4444;margin-top:4px">⚠️ متأخر ${todayRec.lateBy} دقيقة</div>`:`<div style="font-size:12px;color:#10B981;margin-top:4px">🟢 في الوقت</div>`}</div>`
-:`<div style="background:#EF444418;border:1px solid #EF444444;border-radius:14px;padding:18px;text-align:center;margin-bottom:20px"><div style="font-size:32px;margin-bottom:8px">📍</div><div style="font-weight:700;color:#EF4444;font-size:16px">لم تسجل حضورك اليوم بعد</div><div style="font-size:12px;color:#8888aa;margin-top:6px">وقت الدوام: ${WORK_START} — 22:00</div></div>`;
-const rows=myRecs.slice(0,14).map(r=>`<tr> <td style="color:#8888aa;font-size:12px">${r.date}</td> <td style="color:#10B981;font-weight:700">${r.punchIn||"—"} ${r.lateBy>0?`<span style="color:#EF4444;font-size:11px">+${r.lateBy}د</span>`:`<span style="color:#10B981;font-size:11px">✓</span>`}</td>
-<td style="color:#a78bfa;font-weight:700">${r.punchOut||”—”}</td>
-<td>${r.hours!=null?r.hours+” س”:”—”}</td>
-
+  const c=EMP_COLORS[empName]||"#a78bfa";const td=today();
+  const todayRec=S.attendance.find(x=>x.emp===empName&&x.date===td);
+  const myRecs=[...S.attendance.filter(x=>x.emp===empName)].sort((a,b)=>b.date.localeCompare(a.date));
+  const statusBox=todayRec
+    ?todayRec.punchOut
+      ?`<div style="background:#10B98118;border:1px solid #10B98144;border-radius:14px;padding:18px;text-align:center;margin-bottom:20px"><div style="font-size:32px;margin-bottom:8px">✅</div><div style="font-weight:700;color:#10B981;font-size:16px">اكتمل دوامك اليوم</div><div style="font-size:13px;color:#8888aa;margin-top:6px">حضور: ${todayRec.punchIn} — خروج: ${todayRec.punchOut}</div><div style="font-size:13px;color:#10B981;margin-top:4px">⏱ ${todayRec.hours} ساعة</div></div>`
+      :`<div style="background:#F59E0B18;border:1px solid #F59E0B44;border-radius:14px;padding:18px;text-align:center;margin-bottom:20px"><div style="font-size:32px;margin-bottom:8px">⏳</div><div style="font-weight:700;color:#F59E0B;font-size:16px">أنت في الدوام الآن</div><div style="font-size:13px;color:#8888aa;margin-top:6px">بصمة الحضور: ${todayRec.punchIn}</div>${todayRec.lateBy>0?`<div style="font-size:12px;color:#EF4444;margin-top:4px">⚠️ متأخر ${todayRec.lateBy} دقيقة</div>`:`<div style="font-size:12px;color:#10B981;margin-top:4px">🟢 في الوقت</div>`}</div>`
+    :`<div style="background:#EF444418;border:1px solid #EF444444;border-radius:14px;padding:18px;text-align:center;margin-bottom:20px"><div style="font-size:32px;margin-bottom:8px">📍</div><div style="font-weight:700;color:#EF4444;font-size:16px">لم تسجل حضورك اليوم بعد</div><div style="font-size:12px;color:#8888aa;margin-top:6px">وقت الدوام: ${WORK_START} — 22:00</div></div>`;
+  const rows=myRecs.slice(0,14).map(r=>`<tr>
+    <td style="color:#8888aa;font-size:12px">${r.date}</td>
+    <td style="color:#10B981;font-weight:700">${r.punchIn||"—"} ${r.lateBy>0?`<span style="color:#EF4444;font-size:11px">+${r.lateBy}د</span>`:`<span style="color:#10B981;font-size:11px">✓</span>`}</td>
+    <td style="color:#a78bfa;font-weight:700">${r.punchOut||"—"}</td>
+    <td>${r.hours!=null?r.hours+" س":"—"}</td>
   </tr>`).join("");
   const totalDays=myRecs.filter(x=>x.punchOut).length;
   const totalHours=myRecs.filter(x=>x.hours).reduce((a,b)=>a+(b.hours||0),0);
@@ -714,53 +923,72 @@ const rows=myRecs.slice(0,14).map(r=>`<tr> <td style="color:#8888aa;font-size:12
 }
 
 function renderAttendAdmin(){
-const td=today();
-const todayCards=EMPS.map(([name,icon])=>{
-const c=EMP_COLORS[name]||”#a78bfa”;const rec=S.attendance.find(x=>x.emp===name&&x.date===td);
-let status,statusColor,detail;
-if(!rec){status=“غائب”;statusColor=”#EF4444”;detail=“لم يسجل حضور”;}
-else if(!rec.punchOut){status=“في الدوام”;statusColor=”#F59E0B”;detail=`حضر: ${rec.punchIn}${rec.lateBy>0?` (متأخر ${rec.lateBy}د)`:""}`;}
-else{status=“انصرف”;statusColor=”#10B981”;detail=`${rec.punchIn} — ${rec.punchOut} | ${rec.hours}س`;}
-return`<div class="sum-box" style="border-color:${c}44"> <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"> <span style="font-weight:700;color:${c}">${icon} ${name}</span> <span style="padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;background:${statusColor}18;border:1px solid ${statusColor}44;color:${statusColor}">${status}</span> </div> <div style="font-size:12px;color:#8888aa">${detail}</div> </div>`;
-}).join(””);
-const empStats=EMPS.map(([name,icon])=>{
-const c=EMP_COLORS[name]||”#a78bfa”;
-const recs=S.attendance.filter(x=>x.emp===name&&x.punchOut);
-const totalH=recs.reduce((a,b)=>a+(b.hours||0),0);
-const late=S.attendance.filter(x=>x.emp===name&&x.lateBy>0).length;
-return`<div class="sum-box" style="border-color:${c}33"> <div style="font-weight:700;color:${c};margin-bottom:8px">${icon} ${name}</div> <div style="font-size:12px;color:#8888aa">أيام: <b style="color:#e8e8f0">${recs.length}</b></div> <div style="font-size:12px;color:#8888aa">ساعات: <b style="color:${c}">${Math.round(totalH*10)/10}</b></div> <div style="font-size:12px;color:#8888aa">تأخير: <b style="color:#EF4444">${late}</b></div> </div>`;
-}).join(””);
-const allRecs=[…S.attendance].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,50);
-const rows=allRecs.map(r=>{
-const c=EMP_COLORS[r.emp]||”#a78bfa”;
-return`<tr> <td style="color:#8888aa;font-size:11px">${r.date}</td> <td style="font-weight:700;color:${c}">${r.emp}</td> <td style="color:#10B981">${r.punchIn||"—"} ${r.lateBy>0?`<span style="color:#EF4444;font-size:11px">+${r.lateBy}د</span>`:`<span style="color:#10B981;font-size:11px">✓</span>`}</td> <td style="color:#a78bfa">${r.punchOut||"⏳"}</td> <td>${r.hours!=null?r.hours+" س":"—"}</td> </tr>`;
-}).join(””);
-return` <div style="font-size:16px;font-weight:900;margin-bottom:16px">📍 متابعة الحضور</div> <div style="font-size:13px;color:#8888aa;margin-bottom:12px">حالة اليوم — ${td}</div> <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:22px">${todayCards}</div> <div style="font-size:14px;font-weight:700;margin-bottom:12px">📊 إحصائيات</div> <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:22px">${empStats}</div> <div class="detail-box"> <div style="font-weight:700;margin-bottom:14px;font-size:14px">📋 سجل الحضور</div> ${allRecs.length===0?`<div style="text-align:center;padding:30px;color:#555577">لا يوجد سجل</div>`:`<table><thead><tr><th>التاريخ</th><th>الموظف</th><th>حضور</th><th>خروج</th><th>الساعات</th></tr></thead><tbody>${rows}</tbody></table>`} </div>`;
+  const td=today();
+  const todayCards=EMPS.map(([name,icon])=>{
+    const c=EMP_COLORS[name]||"#a78bfa";const rec=S.attendance.find(x=>x.emp===name&&x.date===td);
+    let status,statusColor,detail;
+    if(!rec){status="غائب";statusColor="#EF4444";detail="لم يسجل حضور";}
+    else if(!rec.punchOut){status="في الدوام";statusColor="#F59E0B";detail=`حضر: ${rec.punchIn}${rec.lateBy>0?` (متأخر ${rec.lateBy}د)`:""}`;}
+    else{status="انصرف";statusColor="#10B981";detail=`${rec.punchIn} — ${rec.punchOut} | ${rec.hours}س`;}
+    return`<div class="sum-box" style="border-color:${c}44">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <span style="font-weight:700;color:${c}">${icon} ${name}</span>
+        <span style="padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;background:${statusColor}18;border:1px solid ${statusColor}44;color:${statusColor}">${status}</span>
+      </div>
+      <div style="font-size:12px;color:#8888aa">${detail}</div>
+    </div>`;
+  }).join("");
+  const empStats=EMPS.map(([name,icon])=>{
+    const c=EMP_COLORS[name]||"#a78bfa";
+    const recs=S.attendance.filter(x=>x.emp===name&&x.punchOut);
+    const totalH=recs.reduce((a,b)=>a+(b.hours||0),0);
+    const late=S.attendance.filter(x=>x.emp===name&&x.lateBy>0).length;
+    return`<div class="sum-box" style="border-color:${c}33">
+      <div style="font-weight:700;color:${c};margin-bottom:8px">${icon} ${name}</div>
+      <div style="font-size:12px;color:#8888aa">أيام: <b style="color:#e8e8f0">${recs.length}</b></div>
+      <div style="font-size:12px;color:#8888aa">ساعات: <b style="color:${c}">${Math.round(totalH*10)/10}</b></div>
+      <div style="font-size:12px;color:#8888aa">تأخير: <b style="color:#EF4444">${late}</b></div>
+    </div>`;
+  }).join("");
+  const allRecs=[...S.attendance].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,50);
+  const rows=allRecs.map(r=>{
+    const c=EMP_COLORS[r.emp]||"#a78bfa";
+    return`<tr>
+      <td style="color:#8888aa;font-size:11px">${r.date}</td>
+      <td style="font-weight:700;color:${c}">${r.emp}</td>
+      <td style="color:#10B981">${r.punchIn||"—"} ${r.lateBy>0?`<span style="color:#EF4444;font-size:11px">+${r.lateBy}د</span>`:`<span style="color:#10B981;font-size:11px">✓</span>`}</td>
+      <td style="color:#a78bfa">${r.punchOut||"⏳"}</td>
+      <td>${r.hours!=null?r.hours+" س":"—"}</td>
+    </tr>`;
+  }).join("");
+  return`
+  <div style="font-size:16px;font-weight:900;margin-bottom:16px">📍 متابعة الحضور</div>
+  <div style="font-size:13px;color:#8888aa;margin-bottom:12px">حالة اليوم — ${td}</div>
+  <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:22px">${todayCards}</div>
+  <div style="font-size:14px;font-weight:700;margin-bottom:12px">📊 إحصائيات</div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:22px">${empStats}</div>
+  <div class="detail-box">
+    <div style="font-weight:700;margin-bottom:14px;font-size:14px">📋 سجل الحضور</div>
+    ${allRecs.length===0?`<div style="text-align:center;padding:30px;color:#555577">لا يوجد سجل</div>`:`<table><thead><tr><th>التاريخ</th><th>الموظف</th><th>حضور</th><th>خروج</th><th>الساعات</th></tr></thead><tbody>${rows}</tbody></table>`}
+  </div>`;
 }
 
 function renderReport(){
-let filtered=S.sales.filter(x=>x.date>=S.repFrom&&x.date<=S.repTo);
-if(S.repStore!==“all”)filtered=filtered.filter(x=>x.store===S.repStore);
-if(S.repType!==“all”)filtered=filtered.filter(x=>x.type===S.repType);
-const grand=filtered.reduce((a,b)=>a+b.amount,0);
-const grandShop=filtered.filter(x=>x.type===“store”).reduce((a,b)=>a+b.amount,0);
-const grandDel=filtered.filter(x=>x.type===“delivery”).reduce((a,b)=>a+b.amount,0);
-const storeTotals=STORES.map(s=>{
-const items=filtered.filter(x=>x.store===s.id);
-const shop=items.filter(x=>x.type===“store”).reduce((a,b)=>a+b.amount,0);
-const del=items.filter(x=>x.type===“delivery”).reduce((a,b)=>a+b.amount,0);
-return{s,shop,del,total:shop+del,count:items.length};
-});
-const mx=Math.max(…storeTotals.map(x=>x.total),1);
-const periodBtns=[{v:“today”,l:“📅 اليوم”},{v:“week”,l:“📅 الأسبوع”},{v:“month”,l:“📅 الشهر”},{v:“all”,l:“📅 الكل”}]
-.map(f=>`<button class="date-btn ${S.repPeriod===f.v?"active":""}" onclick="window._setPeriod('${f.v}')">${f.l}</button>`).join(””);
-const dateInputs=`<div class="filter-row" style="margin-bottom:12px;align-items:center">
-<div><div class="lbl">من</div><input class="inp" type="date" id="date-from" value="${S.repFrom}" style="width:auto" onchange="S.repPeriod='custom';S.repFrom=this.value;window._applyDates()"/></div>
-<div style="color:#8888aa;padding-top:22px">←</div>
-<div><div class="lbl">إلى</div><input class="inp" type="date" id="date-to" value="${S.repTo}" style="width:auto" onchange="S.repPeriod='custom';S.repTo=this.value;window._applyDates()"/></div>
-
-  </div>`;
-  const sBtns=[{v:"all",l:"🏪 الكل"},{v:1,l:"🏬 محل 1"},{v:2,l:"🏪 محل 2"},{v:3,l:"🛍️ محل 3"}]
+  let filtered=S.sales.filter(x=>x.date>=S.repFrom&&x.date<=S.repTo);
+  if(S.repStore!=="all")filtered=filtered.filter(x=>x.store===S.repStore);
+  if(S.repType!=="all")filtered=filtered.filter(x=>x.type===S.repType);
+  const grand=filtered.reduce((a,b)=>a+b.amount,0);
+  const grandShop=filtered.filter(x=>x.type==="store").reduce((a,b)=>a+b.amount,0);
+  const grandDel=filtered.filter(x=>x.type==="delivery").reduce((a,b)=>a+b.amount,0);
+  const storeTotals=STORES.map(s=>{
+    const items=filtered.filter(x=>x.store===s.id);
+    const shop=items.filter(x=>x.type==="store").reduce((a,b)=>a+b.amount,0);
+    const del=items.filter(x=>x.type==="delivery").reduce((a,b)=>a+b.amount,0);
+    return{s,shop,del,total:shop+del,count:items.length};
+  });
+  const mx=Math.max(...storeTotals.map(x=>x.total),1);
+  const periodBtns=[{v:"today",l:"📅 اليوم"},{v:"week",l:"📅 الأسبوع"},{v:"month",l:"📅 الشهر"},{v:"all",l:"📅 الكل"}]
+    .map(f=>`<button class="date-btn ${S.repPeriod===f.v?"active":""}" onclick="window._setPeriod('${f.v}')">${f.l}</button>`).join("");  const sBtns=[{v:"all",l:"🏪 الكل"},{v:1,l:"🏬 محل 1"},{v:2,l:"🏪 محل 2"},{v:3,l:"🛍️ محل 3"}]
     .map(f=>`<button class="filter-btn ${S.repStore===f.v?"active":""}" onclick="window._repStore(${JSON.stringify(f.v)})">${f.l}</button>`).join("");
   const tBtns=[{v:"all",l:"📦 الكل"},{v:"store",l:"🏬 محل"},{v:"delivery",l:"🚚 توصيل"}]
     .map(f=>`<button class="filter-btn ${S.repType===f.v?"active":""}" onclick="window._repType('${f.v}')">${f.l}</button>`).join("");
@@ -788,37 +1016,40 @@ const dateInputs=`<div class="filter-row" style="margin-bottom:12px;align-items:
     return`<tr><td style="color:#8888aa;font-size:11px">${x.date} ${x.time||""}</td><td>${st.icon} ${st.name}</td><td>${x.emp||"—"}</td><td><span class="type-badge ${x.type==="store"?"badge-store":"badge-delivery"}">${x.type==="store"?"🏬":"🚚"}</span></td><td style="font-weight:700;color:${x.type==="store"?st.color:"#38bdf8"}">${fmt(x.amount)}</td></tr>`;
   }).join("");
   return`
-    <div class="filter-box">
-      <div style="font-weight:700;font-size:14px;margin-bottom:14px">🔍 فلترة التقرير</div>
-      <div class="lbl" style="margin-bottom:8px">الفترة الزمنية</div>
-      <div class="filter-row" style="margin-bottom:14px">${periodBtns}</div>
-      ${dateInputs}
-      <div class="lbl" style="margin-bottom:7px">المحل</div>
-      <div class="filter-row" style="margin-bottom:12px">${sBtns}</div>
-      <div class="lbl" style="margin-bottom:7px">النوع</div>
-      <div class="filter-row">${tBtns}</div>
+  <div class="filter-box">
+    <div style="font-weight:700;font-size:14px;margin-bottom:14px">🔍 فلترة التقرير</div>
+    <div class="lbl" style="margin-bottom:8px">الفترة الزمنية</div>
+    <div class="filter-row" style="margin-bottom:14px">${periodBtns}</div>
+    <div class="filter-row" style="margin-bottom:12px;align-items:center">
+      <div><div class="lbl">من</div><input class="inp" type="date" value="${S.repFrom}" style="width:auto" onchange="window._setFrom(this.value)"/></div>
+      <div style="color:#8888aa;padding-top:22px">←</div>
+      <div><div class="lbl">إلى</div><input class="inp" type="date" value="${S.repTo}" style="width:auto" onchange="window._setTo(this.value)"/></div>
+    </div>    <div class="lbl" style="margin-bottom:7px">المحل</div>
+    <div class="filter-row" style="margin-bottom:12px">${sBtns}</div>
+    <div class="lbl" style="margin-bottom:7px">النوع</div>
+    <div class="filter-row">${tBtns}</div>
+  </div>
+  <div class="total-banner">
+    <div><div style="font-size:13px;color:#a78bfa;font-weight:700">📊 ${S.repFrom} ← ${S.repTo}</div><div style="font-size:11px;color:#8888aa;margin-top:3px">${filtered.length} فاتورة</div></div>
+    <div style="display:flex;gap:18px;flex-wrap:wrap">
+      <div style="text-align:center"><div style="font-size:11px;color:#8888aa;margin-bottom:3px">🏬 المحلات</div><div style="font-size:16px;font-weight:900;color:#a78bfa">${fmt(grandShop)}</div></div>
+      <div style="text-align:center"><div style="font-size:11px;color:#8888aa;margin-bottom:3px">🚚 التوصيل</div><div style="font-size:16px;font-weight:900;color:#38bdf8">${fmt(grandDel)}</div></div>
+      <div style="text-align:center"><div style="font-size:11px;color:#8888aa;margin-bottom:3px">💰 المجموع</div><div style="font-size:16px;font-weight:900;color:#e8e8f0">${fmt(grand)}</div></div>
     </div>
-    <div class="total-banner">
-      <div><div style="font-size:13px;color:#a78bfa;font-weight:700">📊 ${S.repFrom} ← ${S.repTo}</div><div style="font-size:11px;color:#8888aa;margin-top:3px">${filtered.length} فاتورة</div></div>
-      <div style="display:flex;gap:18px;flex-wrap:wrap">
-        <div style="text-align:center"><div style="font-size:11px;color:#8888aa;margin-bottom:3px">🏬 المحلات</div><div style="font-size:16px;font-weight:900;color:#a78bfa">${fmt(grandShop)}</div></div>
-        <div style="text-align:center"><div style="font-size:11px;color:#8888aa;margin-bottom:3px">🚚 التوصيل</div><div style="font-size:16px;font-weight:900;color:#38bdf8">${fmt(grandDel)}</div></div>
-        <div style="text-align:center"><div style="font-size:11px;color:#8888aa;margin-bottom:3px">💰 المجموع</div><div style="font-size:16px;font-weight:900;color:#e8e8f0">${fmt(grand)}</div></div>
-      </div>
+  </div>
+  <div class="report-grid">${rcards||`<div style="grid-column:1/-1;text-align:center;padding:30px;color:#555577">لا توجد بيانات</div>`}</div>
+  <div class="chart-box">
+    <div style="font-weight:700;margin-bottom:8px;font-size:14px">📈 مقارنة المحلات</div>
+    <div style="display:flex;gap:14px;margin-bottom:14px;font-size:11px">
+      <span><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#a78bfa;margin-left:3px"></span>محل</span>
+      <span><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#38bdf8;margin-left:3px"></span>توصيل</span>
     </div>
-    <div class="report-grid">${rcards||`<div style="grid-column:1/-1;text-align:center;padding:30px;color:#555577">لا توجد بيانات</div>`}</div>
-    <div class="chart-box">
-      <div style="font-weight:700;margin-bottom:8px;font-size:14px">📈 مقارنة المحلات</div>
-      <div style="display:flex;gap:14px;margin-bottom:14px;font-size:11px">
-        <span><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#a78bfa;margin-left:3px"></span>محل</span>
-        <span><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#38bdf8;margin-left:3px"></span>توصيل</span>
-      </div>
-      ${grand===0?`<div style="text-align:center;padding:30px;color:#555577">لا توجد مبيعات</div>`:bars}
-    </div>
-    <div class="detail-box">
-      <div style="font-weight:700;margin-bottom:14px;font-size:14px">📋 تفاصيل الفواتير</div>
-      ${filtered.length===0?`<div style="text-align:center;padding:30px;color:#555577">لا توجد فواتير</div>`:`<table><thead><tr><th>التاريخ</th><th>المحل</th><th>الموظف</th><th>النوع</th><th>المبلغ</th></tr></thead><tbody>${detailRows}</tbody></table>`}
-    </div>`;
+    ${grand===0?`<div style="text-align:center;padding:30px;color:#555577">لا توجد مبيعات</div>`:bars}
+  </div>
+  <div class="detail-box">
+    <div style="font-weight:700;margin-bottom:14px;font-size:14px">📋 تفاصيل الفواتير</div>
+    ${filtered.length===0?`<div style="text-align:center;padding:30px;color:#555577">لا توجد فواتير</div>`:`<table><thead><tr><th>التاريخ</th><th>المحل</th><th>الموظف</th><th>النوع</th><th>المبلغ</th></tr></thead><tbody>${detailRows}</tbody></table>`}
+  </div>`;
 }
 
 // ===== Global Bridge =====
@@ -831,36 +1062,30 @@ window._openSaleEdit=id=>{S.editSaleId=id;S.modal=null;render();};
 window._saveSaleEdit=saveSaleEdit;
 window._closeModal=closeModal;
 window._empMenu=toggleEmpMenu; window._emp=selectEmp;
-window._applyDates=()=>{
-const f=document.getElementById(“date-from”)?.value;
-const t=document.getElementById(“date-to”)?.value;
-if(f)S.repFrom=f;
-if(t)S.repTo=t;
-S.repPeriod=“custom”;
-const main=document.querySelector(”.main”);
-if(main&&S.tab===“report”)main.innerHTML=renderReport();
-};
-window._repStore=v=>{S.repStore=(v===“all”?“all”:Number(v)||v);render();};
+window._setFrom=v=>{S.repPeriod="custom";S.repFrom=v;render();};
+window._setTo=v=>{S.repPeriod="custom";S.repTo=v;render();};
+window._repFrom=v=>{S.repPeriod="custom";S.repFrom=v;render();};
+window._repTo=v=>{S.repPeriod="custom";S.repTo=v;render();};
+window._repStore=v=>{S.repStore=(v==="all"?"all":Number(v)||v);render();};
 window._repType=v=>{S.repType=v;render();};
 window._setPeriod=setRepPeriod;
 window._salary=addSalary; window._salaryAll=addSalaryAll;
 window._convert=convertPoints; window._reset=resetWallet;
 window._delTx=deleteTx;
-window._openManagePoints=emp=>{S.modal={type:“managepoints”,emp};render();};
+window._openManagePoints=emp=>{S.modal={type:"managepoints",emp};render();};
 window._managePoints=async(emp,add)=>{
-const pts=parseInt(document.getElementById(“pts-amount”)?.value);
-if(!pts||pts<=0){alert(“أدخل عدد نقاط صحيح!”);return;}
-await managePoints(emp,pts,add);
+  const pts=parseInt(document.getElementById("pts-amount")?.value);
+  if(!pts||pts<=0){alert("أدخل عدد نقاط صحيح!");return;}
+  await managePoints(emp,pts,add);
 };
-window._openAddMoney=emp=>{S.modal={type:“addmoney”,emp};render();};
-window._doAddMoney=async()=>{const amt=parseFloat(document.getElementById(“am-amount”)?.value);const note=document.getElementById(“am-note”)?.value;if(!amt||amt<=0){alert(“أدخل مبلغ!”);return;}await addMoney(S.modal.emp,amt,note);};
-window._openWithdraw=emp=>{S.modal={type:“withdraw”,emp};render();};
-window._doWithdraw=async()=>{const amt=parseFloat(document.getElementById(“wd-amount”)?.value);const note=document.getElementById(“wd-note”)?.value;if(!amt||amt<=0){alert(“أدخل مبلغ!”);return;}await doWithdraw(S.modal.emp,amt,note);};
+window._openAddMoney=emp=>{S.modal={type:"addmoney",emp};render();};
+window._doAddMoney=async()=>{const amt=parseFloat(document.getElementById("am-amount")?.value);const note=document.getElementById("am-note")?.value;if(!amt||amt<=0){alert("أدخل مبلغ!");return;}await addMoney(S.modal.emp,amt,note);};
+window._openWithdraw=emp=>{S.modal={type:"withdraw",emp};render();};
+window._doWithdraw=async()=>{const amt=parseFloat(document.getElementById("wd-amount")?.value);const note=document.getElementById("wd-note")?.value;if(!amt||amt<=0){alert("أدخل مبلغ!");return;}await doWithdraw(S.modal.emp,amt,note);};
 window._punchIn=punchIn; window._punchOut=punchOut;
 window._sendBroadcast=sendBroadcast;
 window._dismissNotif=dismissPendingNotif;
 window._markAllRead=markAllRead;
 </script>
-
 </body>
 </html>
