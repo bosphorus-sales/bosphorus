@@ -3,11 +3,12 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>نظام مبيعات البسفور - V2</title>
+<title>نظام مبيعات البسفور - النسخة الكاملة</title>
 <style>
+/* الألوان والتصميم الجديد */
 :root {
-  --bg-primary: #0a0a16;
-  --card-bg: linear-gradient(135deg, #1b1b35, #14142a);
+  --bg: #0a0a16;
+  --card-grad: linear-gradient(135deg, #1b1b35, #14142a);
   --accent: #7c3aed;
   --text: #f8fafc;
   --text-dim: #94a3b8;
@@ -15,36 +16,29 @@
   --success: #10B981;
   --danger: #EF4444;
 }
+
 *{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif}
-body{background:var(--bg-primary);color:var(--text);direction:rtl;padding-bottom:80px}
+body{background:var(--bg);color:var(--text);direction:rtl;padding-bottom:80px}
 
-/* الهيدر */
 .header{padding:15px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);background:rgba(10,10,22,0.8);backdrop-filter:blur(10px);position:sticky;top:0;z-index:100}
-.logo{font-size:18px;font-weight:900}
-.logo span{color:var(--accent)}
+.logo{font-size:18px;font-weight:900}.logo span{color:var(--accent)}
 
-/* البطاقات */
-.card{background:var(--card-bg);border-radius:20px;padding:20px;margin:15px;border:1px solid var(--border)}
-.amount-display{text-align:center;margin:15px 0}
-.amount-display h1{font-size:35px;color:#fff}
+.card{background:var(--card-grad);border-radius:20px;padding:20px;margin:15px;border:1px solid var(--border)}
+.amount-display{text-align:center;margin:15px 0}.amount-display h1{font-size:35px;color:#fff}
 
-/* المدخلات والأزرار */
-.inp{width:100%;padding:12px;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid var(--border);color:#fff;margin-bottom:15px;outline:none}
+.inp{width:100%;padding:12px;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid var(--border);color:#fff;margin-bottom:15px;outline:none;font-size:16px}
 .btn-main{width:100%;padding:14px;background:var(--accent);border:none;border-radius:10px;color:#fff;font-weight:bold;cursor:pointer}
 .btn-tab{flex:1;padding:10px;background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--text-dim);border-radius:8px;cursor:pointer}
 .btn-tab.active{border-color:var(--accent);color:#fff;background:rgba(124,58,237,0.1)}
 
-/* النافبار السفلي */
 .nav{position:fixed;bottom:0;width:100%;height:70px;background:rgba(10,10,22,0.9);display:flex;justify-content:space-around;align-items:center;border-top:1px solid var(--border);z-index:100}
 .nav-btn{color:var(--text-dim);text-align:center;font-size:12px;cursor:pointer;flex:1}
 .nav-btn.active{color:var(--accent)}
 
-/* الجداول */
 table{width:100%;border-collapse:collapse;margin-top:10px}
 th{text-align:right;color:var(--text-dim);font-size:11px;padding:8px}
 td{padding:10px;border-bottom:1px solid var(--border);font-size:13px}
 
-/* شاشة تسجيل الدخول */
 .login-screen{height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:20px;text-align:center}
 </style>
 </head>
@@ -53,11 +47,10 @@ td{padding:10px;border-bottom:1px solid var(--border);font-size:13px}
 <div id="root">جارِ التحميل...</div>
 
 <script type="module">
-// استيراد المكتبات بشكل صحيح
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
-import { getFirestore, collection, onSnapshot, addDoc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+import { getFirestore, collection, onSnapshot, addDoc, query, orderBy, serverTimestamp, doc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
 
-// معلومات Firebase الخاصة بك (تم استعادتها من كودك الأصلي)
+// إعدادات Firebase الخاصة بك
 const firebaseConfig = {
   apiKey: "AIzaSyAsllnjBZO4K9MyJNiTFoQJSfKtycQHMtU",
   authDomain: "bosphorus-76067.firebaseapp.com",
@@ -69,27 +62,36 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+
+// المجموعات (نفس مسميات كودك الأصلي)
 const salesCol = collection(db, "shop_sales");
+const walletsCol = collection(db, "wallets");
+const attendCol = collection(db, "attendance");
 
-// الحالة
-let S = {
-  user: null,
-  role: null,
-  sales: [],
-  store: 1,
-  type: 'store'
-};
-
+// الثوابت
 const STORES = [{id:1,name:"محل 1",icon:"🏬"},{id:2,name:"محل 2",icon:"🏪"},{id:3,name:"محل 3",icon:"🛒"}];
+const EMPS = [["عمار","🧔🏻"],["جعفر","👱‍♂️"],["مثنى","👨🏽"],["نورة","👩🏻‍💻"]];
 const EMP_PASS = {"عمار":"111","جعفر":"222","مثنى":"333","نورة":"444"};
 
-// سحب البيانات
+let S = {
+  user: null, role: null, 
+  sales: [], wallets: {}, 
+  store: 1, type: 'store', loaded: false
+};
+
+// متابعة البيانات مباشرة
 onSnapshot(query(salesCol, orderBy("createdAt", "desc")), (snap) => {
   S.sales = snap.docs.map(d => ({id: d.id, ...d.data()}));
+  S.loaded = true;
   render();
 });
 
-// المهام
+onSnapshot(walletsCol, (snap) => {
+  snap.docs.forEach(d => S.wallets[d.id] = d.data());
+  render();
+});
+
+// الدوال
 window.doLogin = () => {
   const p = document.getElementById('pass').value;
   if(p === "0000") { S.user="المالك"; S.role="owner"; }
@@ -103,7 +105,8 @@ window.doLogin = () => {
 
 window.saveSale = async () => {
   const a = document.getElementById('amt').value;
-  if(!a) return;
+  if(!a || isNaN(a)) return alert("أدخل مبلغاً صحيحاً");
+  
   await addDoc(salesCol, {
     amount: Number(a),
     emp: S.user,
@@ -124,28 +127,27 @@ function render() {
   if(!S.user) {
     root.innerHTML = `
       <div class="login-screen">
-        <h1 style="font-size:40px; margin-bottom:10px">👑</h1>
-        <h2 style="margin-bottom:30px">نظام البسفور</h2>
+        <h1 style="font-size:50px">👑</h1>
+        <h2 style="margin-bottom:20px">نظام البسفور</h2>
         <input id="pass" class="inp" type="password" placeholder="أدخل الرمز الخاص بك" style="max-width:300px">
         <button class="btn-main" onclick="doLogin()" style="max-width:300px">دخول</button>
       </div>`;
     return;
   }
 
-  const currentStore = STORES.find(x => x.id === S.store);
   const today = new Date().toLocaleDateString('en-CA');
-  const todaySales = S.sales.filter(x => x.date === today && x.store === S.store);
-  const total = todaySales.reduce((acc, x) => acc + x.amount, 0);
+  const storeSales = S.sales.filter(x => x.date === today && x.store === S.store);
+  const total = storeSales.reduce((acc, x) => acc + x.amount, 0);
 
   root.innerHTML = `
     <div class="header">
       <div class="logo">مبيعات <span>البسفور</span></div>
-      <div style="font-size:12px; color:var(--text-dim)">${S.user}</div>
+      <div style="font-size:13px; color:var(--accent)">● ${S.user}</div>
     </div>
 
     <div class="card">
       <div class="amount-display">
-        <p style="color:var(--text-dim); font-size:12px">إجمالي مبيعات ${currentStore.name}</p>
+        <p style="color:var(--text-dim); font-size:12px">مبيعات ${STORES.find(x=>x.id===S.store).name} اليوم</p>
         <h1>${total.toLocaleString()} <small style="font-size:14px">د.ع</small></h1>
       </div>
       
@@ -154,19 +156,19 @@ function render() {
         <button class="btn-tab ${S.type==='delivery'?'active':''}" onclick="setType('delivery')">توصيل</button>
       </div>
       
-      <input id="amt" class="inp" type="number" placeholder="أدخل مبلغ المبيع">
-      <button class="btn-main" onclick="saveSale()">تأكيد العملية</button>
+      <input id="amt" class="inp" type="number" placeholder="أدخل مبلغ المبيع" inputmode="numeric">
+      <button class="btn-main" onclick="saveSale()">تأكيد العملية ✅</button>
     </div>
 
-    <div class="card">
-      <p style="font-weight:bold; margin-bottom:10px">آخر 5 عمليات اليوم</p>
+    <div class="card" style="margin-bottom:100px">
+      <p style="font-weight:bold; margin-bottom:10px; font-size:14px">آخر مبيعات المتجر</p>
       <table>
-        <thead><tr><th>الوقت</th><th>النوع</th><th>المبلغ</th></tr></thead>
+        <thead><tr><th>الوقت</th><th>الموظف</th><th>المبلغ</th></tr></thead>
         <tbody>
-          ${todaySales.slice(0,5).map(s => `
+          ${storeSales.slice(0,10).map(s => `
             <tr>
               <td>${s.time}</td>
-              <td>${s.type==='store'?'🏬':'🚚'}</td>
+              <td>${s.emp} ${s.type==='store'?'🏬':'🚚'}</td>
               <td style="font-weight:bold">${s.amount.toLocaleString()}</td>
             </tr>
           `).join('')}
