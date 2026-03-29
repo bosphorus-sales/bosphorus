@@ -4,54 +4,60 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>نظام مبيعات البسفور - النسخة الكاملة</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-/* الواجهة الجديدة - الألوان البنفسجية */
+/* التصميم البنفسجي الجديد */
 :root {
   --bg: #0a0a16;
-  --card: linear-gradient(135deg, #1b1b35, #14142a);
+  --card-grad: linear-gradient(135deg, #1b1b35, #14142a);
   --accent: #7c3aed;
   --text: #f8fafc;
   --text-dim: #94a3b8;
   --border: rgba(255, 255, 255, 0.08);
   --success: #10B981;
   --danger: #EF4444;
-  --warning: #F59E0B;
+  --warning: #f59e0b;
 }
 
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI', Tahoma, sans-serif}
-body{background:var(--bg);color:var(--text);direction:rtl;min-height:100vh;padding-bottom:90px}
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
+body { background: var(--bg); color: var(--text); direction: rtl; min-height: 100vh; padding-bottom: 90px; }
 
 /* الهيدر */
-.header{padding:15px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);background:rgba(10,10,22,0.8);backdrop-filter:blur(10px);position:sticky;top:0;z-index:1000}
-.logo{font-size:20px;font-weight:900}.logo span{color:var(--accent)}
+.header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); background: rgba(10,10,22,0.8); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 1000; }
+.logo { font-size: 18px; font-weight: 900; } .logo span { color: var(--accent); }
 
-/* البطاقات والتقارير */
-.card{background:var(--card);border-radius:20px;padding:20px;margin:15px;border:1px solid var(--border);box-shadow: 0 10px 30px rgba(0,0,0,0.3)}
-.amount-box{text-align:center;margin:15px 0}.amount-box h1{font-size:38px;color:#fff}
+/* البطاقات */
+.card { background: var(--card-grad); border-radius: 20px; padding: 20px; margin: 15px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+.amt-v { text-align: center; margin: 15px 0; } .amt-v h1 { font-size: 38px; color: #fff; }
 
-/* الأزرار والمدخلات */
-.inp{width:100%;padding:14px;border-radius:12px;background:rgba(255,255,255,0.05);border:1px solid var(--border);color:#fff;margin-bottom:15px;outline:none;font-size:16px}
-.btn-main{width:100%;padding:16px;background:var(--accent);border:none;border-radius:12px;color:#fff;font-weight:bold;cursor:pointer;font-size:16px}
-.btn-sub{padding:8px 15px;background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--text-dim);border-radius:10px;cursor:pointer;font-size:12px}
-.btn-sub.active{border-color:var(--accent);color:#fff;background:rgba(124,58,237,0.1)}
+/* المدخلات والأزرار */
+.inp { width: 100%; padding: 14px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: #fff; margin-bottom: 12px; outline: none; font-size: 16px; }
+.btn-m { width: 100%; padding: 15px; background: var(--accent); border: none; border-radius: 12px; color: #fff; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.3s; }
+.btn-m:active { transform: scale(0.98); }
 
-/* القائمة السفلية */
-.navbar{position:fixed;bottom:0;width:100%;height:75px;background:rgba(10,10,22,0.95);display:flex;justify-content:space-around;align-items:center;border-top:1px solid var(--border);z-index:1000}
-.nav-item{color:var(--text-dim);text-align:center;font-size:11px;cursor:pointer;flex:1}
-.nav-item.active{color:var(--accent)}
+/* التبويبات */
+.tabs { display: flex; gap: 8px; margin-bottom: 15px; }
+.t-btn { flex: 1; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text-dim); border-radius: 10px; cursor: pointer; font-size: 13px; }
+.t-btn.active { background: rgba(124,58,237,0.15); border-color: var(--accent); color: #fff; }
+
+/* شريط التنقل */
+.nav { position: fixed; bottom: 0; width: 100%; height: 75px; background: rgba(10,10,22,0.95); display: flex; justify-content: space-around; align-items: center; border-top: 1px solid var(--border); z-index: 1000; backdrop-filter: blur(10px); }
+.n-item { color: var(--text-dim); text-align: center; font-size: 11px; cursor: pointer; flex: 1; }
+.n-item.active { color: var(--accent); }
+.n-item i { font-size: 22px; display: block; margin-bottom: 4px; }
 
 /* الجداول */
-.table-w{overflow-x:auto;margin-top:10px}
-table{width:100%;border-collapse:collapse}
-th{text-align:right;color:var(--text-dim);font-size:11px;padding:10px;border-bottom:1px solid var(--border)}
-td{padding:12px;border-bottom:1px solid var(--border);font-size:13px}
+.table-w { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+th { text-align: right; color: var(--text-dim); font-size: 11px; padding: 10px; border-bottom: 1px solid var(--border); }
+td { padding: 12px; border-bottom: 1px solid var(--border); font-size: 13px; }
+
+/* المودال */
+.modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 2000; padding: 20px; }
+.modal-c { background: #1a1a2e; width: 100%; max-width: 400px; border-radius: 20px; padding: 25px; border: 1px solid var(--border); }
 
 /* شاشة الدخول */
-.login-screen{height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:30px;background:radial-gradient(circle at center, #1b1b3a 0%, #0a0a16 100%)}
-
-/* المودال (النافذة المنبثقة) */
-.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:flex;justify-content:center;align-items:center;z-index:2000;padding:20px}
-.modal-content{background:#1a1a2e;width:100%;max-width:400px;border-radius:20px;padding:20px;border:1px solid var(--border)}
+.login-s { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 30px; background: radial-gradient(circle at center, #1b1b3a 0%, #0a0a16 100%); }
 </style>
 </head>
 <body>
@@ -74,241 +80,218 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// المجموعات
-const Cols = {
-  sales: collection(db, "shop_sales"),
-  wallets: collection(db, "wallets"),
-  tx: collection(db, "wallet_tx"),
-  attend: collection(db, "attendance"),
-  notif: collection(db, "notifications")
-};
+// مجموعات البيانات من كودك الأصلي
+const salesCol = collection(db, "shop_sales");
+const walletsCol = collection(db, "wallets");
+const txCol = collection(db, "wallet_tx");
+const attendCol = collection(db, "attendance");
+const notifCol = collection(db, "notifications");
 
-// الإعدادات
+// الثوابت من كودك الأصلي
 const STORES = [{id:1,name:"محل 1",icon:"🏬"},{id:2,name:"محل 2",icon:"🏪"},{id:3,name:"محل 3",icon:"🛒"}];
 const EMPS = ["عمار","جعفر","مثنى","نورة"];
-const EMP_DATA = {"عمار":{pass:"111",store:1},"جعفر":{pass:"222",store:3},"مثنى":{pass:"333",store:2},"نورة":{pass:"444",store:2}};
-const SHOP_LOC = { lat: 33.3128, lng: 44.3615 }; // إحداثيات المحل الافتراضية
+const EMP_PASS = {"عمار":"111","جعفر":"222","مثنى":"333","نورة":"444"};
+const SHOP_LOC = {lat:33.3128, lng:44.3615};
 
 let S = {
   user: null, role: null, tab: 'sales', 
-  selStore: 1, saleType: 'store',
-  data: { sales: [], wallets: {}, tx: [], attend: [] },
-  modal: null, repPeriod: 'today'
+  storeId: 1, saleType: 'store',
+  data: { sales: [], wallets: {}, txs: [], attend: [], notifs: [] },
+  modal: null, period: 'today'
 };
 
-// ربط البيانات الحية
-onSnapshot(query(Cols.sales, orderBy("createdAt", "desc")), snap => { S.data.sales = snap.docs.map(d=>({id:d.id,...d.data()})); render(); });
-onSnapshot(Cols.wallets, snap => { snap.docs.forEach(d=>S.data.wallets[d.id]=d.data()); render(); });
-onSnapshot(query(Cols.tx, orderBy("createdAt", "desc")), snap => { S.data.tx = snap.docs.map(d=>({id:d.id,...d.data()})); render(); });
+// --- نظام جلب البيانات (Real-time) - من كودك الأصلي ---
+onSnapshot(query(salesCol, orderBy("createdAt", "desc")), snap => { S.data.sales = snap.docs.map(d=>({id:d.id,...d.data()})); render(); });
+onSnapshot(walletsCol, snap => { snap.docs.forEach(d=>S.data.wallets[d.id]=d.data()); render(); });
+onSnapshot(query(txCol, orderBy("createdAt", "desc")), snap => { S.data.txs = snap.docs.map(d=>({id:d.id,...d.data()})); render(); });
+onSnapshot(query(attendCol, orderBy("createdAt", "desc")), snap => { S.data.attend = snap.docs.map(d=>({id:d.id,...d.data()})); render(); });
 
-// دالة تسجيل الدخول
+// --- الدوال البرمجية (الحسابات، الراتب، النقاط، الحضور) - من كودك الأصلي ---
 window._login = () => {
-  const p = document.getElementById('l-pass').value;
-  if(p === "0000") { S.user="المالك"; S.role="owner"; S.tab="report"; }
-  else {
-    for(const [name, info] of Object.entries(EMP_DATA)) {
-      if(p === info.pass) { S.user=name; S.role="employee"; S.selStore=info.store; S.tab="sales"; break; }
+    const p = document.getElementById('lp').value;
+    if(p === "0000") { S.user="المالك"; S.role="owner"; S.tab="report"; }
+    else {
+        for(const [n, pass] of Object.entries(EMP_PASS)) {
+            if(p === pass) { S.user=n; S.role="employee"; S.tab="sales"; break; }
+        }
     }
-  }
-  if(S.user) render(); else alert("الرمز خطأ!");
+    if(S.user) render(); else alert("الرمز خطأ");
 };
 
-// دالة الحضور (GPS)
-window._attendance = () => {
-  if (!navigator.geolocation) return alert("المتصفح لا يدعم الموقع");
-  navigator.geolocation.getCurrentPosition(async (pos) => {
-    const dist = calcDist(pos.coords.latitude, pos.coords.longitude, SHOP_LOC.lat, SHOP_LOC.lng);
-    const status = dist < 0.2 ? "حاضر" : "بعيد";
-    await addDoc(Cols.attend, {
-      emp: S.user, status, dist: dist.toFixed(2),
-      time: new Date().toLocaleTimeString('ar-EG'),
-      date: new Date().toLocaleDateString('en-CA'),
-      createdAt: serverTimestamp()
+window._addSale = async () => {
+    const amt = document.getElementById('samt').value;
+    if(!amt) return;
+    const amount = Number(amt);
+    await addDoc(salesCol, {
+        amount, emp: S.user, store: S.storeId, type: S.saleType,
+        time: new Date().toLocaleTimeString('ar-EG'),
+        date: new Date().toLocaleDateString('en-CA'),
+        createdAt: serverTimestamp()
     });
-    alert(status === "حاضر" ? "تم تسجيل حضورك بنجاح" : "أنت بعيد عن موقع العمل!");
-  });
+    // نظام النقاط التلقائي (من ملفك الأصلي)
+    if(S.role !== 'owner') {
+        const pts = Math.floor(amount / 100000);
+        if(pts > 0) {
+            const wRef = doc(db, "wallets", S.user);
+            const cur = S.data.wallets[S.user] || {balance:0, points:0};
+            await setDoc(wRef, { ...cur, points: (cur.points||0) + pts }, {merge:true});
+        }
+    }
+    document.getElementById('samt').value = "";
 };
 
-function calcDist(lat1, lon1, lat2, lon2) {
-  const R = 6371; const dLat = (lat2-lat1)*Math.PI/180; const dLon = (lon2-lon1)*Math.PI/180;
-  const a = Math.sin(dLat/2)*Math.sin(dLat/2) + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2);
-  return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
+window._attendance = () => {
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+        const dist = calcDist(pos.coords.latitude, pos.coords.longitude, SHOP_LOC.lat, SHOP_LOC.lng);
+        const status = dist < 0.2 ? "حاضر" : "بعيد";
+        await addDoc(attendCol, {
+            emp: S.user, status, dist: dist.toFixed(2),
+            time: new Date().toLocaleTimeString('ar-EG'),
+            date: new Date().toLocaleDateString('en-CA'),
+            createdAt: serverTimestamp()
+        });
+        alert(status === "حاضر" ? "تم تسجيل حضورك" : "أنت بعيد عن المحل!");
+    });
+};
+
+function calcDist(l1, n1, l2, n2) {
+    const R = 6371; const dL = (l2-l1)*Math.PI/180; const dN = (n2-n1)*Math.PI/180;
+    const a = Math.sin(dL/2)**2 + Math.cos(l1*Math.PI/180)*Math.cos(l2*Math.PI/180)*Math.sin(dN/2)**2;
+    return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
 }
 
-// إضافة مبيعات مع نظام النقاط التلقائي
-window._addSale = async () => {
-  const amt = document.getElementById('s-amt').value;
-  if(!amt || isNaN(amt)) return;
-  const amount = Number(amt);
-  
-  await addDoc(Cols.sales, {
-    amount, emp: S.user, store: S.selStore, type: S.saleType,
-    time: new Date().toLocaleTimeString('ar-EG'),
-    date: new Date().toLocaleDateString('en-CA'),
-    createdAt: serverTimestamp()
-  });
-
-  // تحديث النقاط (نقطة لكل 100 ألف)
-  if(S.role !== 'owner') {
-    const pts = Math.floor(amount / 100000);
-    if(pts > 0) {
-      const wRef = doc(db, "wallets", S.user);
-      const current = S.data.wallets[S.user] || {balance:0, points:0};
-      await setDoc(wRef, { ...current, points: (current.points||0) + pts }, {merge:true});
-    }
-  }
-  document.getElementById('s-amt').value = "";
+// --- دوال المالك (إدارة المحافظ والرواتب) - من ملفك الأصلي ---
+window._walletOp = (emp, action) => { S.modal = { emp, action }; render(); };
+window._confirmWallet = async () => {
+    const amt = Number(document.getElementById('m-amt').value);
+    const note = document.getElementById('m-note').value;
+    if(!amt) return;
+    const wRef = doc(db, "wallets", S.modal.emp);
+    const cur = S.data.wallets[S.modal.emp] || {balance:0, points:0};
+    const newBal = S.modal.action === 'add' ? (cur.balance + amt) : (cur.balance - amt);
+    await setDoc(wRef, { ...cur, balance: newBal }, {merge:true});
+    await addDoc(txCol, {
+        emp: S.modal.emp, amount: S.modal.action === 'add' ? amt : -amt,
+        type: S.modal.action === 'add' ? "إيداع/راتب" : "سحب/سلفة",
+        note, date: new Date().toLocaleDateString('en-CA'), createdAt: serverTimestamp()
+    });
+    S.modal = null; render();
 };
 
-// وظائف الإدارة (المحافظ)
-window._openWalletAction = (emp, action) => { S.modal = { emp, action }; render(); };
-window._closeModal = () => { S.modal = null; render(); };
-
-window._confirmWalletAction = async () => {
-  const amt = Number(document.getElementById('m-amt').value);
-  const note = document.getElementById('m-note').value;
-  if(!amt) return;
-
-  const wRef = doc(db, "wallets", S.modal.emp);
-  const current = S.data.wallets[S.modal.emp] || {balance:0, points:0};
-  const newBalance = S.modal.action === 'add' ? (current.balance + amt) : (current.balance - amt);
-
-  await setDoc(wRef, { ...current, balance: newBalance }, {merge:true});
-  await addDoc(Cols.tx, {
-    emp: S.modal.emp, amount: S.modal.action === 'add' ? amt : -amt,
-    type: S.modal.action === 'add' ? "إيداع" : "سحب",
-    note, date: new Date().toLocaleDateString('en-CA'), createdAt: serverTimestamp()
-  });
-  _closeModal();
-};
-
-// التنقل
-window._setTab = (t) => { S.tab = t; render(); };
-window._setStore = (id) => { S.selStore = id; render(); };
-
+// --- واجهات العرض ---
 function render() {
-  const root = document.getElementById('app');
-  if(!S.user) {
+    const root = document.getElementById('app');
+    if(!S.user) {
+        root.innerHTML = `<div class="login-s">
+            <h1 style="font-size:50px;margin-bottom:10px">👑</h1>
+            <h2 style="margin-bottom:30px">نظام البسفور</h2>
+            <input id="lp" class="inp" type="password" placeholder="أدخل الرمز" style="max-width:300px">
+            <button class="btn-m" onclick="_login()" style="max-width:300px">دخول</button>
+        </div>`;
+        return;
+    }
+
+    const today = new Date().toLocaleDateString('en-CA');
+    let body = "";
+
+    if(S.tab === 'sales') {
+        const sSales = S.data.sales.filter(x => x.date === today && x.store === S.storeId);
+        const total = sSales.reduce((a,b)=>a+b.amount, 0);
+        body = `
+            <div class="card">
+                <div class="amt-v">
+                    <p style="color:var(--text-dim);font-size:12px">مبيعات ${STORES.find(x=>x.id===S.storeId).name} اليوم</p>
+                    <h1>${total.toLocaleString()} <small style="font-size:14px">د.ع</small></h1>
+                </div>
+                <div class="tabs">
+                    <button class="t-btn ${S.saleType==='store'?'active':''}" onclick="S.saleType='store';render()">بالمحل</button>
+                    <button class="t-btn ${S.saleType==='delivery'?'active':''}" onclick="S.saleType='delivery';render()">توصيل</button>
+                </div>
+                <input id="samt" class="inp" type="number" placeholder="أدخل مبلغ المبيع" inputmode="numeric">
+                <button class="btn-m" onclick="_addSale()">تأكيد العملية ✅</button>
+            </div>
+            <div class="card">
+                <p style="font-weight:bold;margin-bottom:10px">سجل مبيعات اليوم</p>
+                <div class="table-w"><table>
+                    <thead><tr><th>الوقت</th><th>الموظف</th><th>المبلغ</th></tr></thead>
+                    <tbody>${sSales.slice(0,10).map(s=>`<tr><td>${s.time}</td><td>${s.emp}</td><td><b>${s.amount.toLocaleString()}</b></td></tr>`).join('')}</tbody>
+                </table></div>
+            </div>
+            <div style="display:flex;justify-content:center;gap:10px;padding:10px">
+                ${STORES.map(st=>`<button onclick="S.storeId=${st.id};render()" class="t-btn ${S.storeId===st.id?'active':''}">${st.name}</button>`).join('')}
+            </div>`;
+    }
+
+    else if(S.tab === 'report') {
+        const grandTotal = S.data.sales.filter(x=>x.date===today).reduce((a,b)=>a+b.amount,0);
+        body = `
+            <div class="card"><div class="amt-v"><p>إجمالي الفروع اليوم</p><h1>${grandTotal.toLocaleString()}</h1></div></div>
+            <div class="card">
+                <p style="font-weight:bold;margin-bottom:12px">إدارة محافظ الموظفين</p>
+                <div class="table-w"><table>
+                    <thead><tr><th>الموظف</th><th>الرصيد</th><th>النقاط</th><th>إجراء</th></tr></thead>
+                    <tbody>${EMPS.map(e=>{
+                        const w = S.data.wallets[e] || {balance:0, points:0};
+                        return `<tr>
+                            <td>${e}</td>
+                            <td style="color:var(--success)">${w.balance.toLocaleString()}</td>
+                            <td style="color:var(--accent)">${w.points}</td>
+                            <td>
+                                <button onclick="_walletOp('${e}','add')" style="color:var(--success);background:none;border:none;margin-left:10px"><i class="fas fa-plus-circle"></i></button>
+                                <button onclick="_walletOp('${e}','sub')" style="color:var(--danger);background:none;border:none"><i class="fas fa-minus-circle"></i></button>
+                            </td>
+                        </tr>`;
+                    }).join('')}</tbody>
+                </table></div>
+            </div>`;
+    }
+
+    else if(S.tab === 'wallet') {
+        const w = S.data.wallets[S.user] || {balance:0, points:0};
+        body = `
+            <div class="card"><div class="amt-v"><p>رصيدك الحالي</p><h1 style="color:var(--success)">${w.balance.toLocaleString()}</h1><p style="color:var(--accent);margin-top:10px">النقاط: ${w.points}</p></div></div>
+            <div class="card">
+                <p style="font-weight:bold;margin-bottom:10px">سجل العمليات المالية</p>
+                <div class="table-w"><table>
+                    <thead><tr><th>التاريخ</th><th>النوع</th><th>المبلغ</th><th>ملاحظة</th></tr></thead>
+                    <tbody>${S.data.txs.filter(x=>x.emp===S.user).slice(0,10).map(t=>`<tr><td>${t.date}</td><td>${t.type}</td><td style="color:${t.amount>0?'#10B981':'#EF4444'}">${t.amount.toLocaleString()}</td><td>${t.note||'-'}</td></tr>`).join('')}</tbody>
+                </table></div>
+            </div>`;
+}
+
+    const navbar = `
+        <div class="nav">
+            ${S.role==='owner' ? `
+                <div class="n-item ${S.tab==='report'?'active':''}" onclick="S.tab='report';render()"><i class="fas fa-chart-line"></i><div>التقارير</div></div>
+                <div class="n-item ${S.tab==='sales'?'active':''}" onclick="S.tab='sales';render()"><i class="fas fa-store"></i><div>المبيعات</div></div>
+                <div class="n-item" onclick="S.tab='manage';render()"><i class="fas fa-users-cog"></i><div>الموظفين</div></div>
+            ` : `
+                <div class="n-item ${S.tab==='sales'?'active':''}" onclick="S.tab='sales';render()"><i class="fas fa-plus-circle"></i><div>بيع</div></div>
+                <div class="n-item ${S.tab==='wallet'?'active':''}" onclick="S.tab='wallet';render()"><i class="fas fa-wallet"></i><div>محفظتي</div></div>
+                <div class="n-item" onclick="_attendance()"><i class="fas fa-map-marker-alt"></i><div>حضور</div></div>
+            `}
+            <div class="n-item" onclick="location.reload()"><i class="fas fa-sign-out-alt"></i><div>خروج</div></div>
+        </div>`;
+
+    const modal = S.modal ? `
+        <div class="modal">
+            <div class="modal-c">
+                <h3>${S.modal.action==='add'?'إيداع/راتب':'سحب/سلفة'} لـ ${S.modal.emp}</h3>
+                <input id="m-amt" class="inp" type="number" placeholder="المبلغ" style="margin-top:15px">
+                <input id="m-note" class="inp" type="text" placeholder="ملاحظة (اختياري)">
+                <button class="btn-m" onclick="_confirmWallet()">تأكيد العملية</button>
+                <button class="t-btn" onclick="S.modal=null;render()" style="width:100%;margin-top:10px;border:none">إلغاء</button>
+            </div>
+        </div>` : '';
+
     root.innerHTML = `
-      <div class="login-screen">
-        <h1 style="font-size:60px">👑</h1>
-        <h2 style="margin-bottom:30px">نظام البسفور المتكامل</h2>
-        <input id="l-pass" class="inp" type="password" placeholder="أدخل الرمز" style="max-width:300px">
-        <button class="btn-main" onclick="_login()" style="max-width:300px">دخول</button>
-      </div>`;
-    return;
-  }
-
-  let content = "";
-  const today = new Date().toLocaleDateString('en-CA');
-
-  if(S.tab === 'sales') {
-    const todaySales = S.data.sales.filter(x => x.date === today && x.store === S.selStore);
-    const total = todaySales.reduce((a,b)=>a+b.amount, 0);
-    content = `
-      <div class="card">
-        <div class="amount-box">
-          <p style="color:var(--text-dim);font-size:12px">مبيعات ${STORES.find(x=>x.id===S.selStore).name} - اليوم</p>
-          <h1>${total.toLocaleString()} <small style="font-size:14px">د.ع</small></h1>
+        <div class="header">
+            <div class="logo">مبيعات <span>البسفور</span></div>
+            <div style="font-size:12px;color:var(--text-dim)">● ${S.user}</div>
         </div>
-        <div style="display:flex;gap:10px;margin-bottom:15px">
-          <button class="btn-sub ${S.saleType==='store'?'active':''}" onclick="S.saleType='store';render()">بالمحل</button>
-          <button class="btn-sub ${S.saleType==='delivery'?'active':''}" onclick="S.saleType='delivery';render()">توصيل</button>
-        </div>
-        <input id="s-amt" class="inp" type="number" placeholder="المبلغ" inputmode="numeric">
-        <button class="btn-main" onclick="_addSale()">تأكيد العملية</button>
-      </div>
-      <div class="card">
-        <p style="font-weight:bold;margin-bottom:10px">سجل مبيعات اليوم</p>
-        <div class="table-w"><table>
-          <thead><tr><th>الوقت</th><th>الموظف</th><th>المبلغ</th></tr></thead>
-          <tbody>${todaySales.slice(0,15).map(s=>`<tr><td>${s.time}</td><td>${s.emp}</td><td><b>${s.amount.toLocaleString()}</b></td></tr>`).join('')}</tbody>
-        </table></div>
-      </div>
-      <div style="display:flex;justify-content:center;gap:10px;padding:10px">
-        ${STORES.map(st=>`<button onclick="_setStore(${st.id})" class="btn-sub ${S.selStore===st.id?'active':''}">${st.name}</button>`).join('')}
-      </div>`;
-  }
-
-  else if(S.tab === 'report' && S.role === 'owner') {
-    const grandTotal = S.data.sales.filter(x=>x.date===today).reduce((a,b)=>a+b.amount, 0);
-    content = `
-      <div class="card">
-        <div class="amount-box"><p>إجمالي الفروع اليوم</p><h1>${grandTotal.toLocaleString()}</h1></div>
-      </div>
-      <div class="card">
-        <p style="font-weight:bold;margin-bottom:15px">حالة محافظ الموظفين</p>
-        <div class="table-w"><table>
-          <thead><tr><th>الموظف</th><th>الرصيد</th><th>النقاط</th><th>إجراء</th></tr></thead>
-          <tbody>${EMPS.map(e=>{
-            const w = S.data.wallets[e] || {balance:0, points:0};
-            return `<tr>
-              <td>${e}</td>
-              <td style="color:var(--success)">${w.balance.toLocaleString()}</td>
-              <td style="color:var(--accent)">${w.points}</td>
-              <td>
-                <button onclick="_openWalletAction('${e}','add')" style="color:var(--success);background:none;border:none">➕</button>
-                <button onclick="_openWalletAction('${e}','sub')" style="color:var(--danger);background:none;border:none">➖</button>
-              </td>
-            </tr>`;
-          }).join('')}</tbody>
-        </table></div>
-      </div>`;
-  }
-
-  else if(S.tab === 'wallet') {
-    const w = S.data.wallets[S.user] || {balance:0, points:0};
-    content = `
-      <div class="card">
-        <div class="amount-box">
-          <p>رصيدك الحالي</p>
-          <h1 style="color:var(--success)">${w.balance.toLocaleString()}</h1>
-          <p style="color:var(--accent);margin-top:10px">النقاط: ${w.points}</p>
-        </div>
-      </div>
-      <div class="card">
-        <p style="font-weight:bold;margin-bottom:10px">آخر الحركات</p>
-        <div class="table-w"><table>
-          ${S.data.tx.filter(x=>x.emp===S.user).map(t=>`<tr><td>${t.date}</td><td>${t.type}</td><td style="color:${t.amount>0?'#10B981':'#EF4444'}">${t.amount.toLocaleString()}</td></tr>`).join('')}
-        </table></div>
-      </div>`;
-  }
-
-  // النافبار
-  const nav = `
-    <div class="navbar">
-      ${S.role==='owner' ? `
-        <div class="nav-item ${S.tab==='report'?'active':''}" onclick="_setTab('report')">📊<div>التقارير</div></div>
-        <div class="nav-item ${S.tab==='sales'?'active':''}" onclick="_setTab('sales')">🏬<div>المبيعات</div></div>
-        <div class="nav-item ${S.tab==='manage'?'active':''}" onclick="_setTab('manage')">⚙️<div>الإدارة</div></div>
-      ` : `
-        <div class="nav-item ${S.tab==='sales'?'active':''}" onclick="_setTab('sales')">➕<div>بيع</div></div>
-        <div class="nav-item ${S.tab==='wallet'?'active':''}" onclick="_setTab('wallet')">💰<div>محفظتي</div></div>
-        <div class="nav-item" onclick="_attendance()">📍<div>حضور</div></div>
-      `}
-      <div class="nav-item" onclick="location.reload()">🚪<div>خروج</div></div>
-    </div>`;
-
-  // المودال
-  const modal = S.modal ? `
-    <div class="modal-overlay">
-      <div class="modal-content">
-        <h3>${S.modal.action === 'add' ? 'إيداع رصيد' : 'سحب من رصيد'} - ${S.modal.emp}</h3>
-        <input id="m-amt" class="inp" type="number" placeholder="المبلغ" style="margin-top:15px">
-        <input id="m-note" class="inp" type="text" placeholder="ملاحظة">
-        <button class="btn-main" onclick="_confirmWalletAction()">تأكيد</button>
-        <button class="btn-sub" onclick="_closeModal()" style="width:100%;margin-top:10px">إلغاء</button>
-      </div>
-    </div>` : '';
-
-  root.innerHTML = `
-    <div class="header">
-      <div class="logo">مبيعات <span>البسفور</span></div>
-      <div style="font-size:12px;color:var(--text-dim)">${S.user}</div>
-    </div>
-    <div style="padding:5px">${content}</div>
-    ${nav} ${modal}
-  `;
+        <div style="padding-top:10px">${body}</div>
+        ${navbar} ${modal}
+    `;
 }
 
 render();
