@@ -3,70 +3,61 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>نظام مبيعات البسفور - المطور</title>
+<title>نظام مبيعات البسفور - V2</title>
 <style>
-/* المتغيرات والتصميم العصري */
 :root {
   --bg-primary: #0a0a16;
-  --card-bg-gradient: linear-gradient(135deg, #1b1b35, #14142a);
-  --accent-purple: #7c3aed;
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --border-color: rgba(255, 255, 255, 0.08);
-  --input-bg: rgba(255, 255, 255, 0.05);
-  --color-success: #10B981;
-  --color-danger: #EF4444;
+  --card-bg: linear-gradient(135deg, #1b1b35, #14142a);
+  --accent: #7c3aed;
+  --text: #f8fafc;
+  --text-dim: #94a3b8;
+  --border: rgba(255, 255, 255, 0.08);
+  --success: #10B981;
+  --danger: #EF4444;
 }
-
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Tahoma,sans-serif}
-body{background:var(--bg-primary);color:var(--text-primary);direction:rtl;padding-bottom:80px}
+*{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif}
+body{background:var(--bg-primary);color:var(--text);direction:rtl;padding-bottom:80px}
 
 /* الهيدر */
-.header{padding:18px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border-color);background:rgba(10,10,22,0.8);backdrop-filter:blur(10px);sticky:top;z-index:90}
+.header{padding:15px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);background:rgba(10,10,22,0.8);backdrop-filter:blur(10px);position:sticky;top:0;z-index:100}
 .logo{font-size:18px;font-weight:900}
-.logo span{color:var(--accent-purple)}
-
-/* بانر الفائز */
-.winner-banner{background:linear-gradient(90deg,#7c3aed,#db2777,#7c3aed);padding:12px;text-align:center;font-weight:bold;font-size:14px}
+.logo span{color:var(--accent)}
 
 /* البطاقات */
-.main-card{background:var(--card-bg-gradient);border-radius:20px;padding:20px;margin:15px;border:1px solid var(--border-color)}
-.amount-box{text-align:center;margin:20px 0}
-.amount-box h1{font-size:40px;color:#fff}
+.card{background:var(--card-bg);border-radius:20px;padding:20px;margin:15px;border:1px solid var(--border)}
+.amount-display{text-align:center;margin:15px 0}
+.amount-display h1{font-size:35px;color:#fff}
 
-/* المدخلات */
-.inp-group{margin-bottom:15px}
-.lbl{font-size:12px;color:var(--text-secondary);display:block;margin-bottom:5px}
-.inp{width:100%;padding:12px;border-radius:10px;background:var(--input-bg);border:1px solid var(--border-color);color:#fff;outline:none}
-.inp:focus{border-color:var(--accent-purple)}
-
-/* الأزرار */
-.btn-primary{width:100%;padding:15px;background:var(--accent-purple);border:none;border-radius:10px;color:#fff;font-weight:bold;cursor:pointer}
-.btn-secondary{padding:8px 15px;background:var(--input-bg);color:var(--text-secondary);border:1px solid var(--border-color);border-radius:8px;cursor:pointer}
+/* المدخلات والأزرار */
+.inp{width:100%;padding:12px;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid var(--border);color:#fff;margin-bottom:15px;outline:none}
+.btn-main{width:100%;padding:14px;background:var(--accent);border:none;border-radius:10px;color:#fff;font-weight:bold;cursor:pointer}
+.btn-tab{flex:1;padding:10px;background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--text-dim);border-radius:8px;cursor:pointer}
+.btn-tab.active{border-color:var(--accent);color:#fff;background:rgba(124,58,237,0.1)}
 
 /* النافبار السفلي */
-.bottom-nav{position:fixed;bottom:0;width:100%;height:70px;background:rgba(10,10,22,0.9);display:flex;justify-content:space-around;align-items:center;border-top:1px solid var(--border-color)}
-.nav-item{color:var(--text-secondary);text-align:center;font-size:12px;cursor:pointer}
-.nav-item.active{color:var(--accent-purple)}
+.nav{position:fixed;bottom:0;width:100%;height:70px;background:rgba(10,10,22,0.9);display:flex;justify-content:space-around;align-items:center;border-top:1px solid var(--border);z-index:100}
+.nav-btn{color:var(--text-dim);text-align:center;font-size:12px;cursor:pointer;flex:1}
+.nav-btn.active{color:var(--accent)}
 
 /* الجداول */
-table{width:100%;border-collapse:collapse;margin-top:15px}
-th{text-align:right;color:var(--text-secondary);font-size:12px;padding:10px}
-td{padding:12px;border-bottom:1px solid var(--border-color);font-size:13px}
+table{width:100%;border-collapse:collapse;margin-top:10px}
+th{text-align:right;color:var(--text-dim);font-size:11px;padding:8px}
+td{padding:10px;border-bottom:1px solid var(--border);font-size:13px}
 
 /* شاشة تسجيل الدخول */
-.login-wrap{height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:20px}
+.login-screen{height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:20px;text-align:center}
 </style>
 </head>
 <body>
 
-<div id="app"></div>
+<div id="root">جارِ التحميل...</div>
 
 <script type="module">
+// استيراد المكتبات بشكل صحيح
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
 import { getFirestore, collection, onSnapshot, addDoc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
 
-// !!! ضع معلومات الـ Firebase الخاصة بك هنا لكي تعمل سحب البيانات !!!
+// معلومات Firebase الخاصة بك (تم استعادتها من كودك الأصلي)
 const firebaseConfig = {
   apiKey: "AIzaSyAsllnjBZO4K9MyJNiTFoQJSfKtycQHMtU",
   authDomain: "bosphorus-76067.firebaseapp.com",
@@ -78,114 +69,104 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-
-// مجموعات البيانات
 const salesCol = collection(db, "shop_sales");
 
-// الحالة العامة للنظام
-let state = {
+// الحالة
+let S = {
   user: null,
   role: null,
   sales: [],
-  currentStore: 1,
-  saleType: 'store'
+  store: 1,
+  type: 'store'
 };
 
-// الثوابت
-const STORES = [
-  {id:1, name:"محل 1", icon:"🏬"},
-  {id:2, name:"محل 2", icon:"🏪"},
-  {id:3, name:"محل 3", icon:"🛒"}
-];
-const EMP_PASS = {"عمار":"111", "جعفر":"222", "مثنى":"333", "نورة":"444"};
+const STORES = [{id:1,name:"محل 1",icon:"🏬"},{id:2,name:"محل 2",icon:"🏪"},{id:3,name:"محل 3",icon:"🛒"}];
+const EMP_PASS = {"عمار":"111","جعفر":"222","مثنى":"333","نورة":"444"};
 
-// سحب البيانات المباشر
+// سحب البيانات
 onSnapshot(query(salesCol, orderBy("createdAt", "desc")), (snap) => {
-  state.sales = snap.docs.map(d => ({id: d.id, ...d.data()}));
+  S.sales = snap.docs.map(d => ({id: d.id, ...d.data()}));
   render();
 });
 
-// وظائف النظام
-window.login = () => {
-  const pass = document.getElementById('login-pass').value;
-  if(pass === "0000") { state.user = "المالك"; state.role = "owner"; }
+// المهام
+window.doLogin = () => {
+  const p = document.getElementById('pass').value;
+  if(p === "0000") { S.user="المالك"; S.role="owner"; }
   else {
-    for(const [name, p] of Object.entries(EMP_PASS)){
-      if(pass === p) { state.user = name; state.role = "employee"; break; }
+    for(const [n, pass] of Object.entries(EMP_PASS)) {
+      if(p === pass) { S.user=n; S.role="employee"; break; }
     }
   }
-  if(state.user) render(); else alert("خطأ في الرمز");
+  if(S.user) render(); else alert("الرمز خطأ!");
 };
 
-window.addSale = async () => {
-  const amt = document.getElementById('sale-amt').value;
-  if(!amt) return alert("أدخل المبلغ");
+window.saveSale = async () => {
+  const a = document.getElementById('amt').value;
+  if(!a) return;
   await addDoc(salesCol, {
-    amount: Number(amt),
-    emp: state.user,
-    store: state.currentStore,
-    type: state.saleType,
-    time: new Date().toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'}),
+    amount: Number(a),
+    emp: S.user,
+    store: S.store,
+    type: S.type,
+    time: new Date().toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'}),
     date: new Date().toLocaleDateString('en-CA'),
     createdAt: serverTimestamp()
   });
-  document.getElementById('sale-amt').value = "";
+  document.getElementById('amt').value = "";
 };
 
-window.switchTab = (storeId) => { state.currentStore = storeId; render(); };
-window.setSaleType = (type) => { state.saleType = type; render(); };
+window.setTab = (id) => { S.store = id; render(); };
+window.setType = (t) => { S.type = t; render(); };
 
-// رسم الواجهة
 function render() {
-  const root = document.getElementById('app');
-  if(!state.user) {
+  const root = document.getElementById('root');
+  if(!S.user) {
     root.innerHTML = `
-      <div class="login-wrap">
-        <h1 style="margin-bottom:20px">البسفور 👑</h1>
-        <div class="inp-group" style="width:100%; max-width:300px">
-          <input id="login-pass" class="inp" type="password" placeholder="أدخل رمز الدخول">
-        </div>
-        <button class="btn-primary" style="max-width:300px" onclick="window.login()">دخول</button>
+      <div class="login-screen">
+        <h1 style="font-size:40px; margin-bottom:10px">👑</h1>
+        <h2 style="margin-bottom:30px">نظام البسفور</h2>
+        <input id="pass" class="inp" type="password" placeholder="أدخل الرمز الخاص بك" style="max-width:300px">
+        <button class="btn-main" onclick="doLogin()" style="max-width:300px">دخول</button>
       </div>`;
     return;
   }
 
-  const store = STORES.find(s => s.id === state.currentStore);
-  const todaySales = state.sales.filter(s => s.date === new Date().toLocaleDateString('en-CA') && s.store === state.currentStore);
-  const total = todaySales.reduce((sum, s) => sum + s.amount, 0);
+  const currentStore = STORES.find(x => x.id === S.store);
+  const today = new Date().toLocaleDateString('en-CA');
+  const todaySales = S.sales.filter(x => x.date === today && x.store === S.store);
+  const total = todaySales.reduce((acc, x) => acc + x.amount, 0);
 
   root.innerHTML = `
-    <div class="winner-banner">👑 نظام مبيعات البسفور - أهلاً ${state.user}</div>
     <div class="header">
       <div class="logo">مبيعات <span>البسفور</span></div>
-      <button class="btn-secondary" onclick="location.reload()">خروج</button>
+      <div style="font-size:12px; color:var(--text-dim)">${S.user}</div>
     </div>
 
-    <div class="main-card">
-      <div class="amount-box">
-        <span class="lbl">إجمالي مبيعات ${store.name}</span>
-        <h1>${total.toLocaleString()} <small style="font-size:15px">د.ع</small></h1>
+    <div class="card">
+      <div class="amount-display">
+        <p style="color:var(--text-dim); font-size:12px">إجمالي مبيعات ${currentStore.name}</p>
+        <h1>${total.toLocaleString()} <small style="font-size:14px">د.ع</small></h1>
       </div>
       
-      <div class="inp-group">
-        <div style="display:flex; gap:10px; margin-bottom:15px">
-          <button class="btn-secondary" style="flex:1; border-color:${state.saleType==='store'?'#7c3aed':''}" onclick="window.setSaleType('store')">المحل</button>
-          <button class="btn-secondary" style="flex:1; border-color:${state.saleType==='delivery'?'#7c3aed':''}" onclick="window.setSaleType('delivery')">توصيل</button>
-        </div>
-        <input id="sale-amt" class="inp" type="number" placeholder="أدخل مبلغ المبيع">
+      <div style="display:flex; gap:10px; margin-bottom:15px">
+        <button class="btn-tab ${S.type==='store'?'active':''}" onclick="setType('store')">بالمحل</button>
+        <button class="btn-tab ${S.type==='delivery'?'active':''}" onclick="setType('delivery')">توصيل</button>
       </div>
-      <button class="btn-primary" onclick="window.addSale()">تأكيد المبيع</button>
+      
+      <input id="amt" class="inp" type="number" placeholder="أدخل مبلغ المبيع">
+      <button class="btn-main" onclick="saveSale()">تأكيد العملية</button>
     </div>
 
-    <div class="main-card">
-      <span class="lbl">آخر العمليات</span>
+    <div class="card">
+      <p style="font-weight:bold; margin-bottom:10px">آخر 5 عمليات اليوم</p>
       <table>
         <thead><tr><th>الوقت</th><th>النوع</th><th>المبلغ</th></tr></thead>
         <tbody>
           ${todaySales.slice(0,5).map(s => `
             <tr>
               <td>${s.time}</td>
-              <td>${s.type === 'store' ? '🏬' : '🚚'}</td>
+              <td>${s.type==='store'?'🏬':'🚚'}</td>
               <td style="font-weight:bold">${s.amount.toLocaleString()}</td>
             </tr>
           `).join('')}
@@ -193,17 +174,16 @@ function render() {
       </table>
     </div>
 
-    <div class="bottom-nav">
+    <div class="nav">
       ${STORES.map(s => `
-        <div class="nav-item ${state.currentStore === s.id ? 'active' : ''}" onclick="window.switchTab(${s.id})">
-          <div style="font-size:20px">${s.icon}</div>
+        <div class="nav-btn ${S.store === s.id ? 'active' : ''}" onclick="setTab(${s.id})">
+          <div style="font-size:22px">${s.icon}</div>
           <div>${s.name}</div>
         </div>
       `).join('')}
     </div>
   `;
 }
-
 render();
 </script>
 </body>
