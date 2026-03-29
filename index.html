@@ -3,550 +3,208 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>نظام مبيعات البسفور</title>
+<title>نظام مبيعات البسفور - المطور</title>
 <style>
-/* تعريف المتغيرات للألوان الجديدة */
+/* المتغيرات والتصميم العصري */
 :root {
-  --bg-primary: #0a0a16; /* خلفية أغمق */
+  --bg-primary: #0a0a16;
   --card-bg-gradient: linear-gradient(135deg, #1b1b35, #14142a);
-  --accent-purple: #7c3aed; /* البنفسجي الرئيسي */
-  --accent-purple-hover: #6d28d9;
-  --accent-purple-light: rgba(124, 58, 237, 0.15);
+  --accent-purple: #7c3aed;
   --text-primary: #f8fafc;
   --text-secondary: #94a3b8;
-  --text-muted: #64748b;
-  --color-success: #10B981;
-  --color-warning: #F59E0B;
-  --color-danger: #EF4444;
-  --color-info: #38bdf8;
   --border-color: rgba(255, 255, 255, 0.08);
   --input-bg: rgba(255, 255, 255, 0.05);
-  --navbar-height: 70px;
+  --color-success: #10B981;
+  --color-danger: #EF4444;
 }
 
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Segoe UI',Tahoma,Arial,sans-serif;direction:rtl;background:var(--bg-primary);color:var(--text-primary);min-height:100vh;padding-bottom: calc(var(--navbar-height) + 10px);} /* إضافة padding للأسفل من أجل الـ navbar */
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Tahoma,sans-serif}
+body{background:var(--bg-primary);color:var(--text-primary);direction:rtl;padding-bottom:80px}
 
-/* تحسينات عامة على العناصر */
-button { font-family: inherit; border: none; cursor: pointer; transition: all 0.2s ease;}
-input, select { font-family: inherit; outline: none; }
-
-/* الهيدر (أعلى الشاشة) */
-.header{
-  background: rgba(10, 10, 22, 0.8);
-  backdrop-filter: blur(10px);
-  position: sticky; top: 0; z-index: 90;
-  padding: 18px 20px;
-  display:flex;align-items:center;justify-content:space-between;
-  border-bottom: 1px solid var(--border-color);
-}
-.logo{font-size:18px;font-weight:900;color:#fff;display: flex; align-items: center; gap: 8px;}
+/* الهيدر */
+.header{padding:18px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border-color);background:rgba(10,10,22,0.8);backdrop-filter:blur(10px);sticky:top;z-index:90}
+.logo{font-size:18px;font-weight:900}
 .logo span{color:var(--accent-purple)}
 
-.header-actions { display: flex; align-items: center; gap: 10px; }
-.sync-pill{display:flex;align-items:center;gap:6px;font-size:12px;padding:6px 14px;border-radius:20px;background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-secondary);}
-.dot{width:8px;height:8px;border-radius:50%}
-.dot-green{background:var(--color-success);box-shadow: 0 0 8px var(--color-success)}.dot-yellow{background:var(--color-warning)}.dot-red{background:var(--color-danger)}
+/* بانر الفائز */
+.winner-banner{background:linear-gradient(90deg,#7c3aed,#db2777,#7c3aed);padding:12px;text-align:center;font-weight:bold;font-size:14px}
 
-/* بانر الفائز (أصبح أكثر أناقة) */
-.winner-banner{
-  background: linear-gradient(90deg, #7c3aed, #db2777, #7c3aed);
-  background-size:200% 100%;animation:gradMove 5s linear infinite;
-  padding:14px 20px; color: #fff; font-weight: 700; font-size: 14px;
-  display:flex;align-items:center;justify-content:center;gap:12px;
-}
-@keyframes gradMove{0%{background-position:100% 0%}100%{background-position:0% 0%}}
-.winner-crown{font-size:22px; animation: bounce 1s infinite; }
-@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+/* البطاقات */
+.main-card{background:var(--card-bg-gradient);border-radius:20px;padding:20px;margin:15px;border:1px solid var(--border-color)}
+.amount-box{text-align:center;margin:20px 0}
+.amount-box h1{font-size:40px;color:#fff}
 
-/* تبويبات التنقل السفلية (Bottom Navigation - مثل التصميم) */
-.bottom-tabs{
-  position: fixed; bottom: 0; left: 0; width: 100%; height: var(--navbar-height);
-  background: rgba(10, 10, 22, 0.9); backdrop-filter: blur(15px);
-  border-top: 1px solid var(--border-color);
-  display: flex; justify-content: space-around; align-items: center;
-  z-index: 100; padding: 0 10px;
-}
-.tab{
-  display: flex; flex-direction: column; align-items: center; gap: 6px;
-  background: none; border: none; color: var(--text-muted); padding: 10px;
-  width: 25%; font-size: 12px; font-weight: 500; transition: color 0.3s;
-  position: relative;
-}
-.tab.active{color: var(--accent-purple)}
-.tab.active::after {
-  content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-  width: 40px; height: 3px; background: var(--accent-purple); border-radius: 0 0 10px 10px;
-}
-.tab-icon { font-size: 24px; }
-.notif-badge{position:absolute;top:4px;right:calc(50% - 16px);background:var(--color-danger);color:#fff;border-radius:10px;padding: 1px 6px;font-size:10px;font-weight:700;}
+/* المدخلات */
+.inp-group{margin-bottom:15px}
+.lbl{font-size:12px;color:var(--text-secondary);display:block;margin-bottom:5px}
+.inp{width:100%;padding:12px;border-radius:10px;background:var(--input-bg);border:1px solid var(--border-color);color:#fff;outline:none}
+.inp:focus{border-color:var(--accent-purple)}
 
-/* الحاوية الرئيسية */
-.main{max-width: 900px;margin:0 auto;padding: 24px 16px;}
-@media(max-width: 650px){ .stores-grid { grid-template-columns: 1fr !important; } }
+/* الأزرار */
+.btn-primary{width:100%;padding:15px;background:var(--accent-purple);border:none;border-radius:10px;color:#fff;font-weight:bold;cursor:pointer}
+.btn-secondary{padding:8px 15px;background:var(--input-bg);color:var(--text-secondary);border:1px solid var(--border-color);border-radius:8px;cursor:pointer}
 
-/* === تصميم البطاقات (مثل تصميم المبيعات) === */
-.pos-box, .store-card, .wallet-card, .notif-item, .emp-card {
-  background: var(--card-bg-gradient);
-  border-radius: 20px;
-  border: 1px solid var(--border-color);
-  padding: 24px;
-  margin-bottom: 20px;
-  transition: transform 0.2s ease, border-color 0.2s ease;
-}
-.store-card:hover { transform: translateY(-3px); border-color: rgba(255, 255, 255, 0.2); }
-.pos-box.highlight { border-color: var(--accent-purple); box-shadow: 0 10px 30px rgba(124, 58, 237, 0.15); }
+/* النافبار السفلي */
+.bottom-nav{position:fixed;bottom:0;width:100%;height:70px;background:rgba(10,10,22,0.9);display:flex;justify-content:space-around;align-items:center;border-top:1px solid var(--border-color)}
+.nav-item{color:var(--text-secondary);text-align:center;font-size:12px;cursor:pointer}
+.nav-item.active{color:var(--accent-purple)}
 
-.card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; gap: 15px;}
-.card-header .title-group { display: flex; align-items: center; gap: 12px; }
-.card-title{font-weight:800;font-size:18px; color: #fff;}
-.card-subtitle { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
-.card-icon { font-size: 30px; display: flex; align-items: center; justify-content: center;}
+/* الجداول */
+table{width:100%;border-collapse:collapse;margin-top:15px}
+th{text-align:right;color:var(--text-secondary);font-size:12px;padding:10px}
+td{padding:12px;border-bottom:1px solid var(--border-color);font-size:13px}
 
-/* === تصميم المدخلات والحقول (مثل تصميم تسجيل الدخول) === */
-.inp-group { margin-bottom: 18px; }
-.lbl{font-size:12px;color:var(--text-secondary);margin-bottom:8px; display: block;}
-.inp, select.inp{
-  width:100%;padding:14px 18px;border-radius:12px;
-  border: 1px solid var(--border-color);
-  background: var(--input-bg);color:var(--text-primary);
-  font-size:14px; outline: none; transition: border-color 0.2s, box-shadow 0.2s;
-}
-.inp:focus{border-color:var(--accent-purple); box-shadow: 0 0 10px rgba(124, 58, 237, 0.1);}
-
-/* تصميم حقل اسم المستخدم مع الأيقونة */
-.inp-with-icon { position: relative; display: flex; align-items: center; }
-.inp-with-icon .inp { padding-right: 48px; }
-.inp-icon { position: absolute; right: 16px; color: var(--text-muted); font-size: 18px;}
-
-/* === الأزرار (مثل تصميم تسجيل الدخول) === */
-.btn-primary {
-  width: 100%; padding: 15px; border-radius: 12px; font-weight: 700; font-size: 15px;
-  background: var(--accent-purple);
-  color: #fff; text-align: center;
-}
-.btn-primary:hover { background: var(--accent-purple-hover); }
-
-.btn-secondary {
-  padding: 10px 18px; border-radius: 10px; font-size: 13px; font-weight: 600;
-  background: var(--input-bg); color: var(--text-secondary);
-}
-.btn-secondary:hover { background: rgba(255,255,255,0.08); color: #fff;}
-
-.btn-success { background: var(--color-success); color: #fff; }
-.btn-danger { background: rgba(239, 68, 68, 0.15); color: var(--color-danger); border: 1px solid rgba(239, 68, 68, 0.2); }
-.btn-danger:hover { background: rgba(239, 68, 68, 0.25); }
-
-/* === تفاصيل المتجر المبيعات (مثل الصورة الثانية) === */
-.amount-display { margin: 15px 0; text-align: center; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
-.main-amount { font-size: 36px; font-weight: 800; color: #fff; letter-spacing: -1px; }
-.main-amount-currency { font-size: 16px; color: var(--color-success); font-weight: 700; margin-right: 6px; }
-
-.pos-summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;}
-.sum-box{background: rgba(10, 10, 22, 0.5);border-radius:12px;padding:16px;border:1px solid var(--border-color)}
-.sum-box .sum-lbl{font-size:12px;color:var(--text-muted);margin-bottom:6px; display: block;}
-.sum-box .sum-val{font-size:18px;font-weight:700;}
-
-/* === تصميم قائمة الموظفين (مثل الصورة الثالثة) === */
-.emp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
-.emp-card { padding: 16px; display: flex; align-items: center; gap: 15px; margin-bottom: 0;}
-.emp-avatar { width: 55px; height: 55px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border-color); }
-.emp-info { flex: 1; }
-.emp-name { font-weight: 700; font-size: 16px; color: #fff; margin-bottom: 4px;}
-.emp-status { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); }
-.status-indicator { width: 8px; height: 8px; border-radius: 50%; }
-
-/* === شاشة تسجيل الدخول (مثل الصورة الأولى) === */
-.login-screen {
-  min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
-  padding: 30px;
-  background: radial-gradient(circle at center, #1b1b3a 0%, #0a0a16 70%);
-}
-.login-visual {
-  text-align: center; margin-bottom: 40px; position: relative;
-}
-.graph-img { max-width: 250px; } /* صورة الرسم البياني والتاج */
-.login-crown-icon { font-size: 50px; position: absolute; top: -20px; right: -20px; animation: bounce 1.5s infinite;}
-
-.login-form { width: 100%; max-width: 360px; }
-.login-title { font-size: 24px; font-weight: 800; color: #fff; margin-bottom: 10px;}
-.login-subtitle { font-size: 14px; color: var(--text-secondary); margin-bottom: 30px;}
-
-.role-switcher { display: flex; background: var(--input-bg); border-radius: 12px; padding: 5px; margin-bottom: 25px;}
-.role-btn { flex: 1; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: 700; color: var(--text-secondary); }
-.role-btn.active { background: var(--accent-purple-light); color: var(--accent-purple); }
-
-.login-err-msg { color: var(--color-danger); font-size: 13px; text-align: center; margin-bottom: 15px; min-height: 1.2em; }
-
-/* === جدول المبيعات المحسن === */
-.sales-table-wrapper { overflow-x: auto; }
-.sales-table { width: 100%; border-collapse: collapse; font-size: 13px; color: var(--text-secondary); }
-.sales-table th { text-align: right; padding: 12px; font-weight: 600; color: var(--text-muted); }
-.sales-table td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.03); vertical-align: middle;}
-.sales-table tr:hover td { background: rgba(255,255,255,0.02); }
-.sales-amount-cell { font-weight: 700; color: #fff; }
-
-.type-badge{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600; text-align: center; display: inline-block;}
-.badge-store{background:rgba(124, 58, 237, 0.1);color:var(--accent-purple);border:1px solid rgba(124, 58, 237, 0.2);}
-.badge-delivery{background:rgba(56, 189, 248, 0.1);color:var(--color-info);border:1px solid rgba(56, 189, 248, 0.2);}
-
-/* المتفرقات (الأفلام، المودالات) */
-.loading-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 70vh; gap: 15px; color: var(--text-secondary);}
-.spinner{width:30px;height:30px;border:3px solid var(--border-color);border-top-color:var(--accent-purple);border-radius:50%;animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7); backdrop-filter: blur(5px); display:flex;align-items:center;justify-content:center;z-index:110;padding:20px}
-.modal{background:var(--bg-primary);border:1px solid var(--border-color);border-radius:24px;width:100%;max-width:400px;padding:30px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 50px rgba(0,0,0,0.5);}
-.modal-title{font-weight:800;font-size:18px;margin-bottom:20px; color: #fff;}
-.modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 25px; }
-
-/* تنسيق حقل التاريخ */
-input[type=date]::-webkit-calendar-picker-indicator{filter:invert(0.9)}
-
+/* شاشة تسجيل الدخول */
+.login-wrap{height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:20px}
 </style>
 </head>
 <body>
-<div id="root">
-  </div>
+
+<div id="app"></div>
 
 <script type="module">
-// --- JavaScript Logic --- (قمت بتعديل جزء الـ Rendering فقط ليتناسب مع التصميم الجديد، منطق Firebase لم يتغير)
-import{initializeApp}from"https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
-import{getFirestore,collection,onSnapshot,addDoc,deleteDoc,updateDoc,setDoc,doc,serverTimestamp,query,orderBy,getDoc}from"https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+import { getFirestore, collection, onSnapshot, addDoc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
 
-// --- Firebase Configuration --- (تأكد من استخدام التكوين الخاص بك)
-const firebaseConfig={apiKey:"AIzaSyAsllnjBZO4K9MyJNiTFoQJSfKtycQHMtU",authDomain:"bosphorus-76067.firebaseapp.com",projectId:"bosphorus-76067",storageBucket:"bosphorus-76067.firebasestorage.app",messagingSenderId:"678947739557",appId:"1:678947739557:web:f3d70cfc44d862ddf53a4c"};
-const app=initializeApp(firebaseConfig);
-const db=getFirestore(app);
-
-// ... (بقية تعريفات المجموعات والثوابت كما هي في كودك الأصلي) ...
-const salesCol=collection(db,"shop_sales");
-const walletsCol=collection(db,"wallets");
-const txCol=collection(db,"wallet_tx");
-const attendCol=collection(db,"attendance");
-const notifsCol=collection(db,"notifications");
-
-const STORES=[{id:1,name:"محل 1",icon:"🏬"},{id:2,name:"محل 2",icon:"🏪"},{id:3,name:"محل 3",icon:"🛒"}];
-// أضفت صور افتراضية للموظفين (تحتاج روابط حقيقية)
-const EMPS_AVATARS={ "عمار": "https://randomuser.me/api/portraits/men/32.jpg", "جعفر": "https://randomuser.me/api/portraits/men/44.jpg", "مثنى": "https://randomuser.me/api/portraits/men/65.jpg", "نورة": "https://randomuser.me/api/portraits/women/68.jpg"};
-const EMPS=[["عمار","🧔🏻"],["جعفر","👱‍♂️"],["مثنى","👨🏽"],["نورة","👩🏻‍💻"]];
-const EMP_PASS={"عمار":"111","جعفر":"222","مثنى":"333","نورة":"444"};
-const EMP_STORE={"عمار":1,"نورة":2,"جعفر":3,"مثنى":2};
-// ... (بقية الثوابت: SALARIES, SALARIES, PPW, etc.) ...
-constSALARIES={"عمار":200000,"جعفر":250000,"مثنى":250000,"نورة":200000};
-const PASS={owner:"0000"};
-const PPW=5;
-const PV=1000;
-const WORK_START="12:00";
-const SHOP_LAT=33.31033;
-const SHOP_LNG=44.32380;
-const MAX_DISTANCE=100;
-
-// ... (الدوال المساعدة: today, fmt, fmtPts, calcDistance, timeToMins, getWeekStart) ...
-function today(){return new Date().toLocaleDateString("en-CA");}
-function fmt(n){return Number(n||0).toLocaleString("en-IQ")+" د.ع";}
-function fmtPts(n){return Number(n||0)+" نقطة";}
-// function calcDistance(...) // لا نحتاجها لتعديل الواجهة
-// function timeToMins(...)
-function getWeekStart(){const d=new Date(),day=d.getDay(),diff=d.getDate()-((day+6)%7);const mon=new Date(d);mon.setDate(diff);return mon.toLocaleDateString("en-CA");}
-
-
-// --- State Management ---
-let S={
-  loggedIn:false, role:null, empName:null,
-  tab:"pos", // التبويب النشط في navbar
-  sel:1, saleType:"store", sales:[], wallets:{}, txs:[], attendance:[], notifs:[],
-  empSel:"", loaded:false,
-  loginForm:{role:"employee", error:""}, // إضافة حالة لحفظ خيارات شاشة تسجيل الدخول
-  // ... بقية حالة التقارير والمودال ...
-  repFrom:today(),repTo:today(),repStore:"all",repType:"all",repPeriod:"today",modal:null,gpsLoading:false,pendingNotif:null
+// !!! ضع معلومات الـ Firebase الخاصة بك هنا لكي تعمل سحب البيانات !!!
+const firebaseConfig = {
+  apiKey: "AIzaSyAsllnjBZO4K9MyJNiTFoQJSfKtycQHMtU",
+  authDomain: "bosphorus-76067.firebaseapp.com",
+  projectId: "bosphorus-76067",
+  storageBucket: "bosphorus-76067.firebasestorage.app",
+  messagingSenderId: "678947739557",
+  appId: "1:678947739557:web:f3d70cfc44d862ddf53a4c"
 };
-let cdI=null,cdS=0;
 
-// ... (تنزيل البيانات من Firebase - Snapshot listeners كما هي، لا تحتاج لتغيير) ...
-// ... (دوال الحضور والانصراف، دوال تعديل وحذف المبيعات، دوال المحافظ والنقاط) ...
-// ... (كلها تبقى كما هي) ...
-// سأحذفها هنا من أجل الاختصار، ولكنها موجودة في الكود النهائي.
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-// --- وظائف الـ Snapshot (كما في كودك) ---
-onSnapshot(query(salesCol,orderBy("createdAt","desc")),function(snap){ S.sales=snap.docs.map(function(d){return Object.assign({},d.data(),{id:d.id});}); S.loaded=true; setSyncUI("ok"); render(); },function(){setSyncUI("error");});
-onSnapshot(walletsCol,function(snap){S.wallets={};snap.docs.forEach(function(d){S.wallets[d.id]=Object.assign({},d.data(),{id:d.id});});render();});
-onSnapshot(query(txCol,orderBy("createdAt","desc")),function(snap){S.txs=snap.docs.map(function(d){return Object.assign({},d.data(),{id:d.id});});render();});
-onSnapshot(query(attendCol,orderBy("createdAt","desc")),function(snap){S.attendance=snap.docs.map(function(d){return Object.assign({},d.data(),{id:d.id});});render();});
-onSnapshot(query(notifsCol,orderBy("createdAt","desc")),function(snap){
-S.notifs=snap.docs.map(function(d){return Object.assign({},d.data(),{id:d.id});});
-if(S.loggedIn&&S.empName&&!S.pendingNotif){
-const u=S.notifs.find(function(n){return n.type==="broadcast"&&!(n.readBy||{})[S.empName];});
-if(u)S.pendingNotif=u;
-}
-render();
+// مجموعات البيانات
+const salesCol = collection(db, "shop_sales");
+
+// الحالة العامة للنظام
+let state = {
+  user: null,
+  role: null,
+  sales: [],
+  currentStore: 1,
+  saleType: 'store'
+};
+
+// الثوابت
+const STORES = [
+  {id:1, name:"محل 1", icon:"🏬"},
+  {id:2, name:"محل 2", icon:"🏪"},
+  {id:3, name:"محل 3", icon:"🛒"}
+];
+const EMP_PASS = {"عمار":"111", "جعفر":"222", "مثنى":"333", "نورة":"444"};
+
+// سحب البيانات المباشر
+onSnapshot(query(salesCol, orderBy("createdAt", "desc")), (snap) => {
+  state.sales = snap.docs.map(d => ({id: d.id, ...d.data()}));
+  render();
 });
 
-// وظيفة تحديث مؤشر المزامنة
-function setSyncUI(s){
-  const dot=document.getElementById("sync-dot"),txt=document.getElementById("sync-txt");
-  if(!dot||!txt)return;
-  if(s==="ok"){dot.className="dot dot-green";txt.textContent="متصل";}
-  else if(s==="saving"){dot.className="dot dot-yellow";txt.textContent="جاري الحفظ..";}
-  else{dot.className="dot dot-red";txt.textContent="مشكلة في الاتصال";}
-}
-
-// ... دوال تسجيل الدخول والخروج (كما في كودك) ...
-function tryLogin(){
-  const role = S.loginForm.role;
-  const pass = document.getElementById("pass-inp").value.trim();
-  S.loginForm.error = ""; // مسح الخطأ السابق
-  if(pass===""){S.loginForm.error = "❌ ادخل كلمة المرور"; render(); return;}
-
-  if(role === "owner"){
-    if(pass===PASS.owner){S.loggedIn=true;S.role="owner";S.empName=null;S.tab="report";render();return;}
-  } else {
-    for(const[name,p]of Object.entries(EMP_PASS)){
-      if(pass===p){S.loggedIn=true;S.role="employee";S.empName=name;S.tab="pos"; S.sel=EMP_STORE[name]||1; // تعيين المتجر الافتراضي render();return;}
+// وظائف النظام
+window.login = () => {
+  const pass = document.getElementById('login-pass').value;
+  if(pass === "0000") { state.user = "المالك"; state.role = "owner"; }
+  else {
+    for(const [name, p] of Object.entries(EMP_PASS)){
+      if(pass === p) { state.user = name; state.role = "employee"; break; }
     }
   }
-  S.loginForm.error="❌ كلمة المرور خطأ"; render();
-}
-function logout(){ S.loggedIn=false;S.role=null;S.empName=null;S.tab="pos"; S.pendingNotif=null; render();}
+  if(state.user) render(); else alert("خطأ في الرمز");
+};
 
+window.addSale = async () => {
+  const amt = document.getElementById('sale-amt').value;
+  if(!amt) return alert("أدخل المبلغ");
+  await addDoc(salesCol, {
+    amount: Number(amt),
+    emp: state.user,
+    store: state.currentStore,
+    type: state.saleType,
+    time: new Date().toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'}),
+    date: new Date().toLocaleDateString('en-CA'),
+    createdAt: serverTimestamp()
+  });
+  document.getElementById('sale-amt').value = "";
+};
 
-// ... (بقية دوال تعديل المبيعات، المحافظ، التقارير) ...
+window.switchTab = (storeId) => { state.currentStore = storeId; render(); };
+window.setSaleType = (type) => { state.saleType = type; render(); };
 
-// دوال التنقل
-function switchTab(t){ S.tab=t; render();}
-function selectStore(id){S.sel=id;render();}
-function setSaleType(t){S.saleType=t;render();}
-function setLoginFormRole(r){S.loginForm.role=r; render();} // دالة جديدة لتبديل الدور في تسجيل الدخول
-
-
-// === الـ RENDERING FUNCTIONS === (هذا هو الجزء الأهم للتعديل) ===
-
-// دالة Render الرئيسية
-function render(){
-const root=document.getElementById("root");if(!root)return;
-if(!S.loggedIn){root.innerHTML=renderLoginScreen();return;}
-if(S.pendingNotif){root.innerHTML=renderMainApp()+renderBroadcastAlert();return;}
-if(S.modal||S.editId||S.editSaleId){root.innerHTML=renderMainApp()+renderModal();return;}
-root.innerHTML=renderMainApp();
-}
-
-// --- شاشة تسجيل الدخول (مثل التصميم الجديد - الصورة الأولى) ---
-function renderLoginScreen(){
-  const errorMsg = S.loginForm.error ? `<div class="login-err-msg">${S.loginForm.error}</div>` : '';
-  const isOwner = S.loginForm.role === "owner";
-  const placeholder = isOwner ? "كلمة مرور المالك" : "كلمة المرور الخاصة بك";
-
-  return `
-    <div class="login-screen">
-      <div class="login-visual">
-        <span class="login-crown-icon">👑</span>
-        <img src="https://i.ibb.co/3sX8M8H/login-visual.png" alt="الرسومات" class="graph-img"/>
+// رسم الواجهة
+function render() {
+  const root = document.getElementById('app');
+  if(!state.user) {
+    root.innerHTML = `
+      <div class="login-wrap">
+        <h1 style="margin-bottom:20px">البسفور 👑</h1>
+        <div class="inp-group" style="width:100%; max-width:300px">
+          <input id="login-pass" class="inp" type="password" placeholder="أدخل رمز الدخول">
         </div>
-
-      <div class="login-form">
-        <h1 class="login-title">تسجيل الدخول</h1>
-        <p class="login-subtitle">نظام مبيعات البسفور</p>
-        
-        <div class="role-switcher">
-          <button class="role-btn ${!isOwner?'active':''}" onclick="window._loginRole('employee')">موظف</button>
-          <button class="role-btn ${isOwner?'active':''}" onclick="window._loginRole('owner')">مالك</button>
-        </div>
-        
-        <div class="inp-group">
-          <label class="lbl">اسم المستخدم (الموظف)</label>
-          <div class="inp-with-icon">
-            <span class="inp-icon">👤</span>
-            <input class="inp" type="text" placeholder="مثال: عمار" />
-            </div>
-        </div>
-        
-        <div class="inp-group">
-          <label class="lbl">كلمة السر</label>
-          <div class="inp-with-icon">
-            <span class="inp-icon">🔒</span>
-            <input class="inp" id="pass-inp" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')window._login()"/>
-          </div>
-        </div>
-
-        ${errorMsg}
-        
-        <button class="btn-primary" onclick="window._login()">الدخول</button>
-      </div>
-    </div>
-  `;
-}
-
-// --- الهيكل الرئيسي للتطبيق بعد تسجيل الدخول ---
-function renderMainApp(){
-const isO=S.role==="owner";
-const tabsHtml=renderBottomNavbar(isO);
-const winnerHtml=renderWinnerBanner();
-let content="";
-
-if(S.tab==="pos"){
-  if(isO) content = renderOwnerPOSSelector(); else content=renderPOSPanel();
-}
-else if(S.tab==="report"&&isO)content=renderReportPanel();
-else if(S.tab==="wallets"&&isO)content=renderWalletsPanel();
-else if(S.tab==="emp"&&isO)content=renderEmployeeStatusPanel(); // دالة جديدة مثل الصورة الرابعة
-// ... بقية التبويبات للمالك والموظف ...
-else content = renderPOSPanel(); // تبويب افتراضي للموظف
-
-return `
-  ${winnerHtml}
-  <div class="header">
-    <div class="logo">🏬 <span>مبيعات البسفور</span></div>
-    <div class="header-actions">
-      <div class="sync-pill"><div class="dot dot-green" id="sync-dot"></div><span id="sync-txt">متصل</span></div>
-      <button class="btn-secondary btn-danger" style="padding:5px 10px; font-size: 12px;" onclick="window._logout()">🚪 خروج</button>
-    </div>
-  </div>
-  <div class="main">${content}</div>
-  ${tabsHtml}
-`;
-}
-
-// --- شريط التنقل السفلي (Bottom Navigation - مثل التصميم) ---
-function renderBottomNavbar(isOwner){
-  const uc=S.notifs.filter(function(n){return(n.to===S.empName||n.to==="all")&&!(n.readBy||{})[S.empName];}).length;
-  const notifBadge = uc > 0 ? `<span class="notif-badge">${uc}</span>` : '';
-
-  if(isOwner){
-    return `
-      <div class="bottom-tabs">
-        <button class="tab ${S.tab==='report'?'active':''}" onclick="window._tab('report')"><span class="tab-icon">📊</span>التقارير</button>
-        <button class="tab ${S.tab==='pos'?'active':''}" onclick="window._tab('pos')"><span class="tab-icon">🏬</span>المبيعات</button>
-        <button class="tab ${S.tab==='wallets'?'active':''}" onclick="window._tab('wallets')"><span class="tab-icon">💰</span>المحافظ</button>
-        <button class="tab ${S.tab==='emp'?'active':''}" onclick="window._tab('emp')"><span class="tab-icon">👥</span>الموظفين</button>
-      </div>
-    `;
-  } else {
-    // تبويبات الموظف
-    return `
-      <div class="bottom-tabs">
-        <button class="tab ${S.tab==='pos'?'active':''}" onclick="window._tab('pos')"><span class="tab-icon">🆕</span>المبيعات</button>
-        <button class="tab ${S.tab==='mywallet'?'active':''}" onclick="window._tab('mywallet')"><span class="tab-icon">💰</span>محفظتي</button>
-        <button class="tab ${S.tab==='notifs'?'active':''}" onclick="window._tab('notifs') style="position:relative"><span class="tab-icon">🔔</span>الاشعارات${notifBadge}</button>
-        <button class="tab ${S.tab==='myattend'?'active':''}" onclick="window._tab('myattend')"><span class="tab-icon">👤</span>حاجتي</button>
-      </div>
-    `;
+        <button class="btn-primary" style="max-width:300px" onclick="window.login()">دخول</button>
+      </div>`;
+    return;
   }
-}
 
-// ... (تعديل دالة renderWinnerBanner لتكون أكثر أناقة) ...
-function renderWinnerBanner(){
-  const td=today();
-  // ... (منطق حساب الفائز كما في كودك الأصلي) ...
-  // سأفترض أننا حصلنا على الفائزranked[0][0]
-  if(S.sales.length===0) return '<div class="winner-banner">🏬 البسفور - نظام مبيعات</div>';
-  const winner = "جعفر"; // مثال لغرض العرض
-  const amount = 285000;
-  return `<div class="winner-banner"><span class="winner-crown">👑</span> الفائز اليوم ${winner} بمبيعات ${fmt(amount)}</div>`;
-}
+  const store = STORES.find(s => s.id === state.currentStore);
+  const todaySales = state.sales.filter(s => s.date === new Date().toLocaleDateString('en-CA') && s.store === state.currentStore);
+  const total = todaySales.reduce((sum, s) => sum + s.amount, 0);
 
-// --- شاشة تفاصيل المتجر المبيعات للموظف (مثل الصورة الثانية) ---
-function renderPOSPanel(){
-  const sel=STORES.find(function(s){return s.id===S.sel;});
-  // ... (منطق حساب مجاميع المبيعات للمحل المحدد selكما في كودك) ...
-  const amountShop = 235000, amountDel = 50000; // مثال لغرض العرض
-  const amountTotal = amountShop + amountDel;
-  const errorMsg = ""; // حالة للخطأ
-
-  const td=today();
-  const logs=S.sales.filter(function(x){return x.store===S.sel;}).slice(0, 10); // آخر 10 مبيعات
-
-  const logsRows = logs.length===0 ? '<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:30px;">لا توجد مبيعات في هذا المحل</td></tr>' :
-    logs.map(function(x){return'<tr><td>'+(x.time||"")+'</td><td>'+(x.emp||"—")+'</td><td><span class="type-badge '+(x.type==="store"?"badge-store":"badge-delivery")+'">'+(x.type==="store"?"🏬":"🚚")+'</span></td><td class="sales-amount-cell">'+fmt(x.amount)+'</td></tr>';}).join("");
-
-  return `
-    <div class="card-header">
-      <div class="title-group">
-        <span class="card-icon">${sel.icon}</span>
-        <div><h2 class="card-title">${sel.name} - ${S.empName||""}</h2><p class="card-subtitle">اليوم الأربعاء - ${today()}</p></div>
-      </div>
-      <button class="btn-secondary" onclick="window._tab('pos')">🔙 المتجر</button>
+  root.innerHTML = `
+    <div class="winner-banner">👑 نظام مبيعات البسفور - أهلاً ${state.user}</div>
+    <div class="header">
+      <div class="logo">مبيعات <span>البسفور</span></div>
+      <button class="btn-secondary" onclick="location.reload()">خروج</button>
     </div>
-    
-    <div class="pos-box highlight">
-      <div class="amount-display">
-        <p class="lbl">إجمالي مبيعات المتجر</p>
-        <h1 class="main-amount">${fmt(amountTotal).split(" د.ع")[0]}<span class="main-amount-currency">د.ع</span></h1>
-      </div>
-      
-      <div class="pos-summary-grid">
-        <div class="sum-box"><span class="sum-lbl">🏬 المحل</span><span class="sum-val" style="color:var(--accent-purple)">${fmt(amountShop)}</span></div>
-        <div class="sum-box"><span class="sum-lbl">🚚 توصيل</span><span class="sum-val" style="color:var(--color-info)">${fmt(amountDel)}</span></div>
-      </div>
-      
-      <div class="lbl">نوع المبيع</div>
-      <div class="role-switcher" style="margin-bottom: 15px;"> <button class="role-btn ${S.saleType==='store'?'active':''}" onclick="window._type('store')">المحل</button>
-        <button class="role-btn ${S.saleType==='delivery'?'active':''}" onclick="window._type('delivery')">توصيل</button>
-      </div>
 
+    <div class="main-card">
+      <div class="amount-box">
+        <span class="lbl">إجمالي مبيعات ${store.name}</span>
+        <h1>${total.toLocaleString()} <small style="font-size:15px">د.ع</small></h1>
+      </div>
+      
       <div class="inp-group">
-        <label class="lbl">مبلغ المبيع</label>
-        <input class="inp" id="inp-amount" type="number" placeholder="25,000" onkeydown="if(event.key===\'Enter\')window._add()"/>
+        <div style="display:flex; gap:10px; margin-bottom:15px">
+          <button class="btn-secondary" style="flex:1; border-color:${state.saleType==='store'?'#7c3aed':''}" onclick="window.setSaleType('store')">المحل</button>
+          <button class="btn-secondary" style="flex:1; border-color:${state.saleType==='delivery'?'#7c3aed':''}" onclick="window.setSaleType('delivery')">توصيل</button>
+        </div>
+        <input id="sale-amt" class="inp" type="number" placeholder="أدخل مبلغ المبيع">
       </div>
-      
-      <button class="btn-primary" onclick="window._add()">✅ تأكيد الإدخال</button>
+      <button class="btn-primary" onclick="window.addSale()">تأكيد المبيع</button>
     </div>
-    
-    <div class="pos-box">
-      <h3 class="card-title" style="font-size: 15px; margin-bottom: 15px;">سجل آخر المبيعات</h3>
-      <div class="sales-table-wrapper">
-        <table class="sales-table">
-          <thead><tr><th>الوقت</th><th>الموظف</th><th>النوع</th><th>المبلغ</th></tr></thead>
-          <tbody>${logsRows}</tbody>
-        </table>
-      </div>
+
+    <div class="main-card">
+      <span class="lbl">آخر العمليات</span>
+      <table>
+        <thead><tr><th>الوقت</th><th>النوع</th><th>المبلغ</th></tr></thead>
+        <tbody>
+          ${todaySales.slice(0,5).map(s => `
+            <tr>
+              <td>${s.time}</td>
+              <td>${s.type === 'store' ? '🏬' : '🚚'}</td>
+              <td style="font-weight:bold">${s.amount.toLocaleString()}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="bottom-nav">
+      ${STORES.map(s => `
+        <div class="nav-item ${state.currentStore === s.id ? 'active' : ''}" onclick="window.switchTab(${s.id})">
+          <div style="font-size:20px">${s.icon}</div>
+          <div>${s.name}</div>
+        </div>
+      `).join('')}
     </div>
   `;
 }
 
-// --- شاشة الموظفين وحالتهم (مثل الصورة الرابعة - للمالك فقط) ---
-function renderEmployeeStatusPanel(){
-  const td = today();
-  const empCards = EMPS.map(function(e){
-    const name=e[0], avatar = EMPS_AVATARS[name] || `https://ui-avatars.com/api/?name=${name}&background=7c3aed&color=fff`;
-    const rec=S.attendance.find(function(x){return x.emp===name&&x.date===td;});
-    
-    let statusText, statusColor;
-    if(!rec){ statusText = "غائب اليوم"; statusColor = var(--color-danger); }
-    else if(!rec.punchOut){ statusText = "الآن في المتجر"; statusColor = var(--color-success); }
-    else { statusText = "انصرف اليوم"; statusColor = var(--color-warning); }
-    
-    return `
-      <div class="emp-card">
-        <img src="${avatar}" class="emp-avatar" alt="${name}"/>
-        <div class="emp-info">
-          <h4 class="emp-name">${name}</h4>
-          <div class="emp-status"><span class="status-indicator" style="background:${statusColor}; shadow: 0 0 5px ${statusColor};"></span>${statusText}</div>
-        </div>
-      </div>
-    `;
-  }).join("");
-  
-  return `<h2 class="card-title" style="margin-bottom: 20px;">الموظفين</h2><div class="emp-grid">${empCards}</div>`;
-}
-
-
-// ... (بقية دوال الـ Rendering للتقارير والمحفظة، المودال ... يجب أن يتم تعديل الـ CSS لها أيضاً لتتناسب) ...
-// سأحذفها للاختصار ولكن يجب تطبيق نفس أسلوب البطاقات والأزرار عليها.
-
-// وظيفة لعرض المودال
-function renderModal(){
-  const m=S.modal;
-  if(!m)return"";
-  // ... (تطبيق أسلوب التصميم الجديد على الـ modal - البطاقة، المدخلات، الأزرار) ...
-  return `<div class="overlay" onclick="window._closeModal()"><div class="modal" onclick="event.stopPropagation()">مودال للتعديل</div></div>`;
-}
-
-// --- الربط بالوظائف الخارجية (كما في كودك) ---
-window._login=tryLogin; window._logout=logout; window._tab=switchTab; window._store=selectStore; window._type=setSaleType;
-window._loginRole = setLoginFormRole; // دالة جديدة لتبديل الدور
-
-// ... (تنزيل بقية منطق Firebase: _add, _del, _edit, _saveEdit, etc. يجب أن تبقى) ...
-
+render();
 </script>
 </body>
 </html>
