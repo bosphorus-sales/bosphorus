@@ -3,68 +3,69 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>نظام مبيعات البسفور - النسخة الاحترافية</title>
+<title>نظام مبيعات البسفور - V2.0</title>
 <style>
+/* المتغيرات التصميمية للواجهة الجديدة */
 :root {
-  --bg-dark: #0a0a16;
+  --bg: #0a0a16;
   --card-bg: linear-gradient(135deg, #1b1b35, #14142a);
   --accent: #7c3aed;
+  --accent-light: rgba(124, 58, 237, 0.15);
   --text: #f8fafc;
   --text-dim: #94a3b8;
   --border: rgba(255, 255, 255, 0.08);
   --success: #10B981;
   --danger: #EF4444;
+  --warning: #F59E0B;
 }
 
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI', Tahoma, sans-serif}
-body{background:var(--bg-dark);color:var(--text);direction:rtl;padding-bottom:90px;min-height:100vh}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif}
+body{background:var(--bg);color:var(--text);direction:rtl;min-height:100vh;padding-bottom:90px}
 
 /* الهيدر */
 .header{padding:15px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);background:rgba(10,10,22,0.8);backdrop-filter:blur(10px);position:sticky;top:0;z-index:100}
-.logo{font-size:18px;font-weight:900}.logo span{color:var(--accent)}
+.logo{font-size:20px;font-weight:900}.logo span{color:var(--accent)}
 
-/* البطاقات الرئيسية */
-.card{background:var(--card-bg);border-radius:20px;padding:20px;margin:15px;border:1px solid var(--border);box-shadow: 0 10px 30px rgba(0,0,0,0.3)}
-.amount-display{text-align:center;margin:15px 0}.amount-display h1{font-size:38px;color:#fff;letter-spacing:-1px}
+/* البطاقات */
+.card{background:var(--card-bg);border-radius:22px;padding:22px;margin:15px;border:1px solid var(--border);box-shadow: 0 10px 30px rgba(0,0,0,0.4)}
+.amount-display{text-align:center;margin:15px 0}.amount-display h1{font-size:42px;color:#fff;letter-spacing:-1.5px}
 
-/* أزرار التبديل (المحل/توصيل) */
-.switch-group{display:flex;gap:10px;margin-bottom:20px}
-.btn-tab{flex:1;padding:12px;background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--text-dim);border-radius:12px;cursor:pointer;font-weight:bold;transition:0.3s}
-.btn-tab.active{border-color:var(--accent);color:#fff;background:rgba(124,58,237,0.15)}
-
-/* المدخلات */
-.inp{width:100%;padding:14px;border-radius:12px;background:rgba(255,255,255,0.05);border:1px solid var(--border);color:#fff;margin-bottom:15px;outline:none;font-size:16px}
-.inp:focus{border-color:var(--accent)}
-
-/* الأزرار */
+/* المدخلات والأزرار */
+.inp-group{margin-bottom:15px}.lbl{font-size:12px;color:var(--text-dim);margin-bottom:6px;display:block}
+.inp{width:100%;padding:14px;border-radius:12px;background:rgba(255,255,255,0.05);border:1px solid var(--border);color:#fff;outline:none;font-size:16px;transition:0.3s}
+.inp:focus{border-color:var(--accent);background:rgba(255,255,255,0.08)}
 .btn-main{width:100%;padding:16px;background:var(--accent);border:none;border-radius:12px;color:#fff;font-weight:bold;cursor:pointer;font-size:16px;box-shadow: 0 5px 15px rgba(124,58,237,0.3)}
 
-/* شريط التنقل السفلي */
-.nav{position:fixed;bottom:0;width:100%;height:75px;background:rgba(10,10,22,0.95);display:flex;justify-content:space-around;align-items:center;border-top:1px solid var(--border);z-index:1000;backdrop-filter:blur(10px)}
-.nav-btn{color:var(--text-dim);text-align:center;font-size:11px;cursor:pointer;flex:1;transition:0.3s}
-.nav-btn.active{color:var(--accent)}
-.nav-btn i{font-size:24px;display:block;margin-bottom:4px}
+/* التبويبات */
+.tabs-row{display:flex;gap:10px;margin-bottom:20px}
+.tab-btn{flex:1;padding:12px;background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--text-dim);border-radius:12px;cursor:pointer;font-weight:600;transition:0.3s}
+.tab-btn.active{border-color:var(--accent);color:#fff;background:var(--accent-light)}
+
+/* القائمة السفلية */
+.navbar{position:fixed;bottom:0;width:100%;height:75px;background:rgba(10,10,22,0.95);display:flex;justify-content:space-around;align-items:center;border-top:1px solid var(--border);z-index:1000;backdrop-filter:blur(15px)}
+.nav-item{color:var(--text-dim);text-align:center;font-size:11px;cursor:pointer;flex:1;transition:0.3s}
+.nav-item.active{color:var(--accent)}
+.nav-item i{font-size:24px;display:block;margin-bottom:4px}
 
 /* الجداول */
-.table-wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;margin-top:10px}
-th{text-align:right;color:var(--text-dim);font-size:11px;padding:10px;border-bottom:1px solid var(--border)}
-td{padding:12px;border-bottom:1px solid var(--border);font-size:13px}
+.table-container{overflow-x:auto;margin-top:10px}
+table{width:100%;border-collapse:collapse}
+th{text-align:right;color:var(--text-dim);font-size:11px;padding:12px;border-bottom:1px solid var(--border)}
+td{padding:14px;border-bottom:1px solid var(--border);font-size:13px}
 
 /* شاشة تسجيل الدخول */
-.login-screen{height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:30px;text-align:center;background:radial-gradient(circle at center, #1b1b3a 0%, #0a0a16 100%)}
-.login-card{width:100%;max-width:350px}
+.login-screen{height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:30px;background:radial-gradient(circle at center, #1b1b3a 0%, #0a0a16 100%)}
 </style>
 </head>
 <body>
 
-<div id="app"></div>
+<div id="root">جارِ تحميل النظام...</div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
-import { getFirestore, collection, onSnapshot, addDoc, query, orderBy, serverTimestamp, doc, updateDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+import { getFirestore, collection, onSnapshot, addDoc, deleteDoc, updateDoc, setDoc, doc, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
 
-// إعدادات Firebase الخاصة بك
+// إعدادات Firebase الحقيقية الخاصة بك
 const firebaseConfig = {
   apiKey: "AIzaSyAsllnjBZO4K9MyJNiTFoQJSfKtycQHMtU",
   authDomain: "bosphorus-76067.firebaseapp.com",
@@ -77,154 +78,187 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// المجموعات الحقيقية
+// مجموعات البيانات
 const salesCol = collection(db, "shop_sales");
 const walletsCol = collection(db, "wallets");
 const txCol = collection(db, "wallet_tx");
 const attendCol = collection(db, "attendance");
 
-// الثوابت من كودك الأصلي
+// ثوابت النظام
 const STORES = [{id:1,name:"محل 1",icon:"🏬"},{id:2,name:"محل 2",icon:"🏪"},{id:3,name:"محل 3",icon:"🛒"}];
 const EMPS = [["عمار","🧔🏻"],["جعفر","👱‍♂️"],["مثنى","👨🏽"],["نورة","👩🏻‍💻"]];
 const EMP_PASS = {"عمار":"111","جعفر":"222","مثنى":"333","نورة":"444"};
 const EMP_STORE = {"عمار":1,"نورة":2,"جعفر":3,"مثنى":2};
 
-let state = {
-  user: null, role: null, storeId: 1, 
-  tab: 'sales', type: 'store',
-  sales: [], wallets: {}, txs: [], attendance: []
+let S = {
+  loggedIn: false, role: null, empName: null,
+  tab: 'sales', selStore: 1, saleType: 'store',
+  sales: [], wallets: {}, txs: [], attendance: [],
+  loaded: false
 };
 
-// الاستماع للبيانات (Real-time)
+// الاستماع للبيانات الحية (Real-time)
 onSnapshot(query(salesCol, orderBy("createdAt", "desc")), snap => {
-  state.sales = snap.docs.map(d => ({id:d.id, ...d.data()}));
+  S.sales = snap.docs.map(d => ({id:d.id, ...d.data()}));
+  S.loaded = true;
   render();
 });
 onSnapshot(walletsCol, snap => {
-  snap.docs.forEach(d => state.wallets[d.id] = d.data());
+  snap.docs.forEach(d => S.wallets[d.id] = d.data());
   render();
 });
 onSnapshot(query(txCol, orderBy("createdAt", "desc")), snap => {
-  state.txs = snap.docs.map(d => ({id:d.id, ...d.data()}));
+  S.txs = snap.docs.map(d => ({id:d.id, ...d.data()}));
   render();
 });
 
-// الوظائف
-window.login = () => {
-  const p = document.getElementById('l-pass').value;
-  if(p === "0000") { state.user="المالك"; state.role="owner"; state.tab="report"; }
+// وظائف تسجيل الدخول
+window._login = () => {
+  const p = document.getElementById('pass-inp').value;
+  if(p === "0000") { S.loggedIn=true; S.role="owner"; S.tab="report"; }
   else {
     for(const [name, pass] of Object.entries(EMP_PASS)) {
       if(p === pass) { 
-        state.user=name; state.role="employee"; state.storeId=EMP_STORE[name]||1;
-        state.tab="sales"; break; 
+        S.loggedIn=true; S.role="employee"; S.empName=name; 
+        S.selStore=EMP_STORE[name]||1; S.tab="sales"; break; 
       }
     }
   }
-  if(state.user) render(); else alert("الرمز خطأ");
+  if(S.loggedIn) render(); else alert("الرمز غير صحيح!");
 };
 
-window.addSale = async () => {
-  const amt = document.getElementById('s-amt').value;
+// إضافة مبيعات
+window._addSale = async () => {
+  const amt = document.getElementById('amt-inp').value;
   if(!amt || isNaN(amt)) return;
   await addDoc(salesCol, {
-    amount: Number(amt), emp: state.user, store: state.storeId, type: state.type,
+    amount: Number(amt), emp: S.empName || "المالك", store: S.selStore, type: S.saleType,
     time: new Date().toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'}),
     date: new Date().toLocaleDateString('en-CA'), createdAt: serverTimestamp()
   });
-  document.getElementById('s-amt').value = "";
+  document.getElementById('amt-inp').value = "";
 };
 
-window.changeTab = (t) => { state.tab = t; render(); };
-window.changeStore = (id) => { state.storeId = id; render(); };
-window.changeType = (ty) => { state.type = ty; render(); };
+// تبديل الواجهات
+window._setTab = (t) => { S.tab = t; render(); };
+window._setStore = (id) => { S.selStore = id; render(); };
+window._setType = (ty) => { S.saleType = ty; render(); };
 
-// رسم الواجهة
 function render() {
-  const root = document.getElementById('app');
-  if(!state.user) {
-    root.innerHTML = `<div class="login-screen"><div class="login-card">
-      <h1 style="font-size:50px;margin-bottom:10px">👑</h1>
-      <h2 style="margin-bottom:30px">مبيعات البسفور</h2>
-      <input id="l-pass" class="inp" type="password" placeholder="أدخل رمز الدخول">
-      <button class="btn-main" onclick="login()">دخول للنظام</button>
-    </div></div>`;
+  const root = document.getElementById('root');
+  if(!S.loggedIn) {
+    root.innerHTML = `
+      <div class="login-screen">
+        <h1 style="font-size:60px">👑</h1>
+        <h2 style="margin-bottom:30px; letter-spacing:1px">مبيعات البسفور</h2>
+        <div style="width:100%; max-width:320px">
+          <input id="pass-inp" class="inp" type="password" placeholder="أدخل رمز الدخول">
+          <button class="btn-main" onclick="_login()">دخول للنظام</button>
+        </div>
+      </div>`;
     return;
   }
 
-  let content = "";
+  let bodyContent = "";
   const today = new Date().toLocaleDateString('en-CA');
 
-  // شاشة المبيعات
-  if(state.tab === 'sales') {
-    const sName = STORES.find(x=>x.id===state.storeId).name;
-    const sSales = state.sales.filter(x=>x.date===today && x.store===state.storeId);
-    const total = sSales.reduce((a,b)=>a+b.amount, 0);
+  // واجهة المبيعات
+  if(S.tab === 'sales') {
+    const store = STORES.find(x=>x.id===S.selStore);
+    const todaySales = S.sales.filter(x=>x.date===today && x.store===S.selStore);
+    const total = todaySales.reduce((a,b)=>a+b.amount, 0);
 
-    content = `
+    bodyContent = `
       <div class="card">
         <div class="amount-display">
-          <p style="color:var(--text-dim);font-size:12px">إجمالي مبيعات ${sName} اليوم</p>
+          <p style="color:var(--text-dim);font-size:12px">مبيعات ${store.name} اليوم</p>
           <h1>${total.toLocaleString()} <small style="font-size:14px">د.ع</small></h1>
         </div>
-        <div class="switch-group">
-          <button class="btn-tab ${state.type==='store'?'active':''}" onclick="changeType('store')">بالمحل</button>
-          <button class="btn-tab ${state.type==='delivery'?'active':''}" onclick="changeType('delivery')">توصيل</button>
+        <div class="tabs-row">
+          <button class="tab-btn ${S.saleType==='store'?'active':''}" onclick="_setType('store')">بالمحل</button>
+          <button class="tab-btn ${S.saleType==='delivery'?'active':''}" onclick="_setType('delivery')">توصيل</button>
         </div>
-        <input id="s-amt" class="inp" type="number" placeholder="أدخل مبلغ المبيع" inputmode="numeric">
-        <button class="btn-main" onclick="addSale()">تأكيد العملية ✅</button>
+        <input id="amt-inp" class="inp" type="number" placeholder="أدخل المبلغ" inputmode="numeric">
+        <button class="btn-main" onclick="_addSale()">تأكيد العملية ✅</button>
       </div>
-      <div class="card" style="margin-bottom:20px">
-        <p style="font-weight:bold;margin-bottom:10px;font-size:14px">سجل مبيعات اليوم</p>
-        <div class="table-wrap"><table>
+      <div class="card">
+        <p style="font-weight:bold;margin-bottom:12px">سجل مبيعات اليوم</p>
+        <div class="table-container"><table>
           <thead><tr><th>الوقت</th><th>الموظف</th><th>المبلغ</th></tr></thead>
-          <tbody>${sSales.slice(0,10).map(s=>`<tr><td>${s.time}</td><td>${s.emp} ${s.type==='store'?'🏬':'🚚'}</td><td><b>${s.amount.toLocaleString()}</b></td></tr>`).join('')}</tbody>
+          <tbody>${todaySales.slice(0,10).map(s=>`<tr><td>${s.time}</td><td>${s.emp} ${s.type==='store'?'🏬':'🚚'}</td><td><b>${s.amount.toLocaleString()}</b></td></tr>`).join('')}</tbody>
         </table></div>
-      </div>
-    `;
+      </div>`;
   } 
   
-  // شاشة المحفظة (للموظف والمالك)
-  else if(state.tab === 'wallet') {
-    const myWallet = state.wallets[state.user] || {balance:0, points:0};
-    content = `
+  // واجهة المحفظة
+  else if(S.tab === 'wallet') {
+    const name = S.empName || "عمار"; // افتراضي للتجربة
+    const w = S.wallets[name] || {balance:0, points:0};
+    bodyContent = `
       <div class="card">
         <div class="amount-display">
-          <p style="color:var(--text-dim);font-size:12px">رصيد محفظتك الحالي</p>
-          <h1 style="color:var(--success)">${(myWallet.balance||0).toLocaleString()} <small style="font-size:14px">د.ع</small></h1>
-          <p style="margin-top:10px;color:var(--accent)">نقاطك: ${myWallet.points||0}</p>
+          <p style="color:var(--text-dim);font-size:12px">رصيد محفظتك</p>
+          <h1 style="color:var(--success)">${(w.balance||0).toLocaleString()} <small style="font-size:14px">د.ع</small></h1>
+          <p style="margin-top:15px; color:var(--accent); font-weight:bold">النقاط الحالية: ${w.points||0}</p>
         </div>
       </div>
       <div class="card">
-        <p style="font-weight:bold;margin-bottom:10px">آخر الحركات المالية</p>
-        <div class="table-wrap"><table>
+        <p style="font-weight:bold;margin-bottom:12px">آخر الحركات</p>
+        <div class="table-container"><table>
           <thead><tr><th>التاريخ</th><th>النوع</th><th>المبلغ</th></tr></thead>
-          <tbody>${state.txs.filter(x=>x.emp===state.user).slice(0,10).map(t=>`<tr><td>${t.date}</td><td>${t.type}</td><td style="color:${t.amount>0?'#10B981':'#EF4444'}">${t.amount.toLocaleString()}</td></tr>`).join('')}</tbody>
+          <tbody>${S.txs.filter(x=>x.emp===name).slice(0,10).map(t=>`<tr><td>${t.date}</td><td>${t.type}</td><td style="color:${t.amount>0? 'var(--success)':'var(--danger)'}">${t.amount.toLocaleString()}</td></tr>`).join('')}</tbody>
         </table></div>
-      </div>
-    `;
+      </div>`;
   }
 
-  // شريط التنقل السفلي
+  // واجهة التقارير (للمالك)
+  else if(S.tab === 'report') {
+    const grandTotal = S.sales.filter(x=>x.date===today).reduce((a,b)=>a+b.amount,0);
+    bodyContent = `
+      <div class="card">
+        <div class="amount-display">
+          <p style="color:var(--text-dim);font-size:12px">إجمالي مبيعات كل الفروع اليوم</p>
+          <h1 style="color:var(--accent)">${grandTotal.toLocaleString()} <small style="font-size:14px">د.ع</small></h1>
+        </div>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:0 15px">
+        ${STORES.map(s => {
+          const st = S.sales.filter(x=>x.date===today && x.store===s.id).reduce((a,b)=>a+b.amount,0);
+          return `<div class="card" style="margin:0; padding:15px; text-align:center">
+            <div style="font-size:20px">${s.icon}</div>
+            <div style="font-size:12px; color:var(--text-dim)">${s.name}</div>
+            <div style="font-weight:bold">${st.toLocaleString()}</div>
+          </div>`;
+        }).join('')}
+      </div>`;
+  }
+
+  // النافبار السفلي
   const nav = `
-    <div class="nav">
-      ${state.role==='owner' ? `
-        <div class="nav-btn ${state.tab==='report'?'active':''}" onclick="changeTab('report')">📊<div>التقارير</div></div>
-        <div class="nav-btn ${state.tab==='sales'?'active':''}" onclick="changeTab('sales')">🏬<div>المبيعات</div></div>
-        <div class="nav-btn ${state.tab==='manage'?'active':''}" onclick="changeTab('manage')">👥<div>الموظفين</div></div>
+    <div class="navbar">
+      ${S.role==='owner' ? `
+        <div class="nav-item ${S.tab==='report'?'active':''}" onclick="_setTab('report')">📊<div>التقارير</div></div>
+        <div class="nav-item ${S.tab==='sales'?'active':''}" onclick="_setTab('sales')">🏬<div>المبيعات</div></div>
+        <div class="nav-item ${S.tab==='manage'?'active':''}" onclick="_setTab('manage')">👥<div>الموظفين</div></div>
       ` : `
-        <div class="nav-btn ${state.tab==='sales'?'active':''}" onclick="changeTab('sales')">➕<div>بيع</div></div>
-        <div class="nav-btn ${state.tab==='wallet'?'active':''}" onclick="changeTab('wallet')">💰<div>محفظتي</div></div>
-        <div class="nav-btn ${state.tab==='attend'?'active':''}" onclick="changeTab('attend')">📍<div>حضور</div></div>
+        <div class="nav-item ${S.tab==='sales'?'active':''}" onclick="_setTab('sales')">➕<div>بيع</div></div>
+        <div class="nav-item ${S.tab==='wallet'?'active':''}" onclick="_setTab('wallet')">💰<div>محفظتي</div></div>
+        <div class="nav-item ${S.tab==='attend'?'active':''}" onclick="_setTab('attend')">📍<div>حضور</div></div>
       `}
-      <div class="nav-btn" onclick="location.reload()">🚪<div>خروج</div></div>
-    </div>
-  `;
+      <div class="nav-item" onclick="location.reload()">🚪<div>خروج</div></div>
+    </div>`;
 
   root.innerHTML = `
-    <div class="header"><div class="logo">مبيعات <span>البسفور</span></div><div style="font-size:12px;color:var(--text-dim)">${state.user}</div></div>
-    <div style="padding-top:10px">${content}</div>
+    <div class="header">
+      <div class="logo">مبيعات <span>البسفور</span></div>
+      <div style="font-size:12px; color:var(--text-dim)">${S.empName || "المالك"}</div>
+    </div>
+    <div style="padding-top:10px">${bodyContent}</div>
     ${nav}
+    ${S.tab==='sales' ? `
+      <div style="position:fixed; bottom:85px; width:100%; display:flex; justify-content:center; gap:10px">
+        ${STORES.map(s => `<button onclick="_setStore(${s.id})" style="padding:8px 15px; border-radius:20px; border:1px solid var(--border); background:${S.selStore===s.id?'var(--accent)':'var(--card-bg)'}; color:#fff; font-size:11px">${s.name}</button>`).join('')}
+      </div>` : ''}
   `;
 }
 
