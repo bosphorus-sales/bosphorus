@@ -1,336 +1,39 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>نظام مبيعات البسفور - النسخة الكاملة</title>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<title>نظام مبيعات البسفور - النسخة الشاملة</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-:root {
-  --bg: #0a0a16;
-  --card-grad: linear-gradient(135deg, #1b1b35, #14142a);
-  --accent: #7c3aed;
-  --text: #f8fafc;
-  --text-dim: #94a3b8;
-  --border: rgba(255, 255, 255, 0.08);
-  --success: #10B981;
-  --danger: #EF4444;
-  --warning: #f59e0b;
-}
-
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; -webkit-tap-highlight-color: transparent; }
-body { background: var(--bg); color: var(--text); direction: rtl; min-height: 100vh; padding-bottom: 90px; overflow-x: hidden; }
-
-/* Header */
-.header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); background: rgba(10,10,22,0.8); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 1000; }
-.logo { font-size: 18px; font-weight: 900; } .logo span { color: var(--accent); }
-.status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); display: inline-block; margin-left: 5px; }
-
-/* Cards */
-.card { background: var(--card-grad); border-radius: 20px; padding: 20px; margin: 15px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
-.amt-v { text-align: center; margin: 15px 0; } 
-.amt-v p { color: var(--text-dim); font-size: 13px; margin-bottom: 5px; }
-.amt-v h1 { font-size: 36px; color: #fff; font-weight: 800; }
-
-/* Inputs & Buttons */
-.inp { width: 100%; padding: 14px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: #fff; margin-bottom: 12px; outline: none; font-size: 16px; transition: 0.3s; }
-.inp:focus { border-color: var(--accent); background: rgba(255,255,255,0.08); }
-.btn-m { width: 100%; padding: 15px; background: var(--accent); border: none; border-radius: 12px; color: #fff; font-weight: bold; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 10px; }
-.btn-s { padding: 8px 15px; border-radius: 10px; border: 1px solid var(--border); background: rgba(255,255,255,0.05); color: var(--text-dim); cursor: pointer; font-size: 13px; }
-.btn-s.active { background: var(--accent); color: #fff; border-color: var(--accent); }
-
-/* Navigation */
-.nav { position: fixed; bottom: 0; width: 100%; height: 75px; background: rgba(10,10,22,0.95); display: flex; justify-content: space-around; align-items: center; border-top: 1px solid var(--border); z-index: 1000; backdrop-filter: blur(10px); }
-.n-item { color: var(--text-dim); text-align: center; font-size: 11px; cursor: pointer; flex: 1; transition: 0.3s; }
-.n-item.active { color: var(--accent); }
-.n-item i { font-size: 20px; display: block; margin-bottom: 4px; }
-
-/* Tables */
-.table-w { overflow-x: auto; margin-top: 10px; }
-table { width: 100%; border-collapse: collapse; min-width: 400px; }
-th { text-align: right; color: var(--text-dim); font-size: 11px; padding: 12px; border-bottom: 1px solid var(--border); white-space: nowrap; }
-td { padding: 14px; border-bottom: 1px solid var(--border); font-size: 13px; color: #e2e8f0; }
-
-/* Modals */
-.modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 2000; padding: 20px; }
-.modal-c { background: #1a1a2e; width: 100%; max-width: 400px; border-radius: 24px; padding: 25px; border: 1px solid var(--border); position: relative; }
-
-/* Login */
-.login-s { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 30px; background: radial-gradient(circle at center, #1b1b3a 0%, #0a0a16 100%); }
-
-.badge { padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: bold; }
-.badge-s { background: rgba(16,185,129,0.1); color: var(--success); }
-.badge-d { background: rgba(239,68,68,0.1); color: var(--danger); }
+:root{--bg:#0a0a16;--card:linear-gradient(135deg,#1b1b35,#14142a);--accent:#7c3aed;--text:#f8fafc;--text-dim:#94a3b8;--border:rgba(255,255,255,0.08);--success:#10B981;--danger:#EF4444;--warning:#f59e0b}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Tahoma,sans-serif;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);direction:rtl;min-height:100vh;padding-bottom:90px;overflow-x:hidden}
+.header{padding:15px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);background:rgba(10,10,22,0.8);backdrop-filter:blur(10px);position:sticky;top:0;z-index:1000}
+.logo{font-size:18px;font-weight:900}.logo span{color:var(--accent)}
+.card{background:var(--card);border-radius:20px;padding:20px;margin:15px;border:1px solid var(--border);box-shadow:0 10px 30px rgba(0,0,0,0.3)}
+.amt-v{text-align:center;margin:15px 0}.amt-v h1{font-size:36px;color:#fff;font-weight:800}
+.inp{width:100%;padding:14px;border-radius:12px;background:rgba(255,255,255,0.05);border:1px solid var(--border);color:#fff;margin-bottom:12px;outline:none;font-size:16px}
+.btn-m{width:100%;padding:15px;background:var(--accent);border:none;border-radius:12px;color:#fff;font-weight:bold;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;gap:10px}
+.btn-s{padding:8px 15px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,0.05);color:var(--text-dim);cursor:pointer;font-size:13px}
+.btn-s.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.nav{position:fixed;bottom:0;width:100%;height:75px;background:rgba(10,10,22,0.95);display:flex;justify-content:space-around;align-items:center;border-top:1px solid var(--border);z-index:1000}
+.n-item{color:var(--text-dim);text-align:center;font-size:11px;cursor:pointer;flex:1}.n-item.active{color:var(--accent)}
+.n-item i{font-size:22px;display:block;margin-bottom:4px}
+.table-w{overflow-x:auto;margin-top:10px}table{width:100%;border-collapse:collapse;min-width:400px}
+th{text-align:right;color:var(--text-dim);font-size:11px;padding:12px;border-bottom:1px solid var(--border)}
+td{padding:14px;border-bottom:1px solid var(--border);font-size:13px;color:#e2e8f0}
+.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);display:flex;justify-content:center;align-items:center;z-index:2000;padding:20px}
+.modal-c{background:#1a1a2e;width:100%;max-width:400px;border-radius:24px;padding:25px;border:1px solid var(--border)}
+.login-s{height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:30px;background:radial-gradient(circle at center,#1b1b3a 0%,#0a0a16 100%)}
 </style>
 </head>
 <body>
-
 <div id="app"></div>
-
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
-import { getFirestore, collection, onSnapshot, addDoc, deleteDoc, updateDoc, setDoc, doc, serverTimestamp, query, orderBy, where, getDocs, writeBatch, limit } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyAsllnjBZO4K9MyJNiTFoQJSfKtycQHMtU",
-  authDomain: "bosphorus-76067.firebaseapp.com",
-  projectId: "bosphorus-76067",
-  storageBucket: "bosphorus-76067.firebasestorage.app",
-  messagingSenderId: "678947739557",
-  appId: "1:678947739557:web:f3d70cfc44d862ddf53a4c"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-// مجموعات البيانات
-const salesCol = collection(db, "shop_sales");
-const walletsCol = collection(db, "wallets");
-const txCol = collection(db, "wallet_tx");
-const attendCol = collection(db, "attendance");
-const notifCol = collection(db, "notifications");
-
-const STORES = [{id:1,name:"محل 1"},{id:2,name:"محل 2"},{id:3,name:"محل 3"}];
-const EMPS = ["عمار","جعفر","مثنى","نورة"];
-const EMP_PASS = {"عمار":"111","جعفر":"222","مثنى":"333","نورة":"444"};
-const SHOP_LOC = {lat: 33.3128, lng: 44.3615};
-
-let S = {
-  user: null, role: null, tab: 'sales', 
-  storeId: 1, saleType: 'store',
-  data: { sales: [], wallets: {}, txs: [], attend: [], notifs: [] },
-  modal: null, repPeriod: 'today'
-};
-
-// --- نظام المزامنة الكامل ---
-function initSync() {
-  onSnapshot(query(salesCol, orderBy("createdAt", "desc"), limit(200)), snap => {
-    S.data.sales = snap.docs.map(d => ({id:d.id, ...d.data()}));
-    render();
-  });
-  onSnapshot(walletsCol, snap => {
-    snap.docs.forEach(d => S.data.wallets[d.id] = d.data());
-    render();
-  });
-  onSnapshot(query(txCol, orderBy("createdAt", "desc"), limit(100)), snap => {
-    S.data.txs = snap.docs.map(d => ({id:d.id, ...d.data()}));
-    render();
-  });
-  onSnapshot(query(attendCol, orderBy("createdAt", "desc"), limit(50)), snap => {
-    S.data.attend = snap.docs.map(d => ({id:d.id, ...d.data()}));
-    render();
-  });
-}
-
-// --- العمليات (نفس كودك الأصلي بالحرف) ---
-window._login = () => {
-  const p = document.getElementById('lp').value;
-  if(p === "0000") { S.user="المالك"; S.role="owner"; S.tab="report"; initSync(); }
-  else {
-    for(const [n, pass] of Object.entries(EMP_PASS)) {
-      if(p === pass) { S.user=n; S.role="employee"; S.tab="sales"; initSync(); break; }
-    }
-  }
-  if(!S.user) alert("الرمز خطأ");
-  render();
-};
-
-window._addSale = async () => {
-  const amt = document.getElementById('samt').value;
-  if(!amt) return;
-  const val = parseFloat(amt);
-  await addDoc(salesCol, {
-    amount: val, emp: S.user, store: S.storeId, type: S.saleType,
-    time: new Date().toLocaleTimeString('ar-EG'),
-    date: new Date().toLocaleDateString('en-CA'),
-    createdAt: serverTimestamp()
-  });
-  // نظام النقاط التلقائي
-  if(S.role !== 'owner') {
-    const pts = Math.floor(val / 100000);
-    if(pts > 0) {
-      const wRef = doc(db, "wallets", S.user);
-      const cur = S.data.wallets[S.user] || {balance:0, points:0};
-      await setDoc(wRef, { ...cur, points: (cur.points||0) + pts }, {merge:true});
-    }
-  }
-  document.getElementById('samt').value = "";
-};
-
-window._attendance = () => {
-  navigator.geolocation.getCurrentPosition(async (pos) => {
-    const dist = calcDist(pos.coords.latitude, pos.coords.longitude, SHOP_LOC.lat, SHOP_LOC.lng);
-    const status = dist < 0.2 ? "حاضر" : "بعيد";
-    await addDoc(attendCol, {
-      emp: S.user, status, dist: dist.toFixed(2),
-      time: new Date().toLocaleTimeString('ar-EG'),
-      date: new Date().toLocaleDateString('en-CA'),
-      createdAt: serverTimestamp()
-    });
-    alert(status === "حاضر" ? "تم تسجيل حضورك" : "أنت بعيد عن المحل!");
-  });
-};
-
-function calcDist(l1, n1, l2, n2) {
-  const R = 6371; const dL = (l2-l1)*Math.PI/180; const dN = (n2-n1)*Math.PI/180;
-  const a = Math.sin(dL/2)**2 + Math.cos(l1*Math.PI/180)*Math.cos(l2*Math.PI/180)*Math.sin(dN/2)**2;
-  return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
-}
-
-// إدارة المحافظ (المالك)
-window._openWalletOp = (emp, op) => { S.modal = { type: 'wallet', emp, op }; render(); };
-window._doWalletOp = async () => {
-  const amt = parseFloat(document.getElementById('m-amt').value);
-  const note = document.getElementById('m-note').value;
-  if(!amt) return;
-  const wRef = doc(db, "wallets", S.modal.emp);
-  const cur = S.data.wallets[S.modal.emp] || {balance:0, points:0};
-  const newBal = S.modal.op === 'add' ? (cur.balance + amt) : (cur.balance - amt);
-  await setDoc(wRef, { ...cur, balance: newBal }, {merge:true});
-  await addDoc(txCol, {
-    emp: S.modal.emp, amount: S.modal.op === 'add' ? amt : -amt,
-    type: S.modal.op === 'add' ? "إيداع/راتب" : "سحب/سلفة",
-    note, date: new Date().toLocaleDateString('en-CA'), createdAt: serverTimestamp()
-  });
-  S.modal = null; render();
-};
-
-window._convertPoints = async () => {
-  const cur = S.data.wallets[S.user] || {balance:0, points:0};
-  if(cur.points < 10) return alert("تحتاج 10 نقاط على الأقل");
-  const money = cur.points * 1000;
-  const wRef = doc(db, "wallets", S.user);
-  await setDoc(wRef, { balance: (cur.balance||0) + money, points: 0 }, {merge:true});
-  await addDoc(txCol, { emp: S.user, amount: money, type: "تحويل نقاط", date: new Date().toLocaleDateString('en-CA'), createdAt: serverTimestamp() });
-};
-
-// --- واجهة العرض ---
-function render() {
-  const root = document.getElementById('app');
-  if(!S.user) {
-    root.innerHTML = `<div class="login-s">
-      <div style="font-size:60px;margin-bottom:20px">👑</div>
-      <h2 style="margin-bottom:30px;font-weight:900">نظام مبيعات البسفور</h2>
-      <input id="lp" class="inp" type="password" placeholder="أدخل رمز الدخول" style="max-width:320px;text-align:center">
-      <button class="btn-m" onclick="_login()" style="max-width:320px">دخول للنظام</button>
-    </div>`;
-    return;
-  }
-
-  const today = new Date().toLocaleDateString('en-CA');
-  let content = "";
-
-  if(S.tab === 'sales') {
-    const sSales = S.data.sales.filter(x => x.date === today && x.store === S.storeId);
-    const total = sSales.reduce((a,b)=>a+b.amount, 0);
-    content = `
-      <div class="card">
-        <div class="amt-v"><p>مبيعات اليوم - ${STORES.find(x=>x.id===S.storeId).name}</p><h1>${total.toLocaleString()} <small style="font-size:12px">د.ع</small></h1></div>
-        <div style="display:flex;gap:10px;margin-bottom:15px">
-          <button class="btn-s ${S.saleType==='store'?'active':''}" style="flex:1" onclick="S.saleType='store';render()">مبيعات محل</button>
-          <button class="btn-s ${S.saleType==='delivery'?'active':''}" style="flex:1" onclick="S.saleType='delivery';render()">مبيعات توصيل</button>
-        </div>
-        <input id="samt" class="inp" type="number" placeholder="أدخل المبلغ هنا..." inputmode="numeric">
-        <button class="btn-m" onclick="_addSale()"><i class="fas fa-plus-circle"></i> تأكيد المبيع</button>
-      </div>
-      <div class="card">
-        <p style="font-weight:bold;margin-bottom:15px"><i class="fas fa-history"></i> سجل مبيعات اليوم</p>
-        <div class="table-w"><table>
-          <thead><tr><th>الوقت</th><th>الموظف</th><th>المبلغ</th><th>النوع</th></tr></thead>
-          <tbody>${sSales.map(s=>`<tr><td>${s.time}</td><td>${s.emp}</td><td><b>${s.amount.toLocaleString()}</b></td><td>${s.type==='store'?'محل':'توصيل'}</td></tr>`).join('')}</tbody>
-        </table></div>
-      </div>
-      <div style="display:flex;justify-content:center;gap:10px;padding:15px">
-        ${STORES.map(st=>`<button onclick="S.storeId=${st.id};render()" class="btn-s ${S.storeId===st.id?'active':''}">${st.name}</button>`).join('')}
-      </div>`;
-  }
-
-  else if(S.tab === 'report') {
-    const totalToday = S.data.sales.filter(x=>x.date===today).reduce((a,b)=>a+b.amount,0);
-    content = `
-      <div class="card"><div class="amt-v"><p>إجمالي الفروع اليوم</p><h1>${totalToday.toLocaleString()} <small style="font-size:12px">د.ع</small></h1></div></div>
-      <div class="card">
-        <p style="font-weight:bold;margin-bottom:15px"><i class="fas fa-wallet"></i> محافظ الموظفين</p>
-        <div class="table-w"><table>
-          <thead><tr><th>الموظف</th><th>الرصيد</th><th>النقاط</th><th>تحكم</th></tr></thead>
-          <tbody>${EMPS.map(e=>{
-            const w = S.data.wallets[e] || {balance:0, points:0};
-            return `<tr>
-              <td>${e}</td>
-              <td style="color:var(--success);font-weight:bold">${(w.balance||0).toLocaleString()}</td>
-              <td style="color:var(--accent)">${w.points||0}</td>
-              <td>
-                <button onclick="_openWalletOp('${e}','add')" style="color:var(--success);background:none;border:none;font-size:18px;margin-left:10px"><i class="fas fa-plus-circle"></i></button>
-                <button onclick="_openWalletOp('${e}','sub')" style="color:var(--danger);background:none;border:none;font-size:18px"><i class="fas fa-minus-circle"></i></button>
-              </td>
-            </tr>`;
-          }).join('')}</tbody>
-        </table></div>
-      </div>
-      <div class="card">
-        <p style="font-weight:bold;margin-bottom:15px"><i class="fas fa-user-clock"></i> سجل الحضور</p>
-        <div class="table-w"><table>
-          <thead><tr><th>الموظف</th><th>الحالة</th><th>الوقت</th></tr></thead>
-          <tbody>${S.data.attend.filter(x=>x.date===today).map(a=>`<tr><td>${a.emp}</td><td><span class="badge ${a.status==='حاضر'?'badge-s':'badge-d'}">${a.status}</span></td><td>${a.time}</td></tr>`).join('')}</tbody>
-        </table></div>
-      </div>`;
-  }
-
-  else if(S.tab === 'wallet') {
-    const w = S.data.wallets[S.user] || {balance:0, points:0};
-    content = `
-      <div class="card">
-        <div class="amt-v">
-          <p>رصيدك المتوفر (راتب/سلف)</p>
-          <h1 style="color:var(--success)">${(w.balance||0).toLocaleString()}</h1>
-          <p style="color:var(--accent);margin-top:10px">نقاطك الحالية: ${w.points||0}</p>
-        </div>
-        <button class="btn-m" onclick="_convertPoints()"><i class="fas fa-coins"></i> تحويل النقاط إلى رصيد</button>
-      </div>
-      <div class="card">
-        <p style="font-weight:bold;margin-bottom:15px"><i class="fas fa-exchange-alt"></i> سجل الحركات المالية</p>
-        <div class="table-w"><table>
-          <thead><tr><th>التاريخ</th><th>النوع</th><th>المبلغ</th><th>ملاحظة</th></tr></thead>
-          <tbody>${S.data.txs.filter(x=>x.emp===S.user).map(t=>`<tr><td>${t.date}</td><td>${t.type}</td><td style="color:${t.amount>0?'#10B981':'#EF4444'}">${t.amount.toLocaleString()}</td><td>${t.note||'-'}</td></tr>`).join('')}</tbody>
-        </table></div>
-      </div>`;
-  }
-
-  const nav = `
-    <div class="nav">
-      ${S.role==='owner' ? `
-        <div class="n-item ${S.tab==='report'?'active':''}" onclick="S.tab='report';render()"><i class="fas fa-chart-bar"></i><div>التقارير</div></div>
-        <div class="n-item ${S.tab==='sales'?'active':''}" onclick="S.tab='sales';render()"><i class="fas fa-store"></i><div>المبيعات</div></div>
-      ` : `
-        <div class="n-item ${S.tab==='sales'?'active':''}" onclick="S.tab='sales';render()"><i class="fas fa-cart-plus"></i><div>مبيع</div></div>
-        <div class="n-item ${S.tab==='wallet'?'active':''}" onclick="S.tab='wallet';render()"><i class="fas fa-wallet"></i><div>محفظتي</div></div>
-        <div class="n-item" onclick="_attendance()"><i class="fas fa-street-view"></i><div>حضور</div></div>
-      `}
-      <div class="n-item" onclick="location.reload()"><i class="fas fa-sign-out-alt"></i><div>خروج</div></div>
-    </div>`;
-
-  const modal = S.modal ? `
-    <div class="modal">
-      <div class="modal-c">
-        <h3 style="margin-bottom:20px">${S.modal.op==='add'?'إضافة رصيد / راتب':'سحب رصيد / سلفة'} - ${S.modal.emp}</h3>
-        <input id="m-amt" class="inp" type="number" placeholder="المبلغ" inputmode="numeric">
-        <input id="m-note" class="inp" type="text" placeholder="ملاحظة (مثلاً: راتب شهر 12)">
-        <button class="btn-m" onclick="_doWalletOp()">تأكيد العملية</button>
-        <button class="btn-s" onclick="S.modal=null;render()" style="width:100%;margin-top:10px;border:none">إلغاء</button>
-      </div>
-    </div>` : '';
-
-  root.innerHTML = `
-    <div class="header">
-      <div class="logo"><span class="status-dot"></span>مبيعات <span>البسفور</span></div>
-      <div style="font-size:12px;color:var(--text-dim)">${S.user} (${S.role==='owner'?'مدير':'موظف'})</div>
-    </div>
-    <div style="padding-bottom:10px">${content}</div>
-    ${nav} ${modal}
-  `;
-}
-
-render();
+import{initializeApp}from"https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";import{getFirestore,collection,onSnapshot,addDoc,deleteDoc,updateDoc,setDoc,doc,serverTimestamp,query,orderBy,where,getDocs,writeBatch,limit}from"https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";const firebaseConfig={apiKey:"AIzaSyAsllnjBZO4K9MyJNiTFoQJSfKtycQHMtU",authDomain:"bosphorus-76067.firebaseapp.com",projectId:"bosphorus-76067",storageBucket:"bosphorus-76067.firebasestorage.app",messagingSenderId:"678947739557",appId:"1:678947739557:web:f3d70cfc44d862ddf53a4c"};const app=initializeApp(firebaseConfig);const db=getFirestore(app);const salesCol=collection(db,"shop_sales"),walletsCol=collection(db,"wallets"),txCol=collection(db,"wallet_tx"),attendCol=collection(db,"attendance"),notifCol=collection(db,"notifications");const STORES=[{id:1,name:"محل 1"},{id:2,name:"محل 2"},{id:3,name:"محل 3"}],EMPS=["عمار","جعفر","مثنى","نورة"],EMP_PASS={"عمار":"111","جعفر":"222","مثنى":"333","نورة":"444"},SHOP_LOC={lat:33.3128,lng:33.3128};let S={user:null,role:null,tab:'sales',storeId:1,saleType:'store',data:{sales:[],wallets:{},txs:[],attend:[],notifs:[]},modal:null,repPeriod:'today'};function initSync(){onSnapshot(query(salesCol,orderBy("createdAt","desc"),limit(300)),s=>{S.data.sales=s.docs.map(d=>({id:d.id,...d.data()}));render()});onSnapshot(walletsCol,s=>{s.docs.forEach(d=>S.data.wallets[d.id]=d.data());render()});onSnapshot(query(txCol,orderBy("createdAt","desc"),limit(150)),s=>{S.data.txs=s.docs.map(d=>({id:d.id,...d.data()}));render()});onSnapshot(query(attendCol,orderBy("createdAt","desc"),limit(50)),s=>{S.data.attend=s.docs.map(d=>({id:d.id,...d.data()}));render()})}
+window._login=()=>{const p=document.getElementById('lp').value;if(p==="0000"){S.user="المالك";S.role="owner";S.tab="report";initSync()}else{for(const[n,pass]of Object.entries(EMP_PASS)){if(p===pass){S.user=n;S.role="employee";S.tab="sales";initSync();break}}}if(!S.user)alert("الرمز خطأ");render()};window._addSale=async()=>{const a=document.getElementById('samt').value;if(!a)return;const v=parseFloat(a);await addDoc(salesCol,{amount:v,emp:S.user,store:S.storeId,type:S.saleType,time:new Date().toLocaleTimeString('ar-EG'),date:new Date().toLocaleDateString('en-CA'),createdAt:serverTimestamp()});if(S.role!=='owner'){const pts=Math.floor(v/100000);if(pts>0){const wRef=doc(db,"wallets",S.user),cur=S.data.wallets[S.user]||{balance:0,points:0};await setDoc(wRef,{...cur,points:(cur.points||0)+pts},{merge:true})}}document.getElementById('samt').value=""};window._attendance=()=>{navigator.geolocation.getCurrentPosition(async(p)=>{const st="حاضر";await addDoc(attendCol,{emp:S.user,status:st,time:new Date().toLocaleTimeString('ar-EG'),date:new Date().toLocaleDateString('en-CA'),createdAt:serverTimestamp()});alert("تم تسجيل الحضور")})};
+window._walletOp=(e,o)=>{S.modal={emp:e,op:o};render()};window._confirmWallet=async()=>{const a=parseFloat(document.getElementById('m-amt').value),n=document.getElementById('m-note').value;if(!a)return;const wRef=doc(db,"wallets",S.modal.emp),cur=S.data.wallets[S.modal.emp]||{balance:0,points:0},newB=S.modal.op==='add'?((cur.balance||0)+a):((cur.balance||0)-a);await setDoc(wRef,{...cur,balance:newB},{merge:true});await addDoc(txCol,{emp:S.modal.emp,amount:S.modal.op==='add'?a:-a,type:S.modal.op==='add'?"إيداع/راتب":"سحب/سلفة",note:n,date:new Date().toLocaleDateString('en-CA'),createdAt:serverTimestamp()});S.modal=null;render()};window._convertPoints=async()=>{const c=S.data.wallets[S.user]||{balance:0,points:0};if((c.points||0)<10)return alert("تحتاج 10 نقاط");const m=c.points*1000;await setDoc(doc(db,"wallets",S.user),{balance:(c.balance||0)+m,points:0},{merge:true});await addDoc(txCol,{emp:S.user,amount:m,type:"تحويل نقاط",date:new Date().toLocaleDateString('en-CA'),createdAt:serverTimestamp()})};
+window._delSale=async(id)=>{if(confirm("حذف؟"))await deleteDoc(doc(db,"shop_sales",id))};function render(){const r=document.getElementById('app');if(!S.user){r.innerHTML=`<div class="login-s"><div style="font-size:60px;margin-bottom:20px">👑</div><h2 style="margin-bottom:30px">نظام البسفور</h2><input id="lp" class="inp" type="password" placeholder="أدخل الرمز" style="max-width:320px;text-align:center"><button class="btn-m" onclick="_login()" style="max-width:320px">دخول</button></div>`;return}const today=new Date().toLocaleDateString('en-CA');let b="";if(S.tab==='sales'){const sS=S.data.sales.filter(x=>x.date===today&&x.store===S.storeId),t=sS.reduce((a,v)=>a+v.amount,0);b=`<div class="card"><div class="amt-v"><p>مبيعات اليوم - ${STORES.find(x=>x.id===S.storeId).name}</p><h1>${t.toLocaleString()}</h1></div><div style="display:flex;gap:10px;margin-bottom:15px"><button class="btn-s ${S.saleType==='store'?'active':''}" style="flex:1" onclick="S.saleType='store';render()">محل</button><button class="btn-s ${S.saleType==='delivery'?'active':''}" style="flex:1" onclick="S.saleType='delivery';render()">توصيل</button></div><input id="samt" class="inp" type="number" placeholder="المبلغ"><button class="btn-m" onclick="_addSale()">تأكيد المبيع</button></div><div class="card"><p>سجل اليوم</p><div class="table-w"><table><thead><tr><th>الوقت</th><th>الموظف</th><th>المبلغ</th><th>حذف</th></tr></thead><tbody>${sS.map(s=>`<tr><td>${s.time}</td><td>${s.emp}</td><td><b>${s.amount.toLocaleString()}</b></td><td><button onclick="_delSale('${s.id}')" style="color:var(--danger);background:none;border:none"><i class="fas fa-trash"></i></button></td></tr>`).join('')}</tbody></table></div></div><div style="display:flex;justify-content:center;gap:10px;padding:15px">${STORES.map(st=>`<button onclick="S.storeId=${st.id};render()" class="btn-s ${S.storeId===st.id?'active':''}">${st.name}</button>`).join('')}</div>`}else if(S.tab==='report'){const tt=S.data.sales.filter(x=>x.date===today).reduce((a,v)=>a+v.amount,0);b=`<div class="card"><div class="amt-v"><p>إجمالي الفروع اليوم</p><h1>${tt.toLocaleString()}</h1></div></div><div class="card"><p>المحافظ</p><div class="table-w"><table><thead><tr><th>الموظف</th><th>الرصيد</th><th>النقاط</th><th>تحكم</th></tr></thead><tbody>${EMPS.map(e=>{const w=S.data.wallets[e]||{balance:0,points:0};return `<tr><td>${e}</td><td style="color:var(--success)">${(w.balance||0).toLocaleString()}</td><td>${w.points||0}</td><td><button onclick="_walletOp('${e}','add')" style="color:var(--success);background:none;border:none;font-size:18px;margin-left:10px"><i class="fas fa-plus-circle"></i></button><button onclick="_walletOp('${e}','sub')" style="color:var(--danger);background:none;border:none;font-size:18px"><i class="fas fa-minus-circle"></i></button></td></tr>`}).join('')}</tbody></table></div></div><div class="card"><p>الحضور</p><div class="table-w"><table><tbody>${S.data.attend.filter(x=>x.date===today).map(a=>`<tr><td>${a.emp}</td><td>${a.status}</td><td>${a.time}</td></tr>`).join('')}</tbody></table></div></div>`}else if(S.tab==='wallet'){const w=S.data.wallets[S.user]||{balance:0,points:0};b=`<div class="card"><div class="amt-v"><p>رصيدك</p><h1 style="color:var(--success)">${(w.balance||0).toLocaleString()}</h1><p style="color:var(--accent)">نقاطك: ${w.points||0}</p></div><button class="btn-m" onclick="_convertPoints()">تحويل النقاط لرصيد</button></div><div class="card"><p>السجل المالي</p><div class="table-w"><table><tbody>${S.data.txs.filter(x=>x.emp===S.user).map(t=>`<tr><td>${t.date}</td><td>${t.type}</td><td style="color:${t.amount>0?'#10B981':'#EF4444'}">${t.amount.toLocaleString()}</td></tr>`).join('')}</tbody></table></div></div>`}const n=`<div class="nav">${S.role==='owner'?`<div class="n-item ${S.tab==='report'?'active':''}" onclick="S.tab='report';render()"><i class="fas fa-chart-bar"></i><div>التقارير</div></div><div class="n-item ${S.tab==='sales'?'active':''}" onclick="S.tab='sales';render()"><i class="fas fa-store"></i><div>المبيعات</div></div>`:`<div class="n-item ${S.tab==='sales'?'active':''}" onclick="S.tab='sales';render()"><i class="fas fa-cart-plus"></i><div>مبيع</div></div><div class="n-item ${S.tab==='wallet'?'active':''}" onclick="S.tab='wallet';render()"><i class="fas fa-wallet"></i><div>محفظتي</div></div><div class="n-item" onclick="_attendance()"><i class="fas fa-street-view"></i><div>حضور</div></div>`}<div class="n-item" onclick="location.reload()"><i class="fas fa-sign-out-alt"></i><div>خروج</div></div></div>`;const m=S.modal?`<div class="modal"><div class="modal-c"><h3>${S.modal.op==='add'?'إضافة رصيد':'سحب رصيد'} - ${S.modal.emp}</h3><input id="m-amt" class="inp" type="number" placeholder="المبلغ"><input id="m-note" class="inp" type="text" placeholder="ملاحظة"><button class="btn-m" onclick="_confirmWallet()">تأكيد</button><button class="btn-s" onclick="S.modal=null;render()" style="width:100%;margin-top:10px;border:none">إلغاء</button></div></div>`:'';r.innerHTML=`<div class="header"><div class="logo">مبيعات <span>البسفور</span></div><div style="font-size:12px">${S.user}</div></div><div style="padding-bottom:10px">${b}</div>${n}${m}`}render();
 </script>
 </body>
 </html>
