@@ -7,542 +7,178 @@
 <title>نظام مبيعات البسفور</title>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet"/>
 <style>
-:root{
-  --bg:#0f0a1e;
-  --bg2:#160e2e;
-  --bg3:#1e1340;
-  --card:#1a1035;
-  --card2:#231547;
-  --border:#2d1f5e;
-  --purple:#7c3aed;
-  --purple2:#a78bfa;
-  --purple3:#6d28d9;
-  --gold:#f5c518;
-  --gold2:#ffd700;
-  --gold3:#b8860b;
-  --green:#10b981;
-  --red:#ef4444;
-  --blue:#38bdf8;
-  --orange:#f97316;
-  --text:#e8e8f8;
-  --muted:#7b6fa0;
-  --nav-h:72px;
-}
+:root{--bg:#0f0a1e;--bg2:#160e2e;--card:#1a1035;--card2:#231547;--border:#2d1f5e;--purple:#7c3aed;--purple2:#a78bfa;--purple3:#6d28d9;--gold:#f5c518;--gold2:#ffd700;--gold3:#b8860b;--green:#10b981;--red:#ef4444;--blue:#38bdf8;--orange:#f97316;--text:#e8e8f8;--muted:#7b6fa0;--nav-h:72px;}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{
-  font-family:'Cairo',sans-serif;
-  direction:rtl;
-  background:var(--bg);
-  color:var(--text);
-  min-height:100vh;
-  overflow-x:hidden;
-}
-
-/* ===== BACKGROUND EFFECTS ===== */
+body{font-family:'Cairo',sans-serif;direction:rtl;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
 .bg-orb{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0;}
 .bg-orb1{width:400px;height:400px;background:radial-gradient(circle,#4c1d9533 0%,transparent 70%);top:-100px;right:-100px;}
 .bg-orb2{width:300px;height:300px;background:radial-gradient(circle,#7c3aed22 0%,transparent 70%);bottom:100px;left:-80px;}
-.bg-orb3{width:200px;height:200px;background:radial-gradient(circle,#f5c51811 0%,transparent 70%);top:40%;right:20%;}
-
-/* ===== LOADING ===== */
-#loading{
-position:fixed;inset:0;z-index:9999;
-display:none;flex-direction:column;align-items:center;justify-content:center;
-background:var(–bg);gap:16px;
-}
-.spin{width:40px;height:40px;border:3px solid var(–border);border-top-color:var(–purple2);border-radius:50%;animation:spin .8s linear infinite;}
+#loading{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg);gap:16px;}
+.spin{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--purple2);border-radius:50%;animation:spin .8s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg)}}
-
-/* ===== SCREENS ===== */
 .screen{display:none;position:relative;z-index:1;}
 .screen.active{display:block;}
-
-/* ===== LOGIN SCREEN ===== */
-#screen-login{
-min-height:100vh;
-display:flex;flex-direction:column;align-items:center;justify-content:center;
-padding:20px;
-background:var(–bg);
-position:relative;overflow:hidden;
-}
-.login-hero{
-display:flex;flex-direction:column;align-items:center;margin-bottom:32px;animation:fadeUp .8s ease both;
-}
-.login-hero-img{
-width:120px;height:120px;
-background:radial-gradient(circle at 50% 40%,#7c3aed44,transparent 70%);
-display:flex;align-items:center;justify-content:center;
-font-size:72px;margin-bottom:4px;
-filter:drop-shadow(0 0 20px #f5c51866);
-animation:floatCrown 3s ease-in-out infinite;
-}
+#screen-login{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;background:var(--bg);position:relative;overflow:hidden;}
+.login-hero{display:flex;flex-direction:column;align-items:center;margin-bottom:32px;}
+.login-hero-img{font-size:72px;margin-bottom:4px;filter:drop-shadow(0 0 20px #f5c51866);animation:floatCrown 3s ease-in-out infinite;}
 @keyframes floatCrown{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-.login-title{
-font-size:24px;font-weight:900;
-background:linear-gradient(135deg,var(–gold2),var(–purple2),var(–gold));
--webkit-background-clip:text;-webkit-text-fill-color:transparent;
-text-align:center;line-height:1.3;margin-top:8px;
-}
-.login-sub{font-size:13px;color:var(–muted);margin-top:4px;}
-
-.login-box{
-width:100%;max-width:360px;
-background:linear-gradient(145deg,var(–card),var(–bg2));
-border:1px solid var(–border);
-border-radius:24px;padding:28px;
-box-shadow:0 20px 60px #00000066;
-animation:fadeUp .8s .2s ease both;
-}
-@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-
-.role-toggle{display:flex;background:var(–bg);border-radius:14px;padding:4px;margin-bottom:20px;border:1px solid var(–border);}
-.role-btn{
-flex:1;padding:10px;border-radius:11px;border:none;
-font-family:‘Cairo’,sans-serif;font-size:13px;font-weight:700;
-cursor:pointer;transition:all .25s;color:var(–muted);background:none;
-}
-.role-btn.active{background:var(–purple);color:#fff;box-shadow:0 4px 14px #7c3aed55;}
-
+.login-title{font-size:24px;font-weight:900;background:linear-gradient(135deg,var(--gold2),var(--purple2),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center;line-height:1.3;margin-top:8px;}
+.login-sub{font-size:13px;color:var(--muted);margin-top:4px;}
+.login-box{width:100%;max-width:360px;background:linear-gradient(145deg,var(--card),var(--bg2));border:1px solid var(--border);border-radius:24px;padding:28px;box-shadow:0 20px 60px #00000066;}
+.role-toggle{display:flex;background:var(--bg);border-radius:14px;padding:4px;margin-bottom:20px;border:1px solid var(--border);}
+.role-btn{flex:1;padding:10px;border-radius:11px;border:none;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .25s;color:var(--muted);background:none;}
+.role-btn.active{background:var(--purple);color:#fff;box-shadow:0 4px 14px #7c3aed55;}
 .inp-wrap{position:relative;margin-bottom:14px;}
-.inp-icon{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:16px;color:var(–muted);}
-.l-inp{
-width:100%;padding:13px 44px 13px 14px;
-border-radius:13px;border:1px solid var(–border);
-background:var(–bg);color:var(–text);
-font-family:‘Cairo’,sans-serif;font-size:14px;
-outline:none;transition:border-color .2s;
-}
-.l-inp:focus{border-color:var(–purple2);}
-.l-inp::placeholder{color:var(–muted);}
-
-.login-btn-main{
-width:100%;padding:14px;border-radius:13px;border:none;
-background:linear-gradient(135deg,var(–purple),var(–purple3));
-color:#fff;font-family:‘Cairo’,sans-serif;font-size:15px;font-weight:900;
-cursor:pointer;box-shadow:0 6px 20px #7c3aed44;
-transition:all .2s;margin-top:4px;
-}
+.inp-icon{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:16px;color:var(--muted);}
+.l-inp{width:100%;padding:13px 44px 13px 14px;border-radius:13px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-family:'Cairo',sans-serif;font-size:14px;outline:none;transition:border-color .2s;}
+.l-inp:focus{border-color:var(--purple2);}
+.l-inp::placeholder{color:var(--muted);}
+.login-btn-main{width:100%;padding:14px;border-radius:13px;border:none;background:linear-gradient(135deg,var(--purple),var(--purple3));color:#fff;font-family:'Cairo',sans-serif;font-size:15px;font-weight:900;cursor:pointer;box-shadow:0 6px 20px #7c3aed44;transition:all .2s;margin-top:4px;}
 .login-btn-main:active{transform:scale(.98);}
-.login-err{color:var(–red);font-size:12px;text-align:center;min-height:18px;margin-top:8px;}
-
-/* ===== MAIN APP ===== */
-#screen-app{min-height:100vh;padding-bottom:var(–nav-h);}
-
-/* ===== TOP HEADER ===== */
-.top-header{
-background:linear-gradient(180deg,var(–bg2),transparent);
-padding:16px 18px 12px;
-display:flex;align-items:center;justify-content:space-between;
-position:sticky;top:0;z-index:100;
-backdrop-filter:blur(12px);
-border-bottom:1px solid #ffffff08;
-}
-.th-logo{
-font-size:16px;font-weight:900;
-background:linear-gradient(135deg,var(–gold2),var(–purple2));
--webkit-background-clip:text;-webkit-text-fill-color:transparent;
-display:flex;align-items:center;gap:6px;
-}
+.login-err{color:var(--red);font-size:12px;text-align:center;min-height:18px;margin-top:8px;}
+#screen-app{min-height:100vh;padding-bottom:var(--nav-h);}
+.top-header{background:linear-gradient(180deg,var(--bg2),transparent);padding:16px 18px 12px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);border-bottom:1px solid #ffffff08;}
+.th-logo{font-size:16px;font-weight:900;background:linear-gradient(135deg,var(--gold2),var(--purple2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:flex;align-items:center;gap:6px;}
 .th-right{display:flex;align-items:center;gap:8px;}
-.role-pill{
-padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;
-background:var(–purple)22;border:1px solid var(–purple)44;color:var(–purple2);
-}
+.role-pill{padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;background:#7c3aed22;border:1px solid #7c3aed44;color:var(--purple2);}
 .role-pill.emp{background:#f59e0b22;border-color:#f59e0b44;color:#f59e0b;}
-.sync-dot{width:7px;height:7px;border-radius:50%;background:var(–green);animation:pulse 2s infinite;}
-@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 #10b98166}50%{opacity:.6;box-shadow:0 0 0 4px #10b98100}}
-.logout-btn{
-background:var(–bg);border:1px solid var(–border);color:var(–muted);
-padding:6px 10px;border-radius:10px;font-family:‘Cairo’,sans-serif;font-size:11px;
-cursor:pointer;
-}
-
-/* ===== WINNER BANNER ===== */
-.winner-banner{
-background:linear-gradient(90deg,var(–purple3),var(–purple),#8b5cf6,var(–purple),var(–purple3));
-background-size:300% 100%;
-animation:gradSlide 4s linear infinite;
-padding:12px 18px;
-display:flex;align-items:center;justify-content:center;
-gap:14px;flex-wrap:wrap;text-align:center;
-}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.logout-btn{background:var(--bg);border:1px solid var(--border);color:var(--muted);padding:6px 10px;border-radius:10px;font-family:'Cairo',sans-serif;font-size:11px;cursor:pointer;}
+.winner-banner{background:linear-gradient(90deg,var(--purple3),var(--purple),#8b5cf6,var(--purple),var(--purple3));background-size:300% 100%;animation:gradSlide 4s linear infinite;padding:12px 18px;display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;text-align:center;}
 @keyframes gradSlide{0%{background-position:0% 50%}100%{background-position:300% 50%}}
 .w-crown{animation:bounce 1s infinite;display:inline-block;font-size:18px;}
 @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
 .w-item{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:800;color:#fff;}
-.w-name{color:var(–gold2);font-size:15px;}
-.w-sep{color:#ffffff44;margin:0 8px;font-size:10px;}
-
-/* ===== BOTTOM NAV ===== */
-.bottom-nav{
-position:fixed;bottom:0;left:0;right:0;
-height:var(–nav-h);
-background:linear-gradient(180deg,transparent,var(–bg2) 20%);
-backdrop-filter:blur(20px);
-border-top:1px solid var(–border);
-display:flex;align-items:center;justify-content:space-around;
-z-index:100;padding:0 6px;padding-bottom:env(safe-area-inset-bottom,0px);
-}
-.nav-item{
-display:flex;flex-direction:column;align-items:center;gap:4px;
-padding:8px 14px;border-radius:14px;cursor:pointer;transition:all .2s;
-position:relative;flex:1;max-width:80px;
-}
-.nav-item.active{background:var(–purple)22;}
+.w-name{color:var(--gold2);font-size:15px;}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:var(--nav-h);background:linear-gradient(180deg,transparent,var(--bg2) 20%);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-around;z-index:100;padding:0 6px;padding-bottom:env(safe-area-inset-bottom,0px);}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 14px;border-radius:14px;cursor:pointer;transition:all .2s;position:relative;flex:1;max-width:80px;}
+.nav-item.active{background:#7c3aed22;}
 .nav-icon{font-size:22px;transition:transform .2s;}
 .nav-item.active .nav-icon{transform:translateY(-2px);}
-.nav-lbl{font-size:10px;font-weight:700;color:var(–muted);transition:color .2s;}
-.nav-item.active .nav-lbl{color:var(–purple2);}
-.nav-badge{
-position:absolute;top:6px;right:10px;
-background:var(–red);color:#fff;border-radius:50%;
-width:16px;height:16px;font-size:9px;font-weight:900;
-display:flex;align-items:center;justify-content:center;
-}
-.nav-active-line{
-position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);
-width:20px;height:3px;border-radius:3px 3px 0 0;
-background:var(–purple2);display:none;
-}
+.nav-lbl{font-size:10px;font-weight:700;color:var(--muted);transition:color .2s;}
+.nav-item.active .nav-lbl{color:var(--purple2);}
+.nav-badge{position:absolute;top:6px;right:10px;background:var(--red);color:#fff;border-radius:50%;width:16px;height:16px;font-size:9px;font-weight:900;display:flex;align-items:center;justify-content:center;}
+.nav-active-line{position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);width:20px;height:3px;border-radius:3px 3px 0 0;background:var(--purple2);display:none;}
 .nav-item.active .nav-active-line{display:block;}
-
-/* ===== PAGE CONTAINER ===== */
 .page{display:none;padding:14px 16px;}
 .page.active{display:block;}
-
-/* ===== SECTION TITLE ===== */
-.sec-title{
-font-size:18px;font-weight:900;margin-bottom:18px;
-display:flex;align-items:center;gap:8px;
-}
-.sec-title::before{content:’’;width:4px;height:20px;background:var(–purple2);border-radius:4px;display:block;}
-
-/* ===== STORE CARDS ===== */
+.sec-title{font-size:18px;font-weight:900;margin-bottom:18px;display:flex;align-items:center;gap:8px;}
+.sec-title::before{content:'';width:4px;height:20px;background:var(--purple2);border-radius:4px;display:block;}
 .stores-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
-.store-card{
-background:linear-gradient(145deg,var(–card),var(–bg2));
-border:1px solid var(–border);border-radius:16px;
-padding:14px 10px;cursor:pointer;transition:all .2s;
-position:relative;overflow:hidden;text-align:center;
-}
-.store-card::before{
-content:’’;position:absolute;top:-30px;right:-30px;
-width:80px;height:80px;border-radius:50%;
-opacity:0;transition:opacity .3s;
-}
-.store-card.sel{border-width:2px;box-shadow:0 0 0 3px var(–glow,var(–purple))22;}
-.store-card.sel::before{opacity:1;}
+.store-card{background:linear-gradient(145deg,var(--card),var(--bg2));border:1px solid var(--border);border-radius:16px;padding:14px 10px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;text-align:center;}
+.store-card.sel{border-width:2px;}
 .s-icon{font-size:26px;margin-bottom:6px;}
 .s-name{font-size:12px;font-weight:900;}
-.s-sub{font-size:10px;color:var(–muted);margin-top:2px;}
-.s-total{
-margin-top:8px;font-size:13px;font-weight:900;
-padding-top:7px;border-top:1px solid var(–border);
-}
+.s-sub{font-size:10px;color:var(--muted);margin-top:2px;}
+.s-total{margin-top:8px;font-size:13px;font-weight:900;padding-top:7px;border-top:1px solid var(--border);}
 .s-row{display:flex;justify-content:space-between;margin-top:5px;font-size:10px;}
-.s-row span{color:var(–muted);}
-.sel-ring{
-position:absolute;top:6px;right:6px;
-width:8px;height:8px;border-radius:50%;
-background:var(–purple2);display:none;
-}
+.sel-ring{position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;background:var(--purple2);display:none;}
 .store-card.sel .sel-ring{display:block;}
-
-/* ===== POS BOX ===== */
-.pos-box{
-background:linear-gradient(145deg,var(–card),var(–bg2));
-border:1px solid var(–border);border-radius:20px;
-padding:18px;margin-bottom:16px;
-}
+.pos-box{background:linear-gradient(145deg,var(--card),var(--bg2));border:1px solid var(--border);border-radius:20px;padding:18px;margin-bottom:16px;}
 .pos-type-row{display:flex;gap:8px;margin-bottom:16px;}
-.pos-type-btn{
-flex:1;padding:11px 8px;border-radius:12px;
-border:2px solid var(–border);background:var(–bg);
-color:var(–muted);font-family:‘Cairo’,sans-serif;font-size:12px;font-weight:700;
-cursor:pointer;transition:all .2s;text-align:center;
-}
-.pos-type-btn.ts{border-color:var(–purple2);background:#7c3aed18;color:var(–purple2);}
-.pos-type-btn.td{border-color:var(–blue);background:#38bdf818;color:var(–blue);}
-
+.pos-type-btn{flex:1;padding:11px 8px;border-radius:12px;border:2px solid var(--border);background:var(--bg);color:var(--muted);font-family:'Cairo',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;text-align:center;}
+.pos-type-btn.ts{border-color:var(--purple2);background:#7c3aed18;color:var(--purple2);}
+.pos-type-btn.td{border-color:var(--blue);background:#38bdf818;color:var(--blue);}
 .sum-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px;}
-.sum-card{
-background:var(–bg);border-radius:12px;padding:10px 12px;
-border:1px solid var(–border);text-align:center;
-}
-.sum-lbl{font-size:10px;color:var(–muted);margin-bottom:3px;}
+.sum-card{background:var(--bg);border-radius:12px;padding:10px 12px;border:1px solid var(--border);text-align:center;}
+.sum-lbl{font-size:10px;color:var(--muted);margin-bottom:3px;}
 .sum-val{font-size:13px;font-weight:900;}
-
-.inp-lbl{font-size:11px;color:var(–muted);margin-bottom:5px;}
-.inp{
-width:100%;padding:11px 14px;border-radius:12px;
-border:1px solid var(–border);background:var(–bg);
-color:var(–text);font-family:‘Cairo’,sans-serif;font-size:13px;
-outline:none;transition:border-color .2s;
-}
-.inp:focus{border-color:var(–purple2);}
+.inp-lbl{font-size:11px;color:var(--muted);margin-bottom:5px;}
+.inp{width:100%;padding:11px 14px;border-radius:12px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-family:'Cairo',sans-serif;font-size:13px;outline:none;transition:border-color .2s;}
+.inp:focus{border-color:var(--purple2);}
 .inp-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
-
 .emp-sel-wrap{position:relative;}
-.emp-btn{
-width:100%;padding:11px 14px;border-radius:12px;
-border:1px solid var(–border);background:var(–bg);
-color:var(–text);font-family:‘Cairo’,sans-serif;font-size:13px;
-cursor:pointer;display:flex;align-items:center;justify-content:space-between;
-}
-.emp-dropdown{
-display:none;position:absolute;top:calc(100%+4px);right:0;left:0;
-background:var(–card2);border:1px solid var(–border);
-border-radius:14px;overflow:hidden;z-index:50;
-box-shadow:0 10px 30px #00000088;
-}
-.emp-opt{padding:12px 16px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:10px;transition:background .15s;}
-.emp-opt:hover{background:var(–purple)22;}
-
-.add-btn{
-width:100%;padding:14px;border-radius:14px;border:none;
-font-family:‘Cairo’,sans-serif;font-size:14px;font-weight:900;
-cursor:pointer;color:#fff;transition:all .2s;
-box-shadow:0 6px 20px var(–btn-glow,#7c3aed55);
-}
+.emp-btn{width:100%;padding:11px 14px;border-radius:12px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-family:'Cairo',sans-serif;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;}
+.emp-dropdown{display:none;position:absolute;top:calc(100% + 4px);right:0;left:0;background:var(--card2);border:1px solid var(--border);border-radius:14px;overflow:hidden;z-index:50;box-shadow:0 10px 30px #00000088;}
+.emp-opt{padding:12px 16px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:10px;}
+.emp-opt:hover{background:#7c3aed22;}
+.add-btn{width:100%;padding:14px;border-radius:14px;border:none;font-family:'Cairo',sans-serif;font-size:14px;font-weight:900;cursor:pointer;color:#fff;transition:all .2s;}
 .add-btn:active{transform:scale(.98);}
-.add-btn.store-mode{background:linear-gradient(135deg,var(–purple2),var(–purple));–btn-glow:#7c3aed55;}
-.add-btn.del-mode{background:linear-gradient(135deg,#38bdf8,#0284c7);–btn-glow:#38bdf855;}
-
-/* ===== SALES TABLE ===== */
-.sales-table-wrap{
-background:linear-gradient(145deg,var(–card),var(–bg2));
-border:1px solid var(–border);border-radius:20px;overflow:hidden;
-}
-.sales-table-head{
-display:grid;grid-template-columns:2fr 1fr 1fr auto;
-padding:12px 16px;border-bottom:1px solid var(–border);
-font-size:11px;color:var(–muted);font-weight:700;
-}
-.sale-row{
-display:grid;grid-template-columns:2fr 1fr 1fr auto;
-padding:12px 16px;border-bottom:1px solid var(–border)55;
-align-items:center;transition:background .15s;font-size:12px;
-}
+.add-btn.store-mode{background:linear-gradient(135deg,var(--purple2),var(--purple));}
+.add-btn.del-mode{background:linear-gradient(135deg,#38bdf8,#0284c7);}
+.sales-table-wrap{background:linear-gradient(145deg,var(--card),var(--bg2));border:1px solid var(--border);border-radius:20px;overflow:hidden;}
+.sales-table-head{display:grid;grid-template-columns:2fr 1fr 1fr auto;padding:12px 16px;border-bottom:1px solid var(--border);font-size:11px;color:var(--muted);font-weight:700;}
+.sale-row{display:grid;grid-template-columns:2fr 1fr 1fr auto;padding:12px 16px;border-bottom:1px solid #2d1f5e55;align-items:center;font-size:12px;}
 .sale-row:last-child{border:none;}
-.sale-row:hover{background:#ffffff04;}
 .badge{padding:3px 8px;border-radius:20px;font-size:10px;font-weight:700;}
-.badge-s{background:#7c3aed18;border:1px solid #7c3aed44;color:var(–purple2);}
-.badge-d{background:#38bdf818;border:1px solid #38bdf844;color:var(–blue);}
-.sale-emp{font-size:11px;color:var(–muted);}
-.sale-time{font-size:10px;color:var(–muted);}
-.act-btn{background:none;border:none;color:var(–muted);cursor:pointer;padding:4px;font-size:14px;line-height:1;}
-
-/* ===== REPORT ===== */
+.badge-s{background:#7c3aed18;border:1px solid #7c3aed44;color:var(--purple2);}
+.badge-d{background:#38bdf818;border:1px solid #38bdf844;color:var(--blue);}
+.sale-emp{font-size:11px;color:var(--muted);}
+.sale-time{font-size:10px;color:var(--muted);}
+.act-btn{background:none;border:none;color:var(--muted);cursor:pointer;padding:4px;font-size:14px;}
 .filter-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
-.chip{
-padding:7px 14px;border-radius:20px;font-size:11px;font-weight:700;
-border:1px solid var(–border);background:var(–bg);color:var(–muted);
-cursor:pointer;transition:all .2s;font-family:‘Cairo’,sans-serif;
-}
-.chip.active{background:var(–purple);border-color:var(–purple);color:#fff;}
+.chip{padding:7px 14px;border-radius:20px;font-size:11px;font-weight:700;border:1px solid var(--border);background:var(--bg);color:var(--muted);cursor:pointer;transition:all .2s;font-family:'Cairo',sans-serif;}
+.chip.active{background:var(--purple);border-color:var(--purple);color:#fff;}
 .date-range-row{display:flex;gap:8px;align-items:center;margin-bottom:16px;flex-wrap:wrap;}
-.date-inp{
-padding:8px 12px;border-radius:10px;border:1px solid var(–border);
-background:var(–bg);color:var(–text);font-family:‘Cairo’,sans-serif;font-size:12px;
-outline:none;flex:1;min-width:130px;
-}
-.date-inp:focus{border-color:var(–purple2);}
+.date-inp{padding:8px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-family:'Cairo',sans-serif;font-size:12px;outline:none;flex:1;min-width:130px;}
 input[type=date]::-webkit-calendar-picker-indicator{filter:invert(.8);}
-
-.grand-card{
-background:linear-gradient(135deg,var(–purple)22,var(–purple2)11);
-border:1px solid var(–purple)44;
-border-radius:18px;padding:18px 20px;margin-bottom:16px;
-display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;
-}
+.grand-card{background:linear-gradient(135deg,#7c3aed22,#a78bfa11);border:1px solid #7c3aed44;border-radius:18px;padding:18px 20px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
 .grand-total{font-size:26px;font-weight:900;}
 .grand-subs{display:flex;gap:18px;flex-wrap:wrap;}
 .grand-sub{text-align:center;}
-.grand-sub-lbl{font-size:10px;color:var(–muted);margin-bottom:3px;}
+.grand-sub-lbl{font-size:10px;color:var(--muted);margin-bottom:3px;}
 .grand-sub-val{font-size:14px;font-weight:900;}
-
 .rep-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
-.rep-card{
-background:linear-gradient(145deg,var(–card),var(–bg2));
-border:1px solid var(–border);border-radius:16px;
-padding:14px;text-align:center;
-}
-.rep-card-icon{font-size:22px;margin-bottom:5px;}
-.rep-card-name{font-size:10px;color:var(–muted);margin-bottom:5px;}
-.rep-card-total{font-size:16px;font-weight:900;}
-.rep-mini{font-size:10px;color:var(–muted);margin-top:4px;}
-
-.chart-box{
-background:linear-gradient(145deg,var(–card),var(–bg2));
-border:1px solid var(–border);border-radius:18px;padding:16px;margin-bottom:16px;
-}
+.rep-card{background:linear-gradient(145deg,var(--card),var(--bg2));border:1px solid var(--border);border-radius:16px;padding:14px;text-align:center;}
+.rep-mini{font-size:10px;color:var(--muted);margin-top:4px;}
+.chart-box{background:linear-gradient(145deg,var(--card),var(--bg2));border:1px solid var(--border);border-radius:18px;padding:16px;margin-bottom:16px;}
 .bar-wrap{margin-bottom:10px;}
 .bar-meta{display:flex;justify-content:space-between;margin-bottom:4px;font-size:11px;}
-.bar-track{height:10px;background:var(–bg);border-radius:10px;overflow:hidden;position:relative;}
-.bar-fill{height:100%;border-radius:10px;transition:width .5s ease;}
-
-/* ===== WALLETS ===== */
-.wallet-card{
-background:linear-gradient(145deg,var(–card),var(–bg2));
-border:1px solid var(–border);border-radius:20px;
-padding:18px;margin-bottom:14px;
-}
-.wc-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
-.wc-name{font-size:16px;font-weight:900;display:flex;align-items:center;gap:8px;}
+.bar-track{height:10px;background:var(--bg);border-radius:10px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:10px;}
+.wallet-card{background:linear-gradient(145deg,var(--card),var(--bg2));border:1px solid var(--border);border-radius:20px;padding:18px;margin-bottom:14px;}
+.wc-name{font-size:16px;font-weight:900;display:flex;align-items:center;gap:8px;margin-bottom:14px;}
 .wc-balance-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
-.wc-bal{
-background:var(–bg);border-radius:13px;padding:13px 14px;
-border:1px solid var(–border);
-}
-.wc-bal-lbl{font-size:10px;color:var(–muted);margin-bottom:4px;}
+.wc-bal{background:var(--bg);border-radius:13px;padding:13px 14px;border:1px solid var(--border);}
+.wc-bal-lbl{font-size:10px;color:var(--muted);margin-bottom:4px;}
 .wc-bal-val{font-size:18px;font-weight:900;}
 .wc-actions{display:flex;gap:6px;flex-wrap:wrap;}
-.wc-btn{
-flex:1;min-width:70px;padding:8px 6px;border-radius:10px;border:none;
-font-family:‘Cairo’,sans-serif;font-size:10px;font-weight:700;
-cursor:pointer;text-align:center;transition:all .15s;
-}
-.wc-btn:active{transform:scale(.96);}
-.tx-list{margin-top:12px;border-top:1px solid var(–border);padding-top:12px;}
-.tx-item{
-display:flex;justify-content:space-between;align-items:center;
-padding:8px 0;border-bottom:1px solid var(–border)33;font-size:11px;
-}
+.wc-btn{flex:1;min-width:70px;padding:8px 6px;border-radius:10px;border:none;font-family:'Cairo',sans-serif;font-size:10px;font-weight:700;cursor:pointer;text-align:center;}
+.tx-list{margin-top:12px;border-top:1px solid var(--border);padding-top:12px;}
+.tx-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #2d1f5e33;font-size:11px;}
 .tx-item:last-child{border:none;}
-.tx-badge{padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
-
-/* ===== ATTENDANCE ===== */
 .attend-today-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
-.attend-emp-card{
-background:linear-gradient(145deg,var(–card),var(–bg2));
-border:1px solid var(–border);border-radius:16px;padding:14px;
-}
+.attend-emp-card{background:linear-gradient(145deg,var(--card),var(--bg2));border:1px solid var(--border);border-radius:16px;padding:14px;}
 .punch-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
-.punch-btn{
-padding:16px;border-radius:16px;border:none;
-font-family:‘Cairo’,sans-serif;font-size:14px;font-weight:900;
-cursor:pointer;color:#fff;transition:all .2s;
-}
-
-/* ===== NOTIFICATIONS ===== */
-.notif-item{
-background:linear-gradient(145deg,var(–card),var(–bg2));
-border:1px solid var(–border);border-radius:16px;
-padding:14px;margin-bottom:10px;
-display:flex;gap:12px;align-items:flex-start;
-}
-.notif-item.unread{border-color:var(–purple)55;background:var(–purple)08;}
-.notif-dot{width:8px;height:8px;min-width:8px;border-radius:50%;background:var(–purple2);margin-top:4px;}
-
-/* ===== BROADCAST ===== */
-.bc-area{
-background:var(–bg);border:1px solid var(–border);border-radius:14px;
-color:var(–text);font-family:‘Cairo’,sans-serif;font-size:13px;
-padding:14px;width:100%;resize:vertical;outline:none;min-height:100px;
-}
-.bc-area:focus{border-color:var(–purple2);}
-
-/* ===== SETTINGS ===== */
-
-/* ===== MODAL ===== */
-.overlay{
-position:fixed;inset:0;background:#000c;
-display:flex;align-items:center;justify-content:center;
-z-index:200;padding:16px;animation:fadeIn .2s ease;
-}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-.modal{
-background:var(–card2);border:1px solid var(–border);border-radius:24px;
-width:100%;max-width:420px;padding:24px;
-max-height:90vh;overflow-y:auto;
-animation:slideUp .25s ease;
-}
-@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
-.modal-title{font-size:16px;font-weight:900;margin-bottom:20px;display:flex;align-items:center;gap:8px;}
+.punch-btn{padding:16px;border-radius:16px;border:none;font-family:'Cairo',sans-serif;font-size:14px;font-weight:900;cursor:pointer;color:#fff;}
+.notif-item{background:linear-gradient(145deg,var(--card),var(--bg2));border:1px solid var(--border);border-radius:16px;padding:14px;margin-bottom:10px;display:flex;gap:12px;align-items:flex-start;}
+.notif-item.unread{border-color:#7c3aed55;}
+.notif-dot{width:8px;height:8px;min-width:8px;border-radius:50%;background:var(--purple2);margin-top:4px;}
+.bc-area{background:var(--bg);border:1px solid var(--border);border-radius:14px;color:var(--text);font-family:'Cairo',sans-serif;font-size:13px;padding:14px;width:100%;resize:vertical;outline:none;min-height:100px;}
+.overlay{position:fixed;inset:0;background:#000c;display:flex;align-items:center;justify-content:center;z-index:200;padding:16px;}
+.modal{background:var(--card2);border:1px solid var(--border);border-radius:24px;width:100%;max-width:420px;padding:24px;max-height:90vh;overflow-y:auto;}
+.modal-title{font-size:16px;font-weight:900;margin-bottom:20px;}
 .form-row{margin-bottom:14px;}
 .form-actions{display:flex;gap:10px;margin-top:20px;}
-.modal-btn{
-flex:1;padding:13px;border-radius:13px;border:none;
-font-family:‘Cairo’,sans-serif;font-size:13px;font-weight:700;
-cursor:pointer;transition:all .2s;
-}
-
-/* ===== BROADCAST ALERT ===== */
-.broadcast-alert{
-position:fixed;inset:0;background:#000d;
-display:flex;align-items:center;justify-content:center;
-z-index:300;padding:20px;
-}
-.ba-box{
-background:var(–card2);border:2px solid var(–purple)77;
-border-radius:24px;padding:28px;width:100%;max-width:380px;text-align:center;
-}
-
-/* ===== MY WALLET (EMP) ===== */
-.my-wallet-hero{
-background:linear-gradient(145deg,var(–card),var(–bg2));
-border:1px solid var(–border);border-radius:24px;
-padding:24px;margin-bottom:16px;text-align:center;
-}
-.my-avatar{font-size:56px;margin-bottom:10px;}
-.my-name{font-size:22px;font-weight:900;}
+.modal-btn{flex:1;padding:13px;border-radius:13px;border:none;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;}
+.broadcast-alert{position:fixed;inset:0;background:#000d;display:flex;align-items:center;justify-content:center;z-index:300;padding:20px;}
+.ba-box{background:var(--card2);border:2px solid #7c3aed77;border-radius:24px;padding:28px;width:100%;max-width:380px;text-align:center;}
+.my-wallet-hero{background:linear-gradient(145deg,var(--card),var(--bg2));border:1px solid var(--border);border-radius:24px;padding:24px;margin-bottom:16px;text-align:center;}
 .my-bal-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0;}
-.my-bal-box{
-background:var(–bg);border-radius:16px;padding:16px;
-border:1px solid var(–border);text-align:center;
-}
-
-/* ===== VIEW ONLY ===== */
-.view-notice{
-background:var(–purple)11;border:1px solid var(–purple)33;
-border-radius:14px;padding:14px;text-align:center;color:var(–muted);
-font-size:13px;margin-bottom:16px;
-}
-
-/* ===== EMPTY STATE ===== */
-.empty{text-align:center;padding:30px;color:var(–muted);font-size:13px;}
-
-/* ===== UTILS ===== */
-.bold{font-weight:900;}
-.c-gold{color:var(–gold2);}
-.c-purple{color:var(–purple2);}
-.c-green{color:var(–green);}
-.c-red{color:var(–red);}
-.c-blue{color:var(–blue);}
-.c-muted{color:var(–muted);}
-.mb8{margin-bottom:8px;}
-.mb14{margin-bottom:14px;}
-.mb18{margin-bottom:18px;}
-.flex{display:flex;} .jcsb{justify-content:space-between;} .aic{align-items:center;}
-.gap8{gap:8px;}
-select option{background:var(–card2);}
-
-@media(max-width:360px){
-.stores-grid{grid-template-columns:repeat(3,1fr);}
-.inp-row{grid-template-columns:1fr;}
-}
+.my-bal-box{background:var(--bg);border-radius:16px;padding:16px;border:1px solid var(--border);text-align:center;}
+.view-notice{background:#7c3aed11;border:1px solid #7c3aed33;border-radius:14px;padding:14px;text-align:center;color:var(--muted);font-size:13px;margin-bottom:16px;}
+.empty{text-align:center;padding:30px;color:var(--muted);font-size:13px;}
+select option{background:var(--card2);}
+@media(max-width:360px){.inp-row{grid-template-columns:1fr;}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 </style>
-
 </head>
 <body>
-
 <div class="bg-orb bg-orb1"></div>
 <div class="bg-orb bg-orb2"></div>
-<div class="bg-orb bg-orb3"></div>
 
 <!-- LOADING -->
 
 <div id="loading">
-  <div style="font-size:52px;animation:floatCrown 2s ease-in-out infinite">👑</div>
+  <div style="font-size:52px;animation:floatCrown 3s ease-in-out infinite">👑</div>
   <div class="spin"></div>
   <div style="color:var(--muted);font-size:13px">جاري الاتصال...</div>
 </div>
 
 <!-- LOGIN -->
 
-<div id="screen-login" class="screen active">
-  <div class="bg-orb bg-orb1"></div>
-  <div class="bg-orb bg-orb2"></div>
+<div id="screen-login" class="screen">
   <div class="login-hero">
     <div class="login-hero-img">👑</div>
     <div class="login-title">نظام مبيعات<br/>البسفور</div>
@@ -565,24 +201,15 @@ select option{background:var(–card2);}
 <!-- MAIN APP -->
 
 <div id="screen-app" class="screen">
-
-  <!-- TOP HEADER -->
-
-  <div class="top-header" id="top-header">
+  <div class="top-header">
     <div class="th-logo">👑 البسفور</div>
     <div class="th-right">
       <div id="role-badge" class="role-pill">مالك</div>
-      <div class="sync-dot" id="sync-dot" title="متصل"></div>
-      <button class="logout-btn" onclick="logout()">خروج 🚪</button>
+      <div class="sync-dot" id="sync-dot"></div>
+      <button class="logout-btn" id="logout-btn">خروج 🚪</button>
     </div>
   </div>
-
-  <!-- WINNER BANNER -->
-
   <div id="winner-banner" class="winner-banner"></div>
-
-  <!-- PAGES -->
-
   <div id="page-pos" class="page active"></div>
   <div id="page-report" class="page"></div>
   <div id="page-wallets" class="page"></div>
@@ -591,762 +218,507 @@ select option{background:var(–card2);}
   <div id="page-mywallet" class="page"></div>
   <div id="page-myattend" class="page"></div>
   <div id="page-notifs" class="page"></div>
-
-  <!-- BOTTOM NAV -->
-
   <div class="bottom-nav" id="bottom-nav"></div>
 </div>
-
-<!-- MODAL -->
-
 <div id="modal-wrap"></div>
 
-<script type="module">
-import{initializeApp}from"https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
-import{getFirestore,collection,onSnapshot,addDoc,deleteDoc,updateDoc,setDoc,doc,serverTimestamp,query,orderBy,getDoc}from"https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+<!-- Firebase compat SDKs -->
 
-const FC={apiKey:"AIzaSyAsllnjBZO4K9MyJNiTFoQJSfKtycQHMtU",authDomain:"bosphorus-76067.firebaseapp.com",projectId:"bosphorus-76067",storageBucket:"bosphorus-76067.firebasestorage.app",messagingSenderId:"678947739557",appId:"1:678947739557:web:f3d70cfc44d862ddf53a4c"};
-const app=initializeApp(FC);
-const db=getFirestore(app);
-const salesCol=collection(db,"shop_sales");
-const walletsCol=collection(db,"wallets");
-const txCol=collection(db,"wallet_tx");
-const attendCol=collection(db,"attendance");
-const notifsCol=collection(db,"notifications");
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 
-const ST=serverTimestamp;
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-const STORES=[{id:1,name:"محل 1",icon:"🏪",color:"#a78bfa"},{id:2,name:"محل 2",icon:"🏬",color:"#10B981"},{id:3,name:"محل 3",icon:"🛒",color:"#F59E0B"}];
-const EMPS=[["عمار","👨‍💼"],["جعفر","👨‍💼"],["مثنى","👨‍💼"],["نوره","👩‍💼"]];
-const EMP_PASS={"عمار":"111","جعفر":"222","مثنى":"333","نوره":"444"};
-const EMP_STORE={"عمار":1,"نوره":2,"جعفر":3,"مثنى":2};
-const SALARIES={"عمار":200000,"جعفر":250000,"مثنى":250000,"نوره":200000};
-const EMP_ICONS={"عمار":"👨‍💼","جعفر":"👨‍💼","مثنى":"👨‍💼","نوره":"👩‍💼"};
-const EMP_COLORS={"عمار":"#a78bfa","جعفر":"#10B981","مثنى":"#38bdf8","نوره":"#F59E0B"};
-const PASS={owner:"0000"};
-const PPW=5,PV=1000;
-const WORK_START="12:00",SHOP_LAT=33.31033,SHOP_LNG=44.32380,MAX_DIST=100;
+<script>
+// Show login immediately — don't wait for Firebase
+document.getElementById("loading").style.display="none";
+document.getElementById("screen-login").className="screen active";
+</script>
 
-function today(){return new Date().toLocaleDateString("en-CA");}
-function fmt(n){return Number(n||0).toLocaleString("en-IQ")+" د.ع";}
-function fmtPts(n){return Number(n||0)+" نقطة";}
-function calcDist(a,b,c,d){const R=6371000,x=(c-a)*Math.PI/180,y=(d-b)*Math.PI/180;const q=Math.sin(x/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(y/2)**2;return R*2*Math.atan2(Math.sqrt(q),Math.sqrt(1-q));}
-function tMins(t){const[h,m]=t.split(":").map(Number);return h*60+m;}
-function weekStart(){const d=new Date(),day=d.getDay(),diff=d.getDate()-((day+6)%7);const m=new Date(d);m.setDate(diff);return m.toLocaleDateString("en-CA");}
+<script>
+// ===== WAIT FOR FIREBASE THEN INIT =====
+function startApp(){
+  const FC={apiKey:"AIzaSyAsllnjBZO4K9MyJNiTFoQJSfKtycQHMtU",authDomain:"bosphorus-76067.firebaseapp.com",projectId:"bosphorus-76067",storageBucket:"bosphorus-76067.firebasestorage.app",messagingSenderId:"678947739557",appId:"1:678947739557:web:f3d70cfc44d862ddf53a4c"};
+  firebase.initializeApp(FC);
+  const db=firebase.firestore();
+  const TS=firebase.firestore.FieldValue.serverTimestamp;
+  const salesCol=db.collection("shop_sales");
+  const walletsCol=db.collection("wallets");
+  const txCol=db.collection("wallet_tx");
+  const attendCol=db.collection("attendance");
+  const notifsCol=db.collection("notifications");
 
-let S={
-  loggedIn:false,role:null,empName:null,
-  tab:"pos",sel:1,saleType:"store",
-  sales:[],wallets:{},txs:[],attendance:[],notifs:[],
-  empSel:"",loaded:false,
-  editId:null,editSaleId:null,
-  repFrom:today(),repTo:today(),repStore:"all",repType:"all",repPeriod:"today",
-  modal:null,gpsLoading:false,pendingNotif:null,
-};
-let cdI=null,cdS=0;
+  const STORES=[{id:1,name:"محل 1",icon:"🏪",color:"#a78bfa"},{id:2,name:"محل 2",icon:"🏬",color:"#10B981"},{id:3,name:"محل 3",icon:"🛒",color:"#F59E0B"}];
+  const EMPS=[["عمار","👨‍💼"],["جعفر","👨‍💼"],["مثنى","👨‍💼"],["نوره","👩‍💼"]];
+  const EMP_PASS={"عمار":"111","جعفر":"222","مثنى":"333","نوره":"444"};
+  const EMP_STORE={"عمار":1,"نوره":2,"جعفر":3,"مثنى":2};
+  const SALARIES={"عمار":200000,"جعفر":250000,"مثنى":250000,"نوره":200000};
+  const EMP_ICONS={"عمار":"👨‍💼","جعفر":"👨‍💼","مثنى":"👨‍💼","نوره":"👩‍💼"};
+  const EMP_COLORS={"عمار":"#a78bfa","جعفر":"#10B981","مثنى":"#38bdf8","نوره":"#F59E0B"};
+  const PASS={owner:"0000"};
+  const PPW=5,PV=1000;
+  const WORK_START="12:00",SHOP_LAT=33.31033,SHOP_LNG=44.32380,MAX_DIST=100;
 
-// ===== FIREBASE LISTENERS =====
-onSnapshot(query(salesCol,orderBy("createdAt","desc")),function(snap){
-  S.sales=snap.docs.map(d=>({...d.data(),id:d.id}));
-  S.loaded=true;syncOk();
-  const td=today();
-  const sw=new Set(S.sales.filter(x=>x.date===td&&x.type==="store").map(x=>x.store));
-  if(STORES.every(s=>sw.has(s.id))&&!cdI&&cdS===0){
-    getDoc(doc(db,"winners","winner_"+td)).then(ws=>{if(!ws.exists())startCD();});
+  function today(){return new Date().toLocaleDateString("en-CA");}
+  function fmt(n){return Number(n||0).toLocaleString("en-IQ")+" د.ع";}
+  function fmtPts(n){return Number(n||0)+" نقطة";}
+  function calcDist(a,b,c,d){const R=6371000,x=(c-a)*Math.PI/180,y=(d-b)*Math.PI/180;const q=Math.sin(x/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(y/2)**2;return R*2*Math.atan2(Math.sqrt(q),Math.sqrt(1-q));}
+  function tMins(t){const[h,m]=t.split(":").map(Number);return h*60+m;}
+  function weekStart(){const d=new Date(),day=d.getDay(),diff=d.getDate()-((day+6)%7);const m=new Date(d);m.setDate(diff);return m.toLocaleDateString("en-CA");}
+
+  let S={loggedIn:false,role:null,empName:null,tab:"pos",sel:1,saleType:"store",sales:[],wallets:{},txs:[],attendance:[],notifs:[],empSel:"",loaded:false,editId:null,editSaleId:null,repFrom:today(),repTo:today(),repStore:"all",repType:"all",repPeriod:"today",modal:null,gpsLoading:false,pendingNotif:null};
+  let cdI=null,cdS=0;
+
+  // ===== FIREBASE LISTENERS =====
+  salesCol.orderBy("createdAt","desc").onSnapshot(snap=>{
+    S.sales=snap.docs.map(d=>({...d.data(),id:d.id}));
+    S.loaded=true;
+    document.getElementById("sync-dot").style.background="var(--green)";
+    const td=today();
+    const sw=new Set(S.sales.filter(x=>x.date===td&&x.type==="store").map(x=>x.store));
+    if(STORES.every(s=>sw.has(s.id))&&!cdI&&cdS===0){
+      db.doc("winners/winner_"+td).get().then(ws=>{if(!ws.exists)startCD();});
+    }
+    render();
+  },()=>{document.getElementById("sync-dot").style.background="var(--red)";});
+
+  walletsCol.onSnapshot(snap=>{S.wallets={};snap.docs.forEach(d=>{S.wallets[d.id]={...d.data(),id:d.id};});render();});
+  txCol.orderBy("createdAt","desc").onSnapshot(snap=>{S.txs=snap.docs.map(d=>({...d.data(),id:d.id}));render();});
+  attendCol.orderBy("createdAt","desc").onSnapshot(snap=>{S.attendance=snap.docs.map(d=>({...d.data(),id:d.id}));render();});
+  notifsCol.orderBy("createdAt","desc").onSnapshot(snap=>{
+    S.notifs=snap.docs.map(d=>({...d.data(),id:d.id}));
+    if(S.loggedIn&&S.empName&&!S.pendingNotif){
+      const u=S.notifs.find(n=>n.type==="broadcast"&&!(n.readBy||{})[S.empName]);
+      if(u)S.pendingNotif=u;
+    }
+    render();
+  });
+
+  // init wallets
+  EMPS.forEach(([name])=>{db.doc("wallets/"+name).get().then(s=>{if(!s.exists)db.doc("wallets/"+name).set({name,balance:0,points:0,createdAt:TS()});});});
+
+  // ===== LOGIN =====
+  function tryLogin(){
+    const pass=document.getElementById("pass-inp").value.trim();
+    const err=document.getElementById("login-err");
+    if(pass===PASS.owner){S.loggedIn=true;S.role="owner";S.empName=null;render();return;}
+    for(const[name,p]of Object.entries(EMP_PASS)){
+      if(pass===p){S.loggedIn=true;S.role="employee";S.empName=name;S.empSel=name;S.tab="pos";
+        const u=S.notifs.find(n=>n.type==="broadcast"&&!(n.readBy||{})[name]);
+        if(u)S.pendingNotif=u;render();return;}
+    }
+    err.textContent="❌ كلمة المرور غلط";document.getElementById("pass-inp").value="";
   }
-  render();
-},()=>syncErr());
+  function logout(){S.loggedIn=false;S.role=null;S.empName=null;S.empSel="";S.tab="pos";S.pendingNotif=null;render();}
 
-onSnapshot(walletsCol,snap=>{S.wallets={};snap.docs.forEach(d=>{S.wallets[d.id]={...d.data(),id:d.id};});render();});
-onSnapshot(query(txCol,orderBy("createdAt","desc")),snap=>{S.txs=snap.docs.map(d=>({...d.data(),id:d.id}));render();});
-onSnapshot(query(attendCol,orderBy("createdAt","desc")),snap=>{S.attendance=snap.docs.map(d=>({...d.data(),id:d.id}));render();});
-onSnapshot(query(notifsCol,orderBy("createdAt","desc")),snap=>{
-  S.notifs=snap.docs.map(d=>({...d.data(),id:d.id}));
-  if(S.loggedIn&&S.empName&&!S.pendingNotif){
-    const u=S.notifs.find(n=>n.type==="broadcast"&&!(n.readBy||{})[S.empName]);
-    if(u)S.pendingNotif=u;
+  // Login button listeners
+  document.getElementById("role-owner").onclick=()=>{document.getElementById("role-owner").className="role-btn active";document.getElementById("role-emp").className="role-btn";};
+  document.getElementById("role-emp").onclick=()=>{document.getElementById("role-emp").className="role-btn active";document.getElementById("role-owner").className="role-btn";};
+  document.getElementById("login-btn").onclick=tryLogin;
+  document.getElementById("pass-inp").onkeydown=e=>{if(e.key==="Enter")tryLogin();};
+  document.getElementById("logout-btn").onclick=logout;
+
+  // ===== SALES =====
+  async function addSale(){
+    const el=document.getElementById("inp-amount");
+    const amt=el?parseFloat(el.value):0;
+    if(!amt||amt<=0){alert("أدخل مبلغ صحيح!");return;}
+    if(!S.empSel){alert("اختر اسم الموظف!");return;}
+    const now=new Date();
+    await salesCol.add({store:S.sel,amount:amt,emp:S.empSel,type:S.saleType,date:today(),time:now.toLocaleTimeString("en",{hour:"2-digit",minute:"2-digit"}),createdAt:TS()});
+    if(el)el.value="";
+    await checkPts();
   }
-  render();
-});
-
-async function initWallets(){
-  for(const[name]of EMPS){
-    const snap=await getDoc(doc(db,"wallets",name));
-    if(!snap.exists())await setDoc(doc(db,"wallets",name),{name,balance:0,points:0,createdAt:serverTimestamp()});
+  async function delSale(id){if(S.role!=="owner")return;if(!confirm("حذف المبيعة؟"))return;await db.doc("shop_sales/"+id).delete();}
+  async function saveEdit(){
+    const a=document.getElementById("edit-amount"),e=document.getElementById("edit-emp"),t=document.getElementById("edit-type"),s=document.getElementById("edit-store");
+    const amt=a?parseFloat(a.value):0;
+    if(!amt||amt<=0){alert("أدخل مبلغ صحيح!");return;}
+    await db.doc("shop_sales/"+S.editId).update({amount:amt,emp:e?e.value:"",type:t?t.value:"store",store:s?parseInt(s.value):1});
+    S.editId=null;S.modal=null;render();
   }
-}
-initWallets();
-
-function syncOk(){const d=document.getElementById("sync-dot");if(d){d.style.background="var(--green)";d.title="متصل";}}
-function syncErr(){const d=document.getElementById("sync-dot");if(d){d.style.background="var(--red)";d.title="غير متصل";}}
-
-// ===== LOGIN EVENT LISTENERS (inside module) =====
-function setRole(r){
-  document.getElementById("role-owner").className="role-btn"+(r==="owner"?" active":"");
-  document.getElementById("role-emp").className="role-btn"+(r==="emp"?" active":"");
-}
-function tryLogin(){
-  const pass=document.getElementById("pass-inp").value.trim();
-  const err=document.getElementById("login-err");
-  if(pass===PASS.owner){S.loggedIn=true;S.role="owner";S.empName=null;render();return;}
-  for(const[name,p]of Object.entries(EMP_PASS)){
-    if(pass===p){S.loggedIn=true;S.role="employee";S.empName=name;S.empSel=name;S.tab="pos";
-      const u=S.notifs.find(n=>n.type==="broadcast"&&!(n.readBy||{})[name]);
-      if(u)S.pendingNotif=u;render();return;}
+  async function saveSaleEdit(){
+    const nd=document.getElementById("se-date"),na=document.getElementById("se-amount");
+    const newDate=nd?nd.value:"",newAmt=na?parseFloat(na.value):0;
+    if(!newDate){alert("اختر تاريخ!");return;}if(!newAmt||newAmt<=0){alert("أدخل مبلغ صحيح!");return;}
+    if(!confirm("تعديل المبيعة؟"))return;
+    await db.doc("shop_sales/"+S.editSaleId).update({date:newDate,amount:newAmt});
+    S.editSaleId=null;S.modal=null;render();alert("✅ تم تعديل المبيعة");
   }
-  err.textContent="❌ كلمة المرور غلط";document.getElementById("pass-inp").value="";
-}
-function logout(){S.loggedIn=false;S.role=null;S.empName=null;S.empSel="";S.tab="pos";S.pendingNotif=null;render();}
-window.logout=logout;
 
-// ===== SALES =====
-async function addSale(){
-  const el=document.getElementById("inp-amount");
-  const amt=el?parseFloat(el.value):0;
-  if(!amt||amt<=0){alert("أدخل مبلغ صحيح!");return;}
-  if(!S.empSel){alert("اختر اسم الموظف!");return;}
-  const now=new Date();syncSaving();
-  await addDoc(salesCol,{store:S.sel,amount:amt,emp:S.empSel,type:S.saleType,date:today(),time:now.toLocaleTimeString("en",{hour:"2-digit",minute:"2-digit"}),createdAt:serverTimestamp()});
-  if(el)el.value="";
-  await checkPts();
-}
-async function delSale(id){if(S.role!=="owner")return;if(!confirm("حذف المبيعة؟"))return;await deleteDoc(doc(db,"shop_sales",id));}
-async function saveEdit(){
-  const a=document.getElementById("edit-amount"),e=document.getElementById("edit-emp"),t=document.getElementById("edit-type"),s=document.getElementById("edit-store");
-  const amt=a?parseFloat(a.value):0;
-  if(!amt||amt<=0){alert("أدخل مبلغ صحيح!");return;}
-  await updateDoc(doc(db,"shop_sales",S.editId),{amount:amt,emp:e?e.value:"",type:t?t.value:"store",store:s?parseInt(s.value):1});
-  S.editId=null;S.modal=null;render();
-}
-async function saveSaleEdit(){
-  const nd=document.getElementById("se-date"),na=document.getElementById("se-amount");
-  const newDate=nd?nd.value:"",newAmt=na?parseFloat(na.value):0;
-  if(!newDate){alert("اختر تاريخ!");return;}if(!newAmt||newAmt<=0){alert("أدخل مبلغ صحيح!");return;}
-  if(!confirm("تعديل المبيعة؟"))return;
-  syncSaving();await updateDoc(doc(db,"shop_sales",S.editSaleId),{date:newDate,amount:newAmt});
-  S.editSaleId=null;S.modal=null;render();alert("✅ تم تعديل المبيعة");
-}
-function syncSaving(){const d=document.getElementById("sync-dot");if(d){d.style.background="var(--gold2)";}}
-
-// ===== POINTS =====
-async function checkPts(){
-  const td=today();const wr=doc(db,"winners","winner_"+td);const ws=await getDoc(wr);if(ws.exists())return;
-  const et={};S.sales.filter(x=>x.date===td&&x.type==="store").forEach(x=>{et[x.emp]=(et[x.emp]||0)+x.amount;});
-  const ranked=Object.entries(et).sort((a,b)=>b[1]-a[1]);if(!ranked.length)return;
-  const winner=ranked[0][0];
-  const sw=new Set(S.sales.filter(x=>x.date===td&&x.type==="store").map(x=>x.store));
-  if(!STORES.every(s=>sw.has(s.id)))return;
-  const wkS=weekStart();
-  const wkP=S.txs.filter(x=>x.emp===winner&&x.type==="points"&&x.amount>0&&x.date>=wkS).reduce((a,b)=>a+(b.amount||0),0);
-  if(wkP>=25){await setDoc(wr,{emp:winner,date:td,pointsAwarded:false,updatedAt:serverTimestamp()});return;}
-  const wRef=doc(db,"wallets",winner);const wSnap=await getDoc(wRef);
-  if(wSnap.exists()){
-    await updateDoc(wRef,{points:(wSnap.data().points||0)+PPW});
-    await addDoc(txCol,{emp:winner,type:"points",amount:PPW,note:"🏆 فائز "+td+" +"+PPW+" نقاط",date:td,createdAt:serverTimestamp()});
-    await setDoc(wr,{emp:winner,date:td,pointsAwarded:true,updatedAt:serverTimestamp()});
-    await addDoc(notifsCol,{type:"points",to:winner,msg:"🏆 مبروك! فزت باليوم وحصلت على "+PPW+" نقاط",date:td,readBy:{},createdAt:serverTimestamp()});
+  // ===== POINTS =====
+  async function checkPts(){
+    const td=today();const wrRef=db.doc("winners/winner_"+td);const ws=await wrRef.get();if(ws.exists)return;
+    const et={};S.sales.filter(x=>x.date===td&&x.type==="store").forEach(x=>{et[x.emp]=(et[x.emp]||0)+x.amount;});
+    const ranked=Object.entries(et).sort((a,b)=>b[1]-a[1]);if(!ranked.length)return;
+    const winner=ranked[0][0];
+    const sw=new Set(S.sales.filter(x=>x.date===td&&x.type==="store").map(x=>x.store));
+    if(!STORES.every(s=>sw.has(s.id)))return;
+    const wkS=weekStart();
+    const wkP=S.txs.filter(x=>x.emp===winner&&x.type==="points"&&x.amount>0&&x.date>=wkS).reduce((a,b)=>a+(b.amount||0),0);
+    if(wkP>=25){await wrRef.set({emp:winner,date:td,pointsAwarded:false,updatedAt:TS()});return;}
+    const wSnap=await db.doc("wallets/"+winner).get();
+    if(wSnap.exists){
+      await db.doc("wallets/"+winner).update({points:(wSnap.data().points||0)+PPW});
+      await txCol.add({emp:winner,type:"points",amount:PPW,note:"🏆 فائز "+td+" +"+PPW+" نقاط",date:td,createdAt:TS()});
+      await wrRef.set({emp:winner,date:td,pointsAwarded:true,updatedAt:TS()});
+      await notifsCol.add({type:"points",to:winner,msg:"🏆 مبروك! فزت باليوم وحصلت على "+PPW+" نقاط",date:td,readBy:{},createdAt:TS()});
+    }
   }
-}
-function startCD(){
-  cdS=5*60;if(cdI)clearInterval(cdI);
-  cdI=setInterval(()=>{
-    cdS--;if(cdS<=0){clearInterval(cdI);cdI=null;cdS=0;checkPts();}
-    const el=document.getElementById("cd-el");
-    if(el){if(cdS>0){const m=Math.floor(cdS/60),s=cdS%60;el.textContent="⏳ النقاط تُضاف بعد "+m+":"+String(s).padStart(2,"0");}else el.textContent="🏆 جاري احتساب...";}
-  },1000);
-}
-
-// ===== WALLET ACTIONS =====
-async function managePoints(empName,pts,add){
-  const w=S.wallets[empName]||{points:0};const cur=w.points||0;
-  const newPts=add?cur+pts:Math.max(0,cur-pts);
-  await updateDoc(doc(db,"wallets",empName),{points:newPts});
-  await addDoc(txCol,{emp:empName,type:"points",amount:add?pts:-pts,note:(add?"➕":"➖")+" نقاط من المالك",date:today(),createdAt:serverTimestamp()});
-  S.modal=null;render();alert("✅ "+(add?"أضيفت":"حُذفت")+" "+pts+" نقطة");
-}
-async function addSalary(empName){
-  const amt=SALARIES[empName]||0;const ref=doc(db,"wallets",empName);const snap=await getDoc(ref);
-  await updateDoc(ref,{balance:((snap.data()&&snap.data().balance)||0)+amt});
-  await addDoc(txCol,{emp:empName,type:"salary",amount:amt,note:"راتب أسبوعي 💰",date:today(),createdAt:serverTimestamp()});
-  await addDoc(notifsCol,{type:"salary",to:empName,msg:"💰 تم إضافة راتبك "+fmt(amt),date:today(),readBy:{},createdAt:serverTimestamp()});
-  alert("✅ "+fmt(amt)+" لـ "+empName);
-}
-async function addSalaryAll(){if(!confirm("إضافة رواتب للجميع؟"))return;for(const[name]of EMPS)await addSalary(name);}
-async function convertPoints(empName){
-  const w=S.wallets[empName];if(!w||!w.points){alert("لا توجد نقاط!");return;}
-  const pts=w.points,amt=pts*PV;if(!confirm("تحويل "+pts+" نقطة = "+fmt(amt)+"?"))return;
-  await updateDoc(doc(db,"wallets",empName),{points:0,balance:(w.balance||0)+amt});
-  await addDoc(txCol,{emp:empName,type:"convert",amount:amt,note:"تحويل "+pts+" نقطة",date:today(),createdAt:serverTimestamp()});
-  await addDoc(notifsCol,{type:"convert",to:empName,msg:"🎯 تم تحويل "+pts+" نقطة إلى "+fmt(amt),date:today(),readBy:{},createdAt:serverTimestamp()});
-}
-async function addMoney(empName,amt,note){
-  const ref=doc(db,"wallets",empName);const snap=await getDoc(ref);
-  await updateDoc(ref,{balance:((snap.data()&&snap.data().balance)||0)+amt});
-  await addDoc(txCol,{emp:empName,type:"add",amount:amt,note:note||"إضافة أموال",date:today(),createdAt:serverTimestamp()});
-  await addDoc(notifsCol,{type:"add",to:empName,msg:"💵 تم إضافة "+fmt(amt),date:today(),readBy:{},createdAt:serverTimestamp()});
-  S.modal=null;render();alert("✅ "+fmt(amt)+" لـ "+empName);
-}
-async function doWithdraw(empName,amt,note){
-  const w=S.wallets[empName];if(!w||(w.balance||0)<amt){alert("الرصيد غير كافي!");return;}
-  await updateDoc(doc(db,"wallets",empName),{balance:(w.balance||0)-amt});
-  await addDoc(txCol,{emp:empName,type:"withdraw",amount:amt,note:note||"سحب",date:today(),createdAt:serverTimestamp()});
-  await addDoc(notifsCol,{type:"withdraw",to:empName,msg:"💸 تم سحب "+fmt(amt),date:today(),readBy:{},createdAt:serverTimestamp()});
-  S.modal=null;render();
-}
-async function resetWallet(empName){
-  if(!confirm("تصفير "+empName+"?"))return;
-  await updateDoc(doc(db,"wallets",empName),{balance:0,points:0});
-  await addDoc(txCol,{emp:empName,type:"reset",amount:0,note:"تصفير",date:today(),createdAt:serverTimestamp()});
-}
-async function deleteTx(id){
-  if(!confirm("حذف هذه المعاملة?"))return;
-  const tx=S.txs.find(x=>x.id===id);if(!tx)return;
-  const wRef=doc(db,"wallets",tx.emp);const wSnap=await getDoc(wRef);if(!wSnap.exists)return;
-  const w=wSnap.data();
-  if(tx.type==="salary"||tx.type==="add")await updateDoc(wRef,{balance:Math.max(0,(w.balance||0)-tx.amount)});
-  else if(tx.type==="withdraw")await updateDoc(wRef,{balance:(w.balance||0)+tx.amount});
-  else if(tx.type==="points"){if(tx.amount>0)await updateDoc(wRef,{points:Math.max(0,(w.points||0)-tx.amount)});else await updateDoc(wRef,{points:(w.points||0)+Math.abs(tx.amount)});}
-  else if(tx.type==="convert"){const pb=Math.round(tx.amount/PV);await updateDoc(wRef,{balance:Math.max(0,(w.balance||0)-tx.amount),points:(w.points||0)+pb});}
-  await deleteDoc(doc(db,"wallet_tx",id));
-}
-
-// ===== ATTENDANCE =====
-async function punchIn(){
-  const empName=S.empName;if(!empName)return;const td=today();
-  const existing=S.attendance.find(x=>x.emp===empName&&x.date===td&&x.punchIn&&!x.punchOut);
-  if(existing){alert("أنت مسجل حضور بالفعل!");return;}
-  S.gpsLoading=true;render();
-  navigator.geolocation.getCurrentPosition(async pos=>{
-    const d=calcDist(pos.coords.latitude,pos.coords.longitude,SHOP_LAT,SHOP_LNG);
-    S.gpsLoading=false;
-    if(d>MAX_DIST){alert("❌ أنت بعيد "+Math.round(d)+" متر!");render();return;}
-    const now=new Date();const ts=now.toLocaleTimeString("en",{hour:"2-digit",minute:"2-digit"});
-    const nm=now.getHours()*60+now.getMinutes();const lb=Math.max(0,nm-tMins(WORK_START));
-    await addDoc(attendCol,{emp:empName,date:td,punchIn:ts,punchOut:null,punchInMins:nm,punchOutMins:null,lateBy:lb,hours:null,createdAt:serverTimestamp()});
-    render();alert("✅ تسجيل الحضور\n"+ts+"\n"+(lb>0?"⚠️ متأخر "+lb+" دقيقة":"🟢 في الوقت"));
-  },()=>{S.gpsLoading=false;render();alert("❌ تعذر الحصول على موقعك!");},{enableHighAccuracy:true,timeout:10000});
-}
-async function punchOut(){
-  const empName=S.empName;if(!empName)return;const td=today();
-  const existing=S.attendance.find(x=>x.emp===empName&&x.date===td&&x.punchIn&&!x.punchOut);
-  if(!existing){alert("ما عندك بصمة حضور اليوم!");return;}
-  S.gpsLoading=true;render();
-  navigator.geolocation.getCurrentPosition(async pos=>{
-    const d=calcDist(pos.coords.latitude,pos.coords.longitude,SHOP_LAT,SHOP_LNG);
-    S.gpsLoading=false;
-    if(d>MAX_DIST){alert("❌ أنت بعيد "+Math.round(d)+" متر!");render();return;}
-    const now=new Date();const ts=now.toLocaleTimeString("en",{hour:"2-digit",minute:"2-digit"});
-    const nm=now.getHours()*60+now.getMinutes();const hrs=Math.round((nm-existing.punchInMins)/60*10)/10;
-    await updateDoc(doc(db,"attendance",existing.id),{punchOut:ts,punchOutMins:nm,hours:hrs});
-    render();alert("✅ تسجيل الخروج\n"+ts+"\nساعات: "+hrs);
-  },()=>{S.gpsLoading=false;render();alert("❌ تعذر!");},{enableHighAccuracy:true,timeout:10000});
-}
-
-// ===== NOTIFICATIONS =====
-async function sendBroadcast(){
-  const el=document.getElementById("broadcast-msg");const msg=el?el.value.trim():"";
-  if(!msg){alert("اكتب رسالة!");return;}
-  await addDoc(notifsCol,{type:"broadcast",to:"all",msg:msg,date:today(),readBy:{},createdAt:serverTimestamp()});
-  S.modal=null;if(el)el.value="";render();alert("✅ تم الإرسال");
-}
-async function markNotifRead(id,empName){const ref=doc(db,"notifications",id);const snap=await getDoc(ref);if(snap.exists()){const rb=snap.data().readBy||{};rb[empName]=true;await updateDoc(ref,{readBy:rb});}}
-async function dismissPendingNotif(){if(S.pendingNotif&&S.empName){await markNotifRead(S.pendingNotif.id,S.empName);S.pendingNotif=null;render();}}
-async function markAllRead(){const myN=S.notifs.filter(n=>(n.to===S.empName||n.to==="all")&&!(n.readBy||{})[S.empName]);for(const n of myN)await markNotifRead(n.id,S.empName);}
-
-// ===== REPORT HELPERS =====
-function storeSums(sid,fr,to){
-  const items=S.sales.filter(x=>x.store===sid&&x.date>=fr&&x.date<=to);
-  const shop=items.filter(x=>x.type==="store").reduce((a,b)=>a+b.amount,0);
-  const del=items.filter(x=>x.type==="delivery").reduce((a,b)=>a+b.amount,0);
-  return{shop,del,total:shop+del,count:items.length,items};
-}
-function setRepPeriod(p){
-  S.repPeriod=p;
-  if(p==="today"){S.repFrom=today();S.repTo=today();}
-  else if(p==="week"){S.repFrom=weekStart();S.repTo=today();}
-  else if(p==="month"){const d=new Date();S.repFrom=new Date(d.getFullYear(),d.getMonth(),1).toLocaleDateString("en-CA");S.repTo=today();}
-  else if(p==="all"){S.repFrom="2020-01-01";S.repTo=today();}
-  render();
-}
-
-// ===== RENDER WINNER BANNER =====
-function renderWinnerBanner(){
-  const td=today(),et={};
-  S.sales.filter(x=>x.date===td&&x.type==="store").forEach(x=>{et[x.emp]=(et[x.emp]||0)+x.amount;});
-  let ranked=Object.entries(et).sort((a,b)=>b[1]-a[1]);
-  let label=td;
-  if(!ranked.length){
-    const allD=Array.from(new Set(S.sales.filter(x=>x.type==="store").map(x=>x.date))).sort((a,b)=>b.localeCompare(a));
-    for(const d of allD){if(d===td)continue;const pv={};S.sales.filter(x=>x.date===d&&x.type==="store").forEach(x=>{pv[x.emp]=(pv[x.emp]||0)+x.amount;});if(Object.keys(pv).length){ranked=Object.entries(pv).sort((a,b)=>b[1]-a[1]);label=d;break;}}
+  function startCD(){
+    cdS=5*60;if(cdI)clearInterval(cdI);
+    cdI=setInterval(()=>{
+      cdS--;if(cdS<=0){clearInterval(cdI);cdI=null;cdS=0;checkPts();}
+      const el=document.getElementById("cd-el");
+      if(el){if(cdS>0){const m=Math.floor(cdS/60),s=cdS%60;el.textContent="⏳ النقاط تُضاف بعد "+m+":"+String(s).padStart(2,"0");}else el.textContent="🏆 جاري احتساب...";}
+    },1000);
   }
-  const sw=new Set(S.sales.filter(x=>x.date===td&&x.type==="store").map(x=>x.store));
-  const ar=STORES.every(s=>sw.has(s.id)),isT=label===td;
-  const meds=["🥇","🥈","🥉"];
-  let cdH="";
-  if(cdS>0&&ar&&isT){const m=Math.floor(cdS/60),s=cdS%60;cdH=`<span id="cd-el" style="background:#ffffff22;padding:2px 10px;border-radius:20px;font-size:11px">⏳ ${m}:${String(s).padStart(2,"0")}</span>`;}
-  else if(ar&&isT)cdH=`<span id="cd-el" style="background:#10b98133;padding:2px 10px;border-radius:20px;font-size:11px;color:var(--green)">✅ كل المحلات سجلت</span>`;
-  else if(isT){const ss=STORES.map(s=>sw.has(s.id)?`<span style="color:var(--green)">${s.icon}✓</span>`:`<span style="color:var(--red)">${s.icon}⏳</span>`).join(" ");cdH=`<span id="cd-el" style="background:#ffffff22;padding:2px 10px;border-radius:20px;font-size:11px">${ss}</span>`;}
-  if(!ranked.length)return'<div class="winner-banner"><div class="w-item">🏪 <b>نظام مبيعات البسفور</b></div></div>';
-  const items=ranked.map((r,i)=>`<div class="w-item"><span class="w-crown">${meds[i]||"🏅"}</span><span>${i===0?(isT?"👑 الفائز":"فائز "+label):"المركز "+(i+1)}: </span><span class="w-name">${r[0]}</span><span style="color:var(--gold2);margin:0 6px">${fmt(r[1])}</span>${i===0&&isT?cdH:""}${i<ranked.length-1?'<span class="w-sep">✦</span>':""}</div>`).join("");
-  return`<div class="winner-banner">${items}</div>`;
-}
 
-// ===== RENDER BOTTOM NAV =====
-function renderBottomNav(){
-  const isO=S.role==="owner",isE=S.role==="employee"&&S.empName;
-  const uc=isE?S.notifs.filter(n=>(n.to===S.empName||n.to==="all")&&!(n.readBy||{})[S.empName]).length:0;
-  let items=[];
-  if(isO){
-    items=[
-      {id:"pos",icon:"🛒",lbl:"مبيعات"},
-      {id:"report",icon:"📊",lbl:"تقارير"},
-      {id:"wallets",icon:"💰",lbl:"محافظ"},
-      {id:"attend",icon:"📍",lbl:"حضور"},
-      {id:"more",icon:"☰",lbl:"المزيد"},
-    ];
-  } else if(isE){
-    const myS=EMP_STORE[S.empName];
-    items=[
-      ...(myS?[{id:"pos",icon:"🛒",lbl:"مبيعات"}]:[]),
-      {id:"mywallet",icon:"💼",lbl:"محفظتي"},
-      {id:"myattend",icon:"📍",lbl:"حضوري"},
-      {id:"notifs",icon:"🔔",lbl:"إشعارات",badge:uc},
-    ];
+  // ===== WALLET ACTIONS =====
+  async function managePoints(empName,pts,add){
+    const w=S.wallets[empName]||{points:0};const cur=w.points||0;
+    const newPts=add?cur+pts:Math.max(0,cur-pts);
+    await db.doc("wallets/"+empName).update({points:newPts});
+    await txCol.add({emp:empName,type:"points",amount:add?pts:-pts,note:(add?"➕":"➖")+" نقاط من المالك",date:today(),createdAt:TS()});
+    S.modal=null;render();alert("✅ "+(add?"أضيفت":"حُذفت")+" "+pts+" نقطة");
   }
-  return items.map(it=>`
-    <div class="nav-item${S.tab===it.id?" active":""}" onclick="window._tab('${it.id}')">
-      <div class="nav-icon">${it.icon}</div>
-      <div class="nav-lbl">${it.lbl}</div>
-      ${it.badge?`<div class="nav-badge">${it.badge}</div>`:""}
-      <div class="nav-active-line"></div>
-    </div>
-  `).join("");
-}
+  async function addSalary(empName){
+    const amt=SALARIES[empName]||0;const snap=await db.doc("wallets/"+empName).get();
+    await db.doc("wallets/"+empName).update({balance:((snap.data()&&snap.data().balance)||0)+amt});
+    await txCol.add({emp:empName,type:"salary",amount:amt,note:"راتب أسبوعي 💰",date:today(),createdAt:TS()});
+    await notifsCol.add({type:"salary",to:empName,msg:"💰 تم إضافة راتبك "+fmt(amt),date:today(),readBy:{},createdAt:TS()});
+    alert("✅ "+fmt(amt)+" لـ "+empName);
+  }
+  async function addSalaryAll(){if(!confirm("إضافة رواتب للجميع؟"))return;for(const[name]of EMPS)await addSalary(name);}
+  async function convertPoints(empName){
+    const w=S.wallets[empName];if(!w||!w.points){alert("لا توجد نقاط!");return;}
+    const pts=w.points,amt=pts*PV;if(!confirm("تحويل "+pts+" نقطة = "+fmt(amt)+"?"))return;
+    await db.doc("wallets/"+empName).update({points:0,balance:(w.balance||0)+amt});
+    await txCol.add({emp:empName,type:"convert",amount:amt,note:"تحويل "+pts+" نقطة",date:today(),createdAt:TS()});
+    await notifsCol.add({type:"convert",to:empName,msg:"🎯 تم تحويل "+pts+" نقطة إلى "+fmt(amt),date:today(),readBy:{},createdAt:TS()});
+  }
+  async function addMoney(empName,amt,note){
+    const snap=await db.doc("wallets/"+empName).get();
+    await db.doc("wallets/"+empName).update({balance:((snap.data()&&snap.data().balance)||0)+amt});
+    await txCol.add({emp:empName,type:"add",amount:amt,note:note||"إضافة أموال",date:today(),createdAt:TS()});
+    await notifsCol.add({type:"add",to:empName,msg:"💵 تم إضافة "+fmt(amt),date:today(),readBy:{},createdAt:TS()});
+    S.modal=null;render();alert("✅ "+fmt(amt)+" لـ "+empName);
+  }
+  async function doWithdraw(empName,amt,note){
+    const w=S.wallets[empName];if(!w||(w.balance||0)<amt){alert("الرصيد غير كافي!");return;}
+    await db.doc("wallets/"+empName).update({balance:(w.balance||0)-amt});
+    await txCol.add({emp:empName,type:"withdraw",amount:amt,note:note||"سحب",date:today(),createdAt:TS()});
+    await notifsCol.add({type:"withdraw",to:empName,msg:"💸 تم سحب "+fmt(amt),date:today(),readBy:{},createdAt:TS()});
+    S.modal=null;render();
+  }
+  async function resetWallet(empName){
+    if(!confirm("تصفير "+empName+"?"))return;
+    await db.doc("wallets/"+empName).update({balance:0,points:0});
+    await txCol.add({emp:empName,type:"reset",amount:0,note:"تصفير",date:today(),createdAt:TS()});
+  }
+  async function deleteTx(id){
+    if(!confirm("حذف هذه المعاملة?"))return;
+    const tx=S.txs.find(x=>x.id===id);if(!tx)return;
+    const wSnap=await db.doc("wallets/"+tx.emp).get();if(!wSnap.exists)return;
+    const w=wSnap.data();
+    if(tx.type==="salary"||tx.type==="add")await db.doc("wallets/"+tx.emp).update({balance:Math.max(0,(w.balance||0)-tx.amount)});
+    else if(tx.type==="withdraw")await db.doc("wallets/"+tx.emp).update({balance:(w.balance||0)+tx.amount});
+    else if(tx.type==="points"){if(tx.amount>0)await db.doc("wallets/"+tx.emp).update({points:Math.max(0,(w.points||0)-tx.amount)});else await db.doc("wallets/"+tx.emp).update({points:(w.points||0)+Math.abs(tx.amount)});}
+    else if(tx.type==="convert"){const pb=Math.round(tx.amount/PV);await db.doc("wallets/"+tx.emp).update({balance:Math.max(0,(w.balance||0)-tx.amount),points:(w.points||0)+pb});}
+    await db.doc("wallet_tx/"+id).delete();
+  }
 
-// ===== RENDER POS =====
-function renderPOS(){
-  const td=today(),isO=S.role==="owner",isE=!!S.empName;
-  const myS=isE?EMP_STORE[S.empName]:null;
-  if(isE&&myS&&S.sel!==myS)S.sel=myS;
-  if(isE&&!S.empSel)S.empSel=S.empName;
+  // ===== ATTENDANCE =====
+  async function punchIn(){
+    const empName=S.empName;if(!empName)return;const td=today();
+    const existing=S.attendance.find(x=>x.emp===empName&&x.date===td&&x.punchIn&&!x.punchOut);
+    if(existing){alert("أنت مسجل حضور بالفعل!");return;}
+    S.gpsLoading=true;render();
+    navigator.geolocation.getCurrentPosition(async pos=>{
+      const d=calcDist(pos.coords.latitude,pos.coords.longitude,SHOP_LAT,SHOP_LNG);
+      S.gpsLoading=false;
+      if(d>MAX_DIST){alert("❌ أنت بعيد "+Math.round(d)+" متر!");render();return;}
+      const now=new Date();const ts=now.toLocaleTimeString("en",{hour:"2-digit",minute:"2-digit"});
+      const nm=now.getHours()*60+now.getMinutes();const lb=Math.max(0,nm-tMins(WORK_START));
+      await attendCol.add({emp:empName,date:td,punchIn:ts,punchOut:null,punchInMins:nm,punchOutMins:null,lateBy:lb,hours:null,createdAt:TS()});
+      render();alert("✅ تسجيل الحضور\n"+ts+"\n"+(lb>0?"⚠️ متأخر "+lb+" دقيقة":"🟢 في الوقت"));
+    },()=>{S.gpsLoading=false;render();alert("❌ تعذر الحصول على موقعك!");},{enableHighAccuracy:true,timeout:10000});
+  }
+  async function punchOut(){
+    const empName=S.empName;if(!empName)return;const td=today();
+    const existing=S.attendance.find(x=>x.emp===empName&&x.date===td&&x.punchIn&&!x.punchOut);
+    if(!existing){alert("ما عندك بصمة حضور اليوم!");return;}
+    S.gpsLoading=true;render();
+    navigator.geolocation.getCurrentPosition(async pos=>{
+      const d=calcDist(pos.coords.latitude,pos.coords.longitude,SHOP_LAT,SHOP_LNG);
+      S.gpsLoading=false;
+      if(d>MAX_DIST){alert("❌ أنت بعيد "+Math.round(d)+" متر!");render();return;}
+      const now=new Date();const ts=now.toLocaleTimeString("en",{hour:"2-digit",minute:"2-digit"});
+      const nm=now.getHours()*60+now.getMinutes();const hrs=Math.round((nm-existing.punchInMins)/60*10)/10;
+      await db.doc("attendance/"+existing.id).update({punchOut:ts,punchOutMins:nm,hours:hrs});
+      render();alert("✅ تسجيل الخروج\n"+ts+"\nساعات: "+hrs);
+    },()=>{S.gpsLoading=false;render();alert("❌ تعذر!");},{enableHighAccuracy:true,timeout:10000});
+  }
 
-  const ts=S.sales.filter(x=>x.date===td&&x.type==="store");
-  let dd=td;
-  if(ts.length===0){const ad=Array.from(new Set(S.sales.map(x=>x.date))).sort((a,b)=>b.localeCompare(a));if(ad.length>0&&ad[0]!==td)dd=ad[0];}
+  // ===== NOTIFICATIONS =====
+  async function sendBroadcast(){
+    const el=document.getElementById("broadcast-msg");const msg=el?el.value.trim():"";
+    if(!msg){alert("اكتب رسالة!");return;}
+    await notifsCol.add({type:"broadcast",to:"all",msg:msg,date:today(),readBy:{},createdAt:TS()});
+    if(el)el.value="";render();alert("✅ تم الإرسال");
+  }
+  async function markNotifRead(id,empName){
+    const ref=db.doc("notifications/"+id);const snap=await ref.get();
+    if(snap.exists){const rb=snap.data().readBy||{};rb[empName]=true;await ref.update({readBy:rb});}
+  }
+  async function dismissPendingNotif(){if(S.pendingNotif&&S.empName){await markNotifRead(S.pendingNotif.id,S.empName);S.pendingNotif=null;render();}}
+  async function markAllRead(){const myN=S.notifs.filter(n=>(n.to===S.empName||n.to==="all")&&!(n.readBy||{})[S.empName]);for(const n of myN)await markNotifRead(n.id,S.empName);}
 
-  const cards=STORES.map(s=>{
-    const r=storeSums(s.id,dd,dd);
-    const isMy=myS===s.id,canC=isO||(isE&&isMy);
-    return`<div class="store-card${S.sel===s.id?" sel":""}" style="--glow:${s.color}" onclick="${canC?`window._store(${s.id})`:"void(0)"}">
-      <div class="sel-ring" style="background:${s.color}"></div>
-      <div class="s-icon">${s.icon}</div>
-      <div class="s-name" style="color:${s.color}">${s.name}${isMy&&isE?" ⭐":""}</div>
-      <div class="s-sub">${r.count} فاتورة</div>
-      <div class="s-total" style="color:${s.color}">${fmt(r.total)}</div>
-      <div class="s-row"><span>🏪</span><span style="color:${s.color}">${fmt(r.shop)}</span></div>
-      <div class="s-row"><span>🚚</span><span style="color:var(--blue)">${fmt(r.del)}</span></div>
-    </div>`;
-  }).join("");
+  // ===== HELPERS =====
+  function storeSums(sid,fr,to){
+    const items=S.sales.filter(x=>x.store===sid&&x.date>=fr&&x.date<=to);
+    const shop=items.filter(x=>x.type==="store").reduce((a,b)=>a+b.amount,0);
+    const del=items.filter(x=>x.type==="delivery").reduce((a,b)=>a+b.amount,0);
+    return{shop,del,total:shop+del,count:items.length,items};
+  }
+  function setRepPeriod(p){
+    S.repPeriod=p;
+    if(p==="today"){S.repFrom=today();S.repTo=today();}
+    else if(p==="week"){S.repFrom=weekStart();S.repTo=today();}
+    else if(p==="month"){const d=new Date();S.repFrom=new Date(d.getFullYear(),d.getMonth(),1).toLocaleDateString("en-CA");S.repTo=today();}
+    else if(p==="all"){S.repFrom="2020-01-01";S.repTo=today();}
+    render();
+  }
 
-  const sel=STORES.find(s=>s.id===S.sel);
-  const canE=isO||(isE&&myS===S.sel);
-  const r2=storeSums(S.sel,td,td);
-  const logs=r2.items.length>0?r2.items:S.sales.filter(x=>x.store===S.sel).slice(0,20);
+  // ===== WINNER BANNER =====
+  function renderWinnerBanner(){
+    const td=today(),et={};
+    S.sales.filter(x=>x.date===td&&x.type==="store").forEach(x=>{et[x.emp]=(et[x.emp]||0)+x.amount;});
+    let ranked=Object.entries(et).sort((a,b)=>b[1]-a[1]);let label=td;
+    if(!ranked.length){
+      const allD=Array.from(new Set(S.sales.filter(x=>x.type==="store").map(x=>x.date))).sort((a,b)=>b.localeCompare(a));
+      for(const d of allD){if(d===td)continue;const pv={};S.sales.filter(x=>x.date===d&&x.type==="store").forEach(x=>{pv[x.emp]=(pv[x.emp]||0)+x.amount;});if(Object.keys(pv).length){ranked=Object.entries(pv).sort((a,b)=>b[1]-a[1]);label=d;break;}}
+    }
+    const sw=new Set(S.sales.filter(x=>x.date===td&&x.type==="store").map(x=>x.store));
+    const ar=STORES.every(s=>sw.has(s.id)),isT=label===td;
+    const meds=["🥇","🥈","🥉"];
+    let cdH="";
+    if(cdS>0&&ar&&isT){const m=Math.floor(cdS/60),s=cdS%60;cdH=`<span id="cd-el" style="background:#ffffff22;padding:2px 10px;border-radius:20px;font-size:11px">⏳ ${m}:${String(s).padStart(2,"0")}</span>`;}
+    else if(ar&&isT)cdH=`<span id="cd-el" style="background:#10b98133;padding:2px 10px;border-radius:20px;font-size:11px;color:#10b981">✅ كل المحلات سجلت</span>`;
+    else if(isT){const ss=STORES.map(s=>sw.has(s.id)?`<span style="color:#10b981">${s.icon}✓</span>`:`<span style="color:#ef4444">${s.icon}⏳</span>`).join(" ");cdH=`<span id="cd-el" style="background:#ffffff22;padding:2px 10px;border-radius:20px;font-size:11px">${ss}</span>`;}
+    if(!ranked.length)return`<div class="winner-banner"><div class="w-item">🏪 <b>نظام مبيعات البسفور</b></div></div>`;
+    const items=ranked.map((r,i)=>`<div class="w-item"><span class="w-crown">${meds[i]||"🏅"}</span><span>${i===0?(isT?"👑 الفائز":"فائز "+label):"المركز "+(i+1)}: </span><span class="w-name">${r[0]}</span><span style="color:#ffd700;margin:0 6px">${fmt(r[1])}</span>${i===0&&isT?cdH:""}${i<ranked.length-1?'<span style="color:#ffffff44;margin:0 8px">✦</span>':""}</div>`).join("");
+    return`<div class="winner-banner">${items}</div>`;
+  }
 
-  const eL=S.empSel?(EMPS.find(e=>e[0]===S.empSel)||["","👤"])[1]+" "+S.empSel:"👤 اختر موظف";
-  const eI=EMPS.map(e=>`<div class="emp-opt" onclick="window._emp('${e[0]}','${e[1]}')">${e[1]} ${e[0]}</div>`).join("");
+  // ===== BOTTOM NAV =====
+  function renderBottomNav(){
+    const isO=S.role==="owner",isE=S.role==="employee"&&S.empName;
+    const uc=isE?S.notifs.filter(n=>(n.to===S.empName||n.to==="all")&&!(n.readBy||{})[S.empName]).length:0;
+    let items=[];
+    if(isO)items=[{id:"pos",icon:"🛒",lbl:"مبيعات"},{id:"report",icon:"📊",lbl:"تقارير"},{id:"wallets",icon:"💰",lbl:"محافظ"},{id:"attend",icon:"📍",lbl:"حضور"},{id:"more",icon:"☰",lbl:"المزيد"}];
+    else if(isE){const myS=EMP_STORE[S.empName];items=[...(myS?[{id:"pos",icon:"🛒",lbl:"مبيعات"}]:[]),{id:"mywallet",icon:"💼",lbl:"محفظتي"},{id:"myattend",icon:"📍",lbl:"حضوري"},{id:"notifs",icon:"🔔",lbl:"إشعارات",badge:uc}];}
+    return items.map(it=>`<div class="nav-item${S.tab===it.id?" active":""}" onclick="switchTab('${it.id}')"><div class="nav-icon">${it.icon}</div><div class="nav-lbl">${it.lbl}</div>${it.badge?`<div class="nav-badge">${it.badge}</div>`:""}<div class="nav-active-line"></div></div>`).join("");
+  }
 
-  const rows=logs.length===0?`<div class="empty">لا توجد مبيعات</div>`:
-    logs.map(x=>`<div class="sale-row">
-      <div><div style="font-weight:700">${fmt(x.amount)}</div><div class="sale-emp">${x.emp||"—"}</div></div>
-      <div><span class="badge ${x.type==="store"?"badge-s":"badge-d"}">${x.type==="store"?"🏪":"🚚"}</span></div>
-      <div><div class="sale-time">${x.date!==td?`<span style="color:var(--orange)">${x.date}</span>`:""}${x.time||""}</div></div>
-      <div style="display:flex;gap:4px">
-        ${isO?`<button class="act-btn" onclick="window._edit('${x.id}')">✏️</button><button class="act-btn" onclick="window._del('${x.id}')">🗑️</button>`:""}
+  function switchTab(t){if(t==="report"&&S.role!=="owner"){alert("للمالك فقط!");return;}S.tab=t;render();}
+  window.switchTab=switchTab;
+
+  // ===== RENDER POS =====
+  function renderPOS(){
+    const td=today(),isO=S.role==="owner",isE=!!S.empName;
+    const myS=isE?EMP_STORE[S.empName]:null;
+    if(isE&&myS&&S.sel!==myS)S.sel=myS;
+    if(isE&&!S.empSel)S.empSel=S.empName;
+    const ts=S.sales.filter(x=>x.date===td&&x.type==="store");
+    let dd=td;
+    if(ts.length===0){const ad=Array.from(new Set(S.sales.map(x=>x.date))).sort((a,b)=>b.localeCompare(a));if(ad.length>0&&ad[0]!==td)dd=ad[0];}
+    const cards=STORES.map(s=>{
+      const r=storeSums(s.id,dd,dd);const isMy=myS===s.id,canC=isO||(isE&&isMy);
+      return`<div class="store-card${S.sel===s.id?" sel":""}" onclick="${canC?`selStore(${s.id})`:"void(0)"}"><div class="sel-ring" style="background:${s.color}"></div><div class="s-icon">${s.icon}</div><div class="s-name" style="color:${s.color}">${s.name}${isMy&&isE?" ⭐":""}</div><div class="s-sub">${r.count} فاتورة</div><div class="s-total" style="color:${s.color}">${fmt(r.total)}</div><div class="s-row"><span>🏪 ${fmt(r.shop)}</span><span style="color:#38bdf8">🚚 ${fmt(r.del)}</span></div></div>`;
+    }).join("");
+    const sel=STORES.find(s=>s.id===S.sel);
+    const canE=isO||(isE&&myS===S.sel);
+    const r2=storeSums(S.sel,td,td);
+    const logs=r2.items.length>0?r2.items:S.sales.filter(x=>x.store===S.sel).slice(0,20);
+    const eL=S.empSel?(EMPS.find(e=>e[0]===S.empSel)||["","👤"])[1]+" "+S.empSel:"👤 اختر موظف";
+    const eI=EMPS.map(e=>`<div class="emp-opt" onclick="selEmp('${e[0]}','${e[1]}')">${e[1]} ${e[0]}</div>`).join("");
+    const rows=logs.length===0?`<div class="empty">لا توجد مبيعات</div>`:
+      logs.map(x=>`<div class="sale-row"><div><div style="font-weight:700">${fmt(x.amount)}</div><div class="sale-emp">${x.emp||"—"}</div></div><div><span class="badge ${x.type==="store"?"badge-s":"badge-d"}">${x.type==="store"?"🏪":"🚚"}</span></div><div class="sale-time">${x.date!==td?`<span style="color:#f97316">${x.date}</span><br/>`:``}${x.time||""}</div><div style="display:flex;gap:4px">${isO?`<button class="act-btn" onclick="openEdit('${x.id}')">✏️</button><button class="act-btn" onclick="doDelSale('${x.id}')">🗑️</button>`:""}</div></div>`).join("");
+    const posForm=canE?`
+      <div class="pos-type-row">
+        <button class="pos-type-btn${S.saleType==="store"?" ts":""}" onclick="setSaleType('store')">🏪 مبيعات المحل</button>
+        <button class="pos-type-btn${S.saleType==="delivery"?" td":""}" onclick="setSaleType('delivery')">🚚 توصيل</button>
       </div>
-    </div>`).join("");
-
-  const posForm=canE?`
-    <div class="pos-type-row">
-      <button class="pos-type-btn${S.saleType==="store"?" ts":""}" onclick="window._type('store')">🏪 مبيعات المحل</button>
-      <button class="pos-type-btn${S.saleType==="delivery"?" td":""}" onclick="window._type('delivery')">🚚 توصيل</button>
-    </div>
-    <div class="sum-row">
-      <div class="sum-card"><div class="sum-lbl">🏪 المحل</div><div class="sum-val" style="color:${sel.color}">${fmt(r2.shop)}</div></div>
-      <div class="sum-card"><div class="sum-lbl">🚚 توصيل</div><div class="sum-val" style="color:var(--blue)">${fmt(r2.del)}</div></div>
-      <div class="sum-card" style="border-color:var(--purple)44"><div class="sum-lbl">💰 مجموع</div><div class="sum-val">${fmt(r2.total)}</div></div>
-    </div>
-    <div class="inp-row">
-      <div>
-        <div class="inp-lbl">المبلغ *</div>
-        <input class="inp" id="inp-amount" type="number" placeholder="25000" min="0" style="border-color:${S.saleType==="store"?"var(--purple)66":"var(--blue)66"}" onkeydown="if(event.key==='Enter')window._add()"/>
+      <div class="sum-row">
+        <div class="sum-card"><div class="sum-lbl">🏪 المحل</div><div class="sum-val" style="color:${sel.color}">${fmt(r2.shop)}</div></div>
+        <div class="sum-card"><div class="sum-lbl">🚚 توصيل</div><div class="sum-val" style="color:#38bdf8">${fmt(r2.del)}</div></div>
+        <div class="sum-card"><div class="sum-lbl">💰 مجموع</div><div class="sum-val">${fmt(r2.total)}</div></div>
       </div>
-      <div>
-        <div class="inp-lbl">الموظف *</div>
-        <div class="emp-sel-wrap">
-          <button class="emp-btn" id="emp-btn" onclick="window._empMenu()">
-            <span id="emp-label">${eL}</span><span style="color:var(--muted);font-size:11px">▾</span>
-          </button>
-          <div id="emp-menu" class="emp-dropdown">${eI}</div>
-        </div>
+      <div class="inp-row">
+        <div><div class="inp-lbl">المبلغ *</div><input class="inp" id="inp-amount" type="number" placeholder="25000" min="0" onkeydown="if(event.key==='Enter')doAddSale()" style="border-color:${S.saleType==="store"?"#a78bfa66":"#38bdf866"}"/></div>
+        <div><div class="inp-lbl">الموظف *</div><div class="emp-sel-wrap"><button class="emp-btn" onclick="toggleEmpMenu()"><span id="emp-label">${eL}</span><span style="color:#7b6fa0;font-size:11px">▾</span></button><div id="emp-menu" class="emp-dropdown">${eI}</div></div></div>
       </div>
-    </div>
-    <button class="add-btn${S.saleType==="store"?" store-mode":" del-mode"}" onclick="window._add()">✅ تسجيل</button>
-  `:`<div class="view-notice">👁 وضع المشاهدة</div>
-    <div class="sum-row">
-      <div class="sum-card"><div class="sum-lbl">🏪 المحل</div><div class="sum-val" style="color:${sel.color}">${fmt(r2.shop)}</div></div>
-      <div class="sum-card"><div class="sum-lbl">🚚 توصيل</div><div class="sum-val" style="color:var(--blue)">${fmt(r2.del)}</div></div>
-      <div class="sum-card"><div class="sum-lbl">💰 مجموع</div><div class="sum-val">${fmt(r2.total)}</div></div>
-    </div>`;
+      <button class="add-btn${S.saleType==="store"?" store-mode":" del-mode"}" onclick="doAddSale()">✅ تسجيل</button>`
+    :`<div class="view-notice">👁 وضع المشاهدة</div>
+      <div class="sum-row">
+        <div class="sum-card"><div class="sum-lbl">🏪 المحل</div><div class="sum-val" style="color:${sel.color}">${fmt(r2.shop)}</div></div>
+        <div class="sum-card"><div class="sum-lbl">🚚 توصيل</div><div class="sum-val" style="color:#38bdf8">${fmt(r2.del)}</div></div>
+        <div class="sum-card"><div class="sum-lbl">💰 مجموع</div><div class="sum-val">${fmt(r2.total)}</div></div>
+      </div>`;
+    return`<div class="stores-grid">${cards}</div><div class="pos-box"><div class="sec-title">${sel.icon} ${sel.name}</div>${posForm}</div><div class="sales-table-wrap"><div class="sales-table-head"><div>المبلغ / الموظف</div><div>النوع</div><div>الوقت</div><div></div></div>${rows}</div>`;
+  }
+  window.selStore=function(id){S.sel=id;render();};
+  window.setSaleType=function(t){S.saleType=t;render();};
+  window.doAddSale=addSale;
+  window.doDelSale=delSale;
+  window.openEdit=function(id){S.editId=id;S.modal=null;render();};
+  window.toggleEmpMenu=function(){const m=document.getElementById("emp-menu");if(!m)return;const open=m.style.display==="block";m.style.display=open?"none":"block";if(!open)setTimeout(()=>{document.addEventListener("click",function h(e){const m2=document.getElementById("emp-menu");if(m2&&!m2.contains(e.target)){m2.style.display="none";document.removeEventListener("click",h);}});},0);};
+  window.selEmp=function(name,icon){S.empSel=name;const lb=document.getElementById("emp-label");if(lb)lb.textContent=icon+" "+name;const m=document.getElementById("emp-menu");if(m)m.style.display="none";render();};
 
-  return`
-    <div class="stores-grid">${cards}</div>
-    <div class="pos-box">
-      <div class="sec-title">${sel.icon} ${sel.name}</div>
-      ${posForm}
-    </div>
-    <div class="sales-table-wrap">
-      <div class="sales-table-head"><div>المبلغ / الموظف</div><div>النوع</div><div>الوقت</div><div></div></div>
-      ${rows}
-    </div>
-  `;
-}
-
-// ===== RENDER REPORT =====
-function renderReport(){
-  let f=S.sales.filter(x=>x.date>=S.repFrom&&x.date<=S.repTo);
-  if(S.repStore!=="all")f=f.filter(x=>x.store===S.repStore);
-  if(S.repType!=="all")f=f.filter(x=>x.type===S.repType);
-  const grand=f.reduce((a,b)=>a+b.amount,0);
-  const gS=f.filter(x=>x.type==="store").reduce((a,b)=>a+b.amount,0);
-  const gD=f.filter(x=>x.type==="delivery").reduce((a,b)=>a+b.amount,0);
-  const st=STORES.map(s=>{const it=f.filter(x=>x.store===s.id);const sh=it.filter(x=>x.type==="store").reduce((a,b)=>a+b.amount,0);const dl=it.filter(x=>x.type==="delivery").reduce((a,b)=>a+b.amount,0);return{s,shop:sh,del:dl,total:sh+dl,count:it.length};});
-  const mx=Math.max(...st.map(x=>x.total),1);
-
-  const pb=[{v:"today",l:"اليوم"},{v:"week",l:"الأسبوع"},{v:"month",l:"الشهر"},{v:"all",l:"الكل"}].map(x=>`<button class="chip${S.repPeriod===x.v?" active":""}" onclick="window._setPeriod('${x.v}')">${x.l}</button>`).join("");
-  const sb=[{v:"all",l:"🏪 الكل"},{v:1,l:"محل 1"},{v:2,l:"محل 2"},{v:3,l:"محل 3"}].map(x=>`<button class="chip${S.repStore===x.v?" active":""}" onclick="window._repStore(${JSON.stringify(x.v)})">${x.l}</button>`).join("");
-  const tb=[{v:"all",l:"📦 الكل"},{v:"store",l:"🏪 محل"},{v:"delivery",l:"🚚 توصيل"}].map(x=>`<button class="chip${S.repType===x.v?" active":""}" onclick="window._repType('${x.v}')">${x.l}</button>`).join("");
-
-  const rc=st.filter(x=>S.repStore==="all"||x.s.id===S.repStore).map(o=>`
-    <div class="rep-card" style="border-color:${o.s.color}44">
-      <div class="rep-card-icon">${o.s.icon}</div>
-      <div class="rep-card-name">${o.s.name}</div>
-      <div class="rep-card-total" style="color:${o.s.color}">${fmt(o.total)}</div>
-      <div class="rep-mini">🏪 ${fmt(o.shop)}</div>
-      <div class="rep-mini" style="color:var(--blue)">🚚 ${fmt(o.del)}</div>
-      <div class="rep-mini">${o.count} فاتورة</div>
-    </div>`).join("");
-
-  const bars=st.filter(x=>S.repStore==="all"||x.s.id===S.repStore).map(o=>{
-    const pct=grand>0?Math.round(o.total/grand*100):0;
-    const w=Math.round(o.total/mx*100);
-    const wS=o.total>0?Math.round(o.shop/o.total*100):0;
-    return`<div class="bar-wrap">
-      <div class="bar-meta">
-        <span>${o.s.icon} ${o.s.name}</span>
-        <span style="color:${o.s.color}">${pct}% — ${fmt(o.total)}</span>
-      </div>
-      <div class="bar-track">
-        <div class="bar-fill" style="width:${w}%;background:linear-gradient(90deg,${o.s.color},${o.s.color}aa)"></div>
-      </div>
-    </div>`;
-  }).join("");
-
-  const dr=Array.from(f).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,50).map(x=>{
-    const s2=STORES.find(s=>s.id===x.store)||STORES[0];
-    return`<div class="sale-row">
-      <div><div style="font-weight:700;color:${x.type==="store"?s2.color:"var(--blue)"}">${fmt(x.amount)}</div><div class="sale-emp">${s2.icon} ${s2.name} · ${x.emp||"—"}</div></div>
-      <div><span class="badge ${x.type==="store"?"badge-s":"badge-d"}">${x.type==="store"?"🏪":"🚚"}</span></div>
-      <div class="sale-time">${x.date}<br/>${x.time||""}</div>
-      <div></div>
-    </div>`;
-  }).join("");
-
-  return`
-    <div class="sec-title">📊 التقارير</div>
+  // ===== RENDER REPORT =====
+  function renderReport(){
+    let f=S.sales.filter(x=>x.date>=S.repFrom&&x.date<=S.repTo);
+    if(S.repStore!=="all")f=f.filter(x=>x.store===S.repStore);
+    if(S.repType!=="all")f=f.filter(x=>x.type===S.repType);
+    const grand=f.reduce((a,b)=>a+b.amount,0);
+    const gS=f.filter(x=>x.type==="store").reduce((a,b)=>a+b.amount,0);
+    const gD=f.filter(x=>x.type==="delivery").reduce((a,b)=>a+b.amount,0);
+    const st=STORES.map(s=>{const it=f.filter(x=>x.store===s.id);const sh=it.filter(x=>x.type==="store").reduce((a,b)=>a+b.amount,0);const dl=it.filter(x=>x.type==="delivery").reduce((a,b)=>a+b.amount,0);return{s,shop:sh,del:dl,total:sh+dl,count:it.length};});
+    const mx=Math.max(...st.map(x=>x.total),1);
+    const pb=[{v:"today",l:"اليوم"},{v:"week",l:"الأسبوع"},{v:"month",l:"الشهر"},{v:"all",l:"الكل"}].map(x=>`<button class="chip${S.repPeriod===x.v?" active":""}" onclick="setRP('${x.v}')">${x.l}</button>`).join("");
+    const sb=[{v:"all",l:"🏪 الكل"},{v:1,l:"محل 1"},{v:2,l:"محل 2"},{v:3,l:"محل 3"}].map(x=>`<button class="chip${S.repStore===x.v?" active":""}" onclick="setRS(${JSON.stringify(x.v)})">${x.l}</button>`).join("");
+    const tb=[{v:"all",l:"📦 الكل"},{v:"store",l:"🏪 محل"},{v:"delivery",l:"🚚 توصيل"}].map(x=>`<button class="chip${S.repType===x.v?" active":""}" onclick="setRT('${x.v}')">${x.l}</button>`).join("");
+    const rc=st.filter(x=>S.repStore==="all"||x.s.id===S.repStore).map(o=>`<div class="rep-card" style="border-color:${o.s.color}44"><div style="font-size:22px;margin-bottom:5px">${o.s.icon}</div><div style="font-size:10px;color:#7b6fa0;margin-bottom:5px">${o.s.name}</div><div style="font-size:16px;font-weight:900;color:${o.s.color}">${fmt(o.total)}</div><div class="rep-mini">🏪 ${fmt(o.shop)}</div><div class="rep-mini" style="color:#38bdf8">🚚 ${fmt(o.del)}</div><div class="rep-mini">${o.count} فاتورة</div></div>`).join("");
+    const bars=st.filter(x=>S.repStore==="all"||x.s.id===S.repStore).map(o=>{const pct=grand>0?Math.round(o.total/grand*100):0;const w=Math.round(o.total/mx*100);return`<div class="bar-wrap"><div class="bar-meta"><span>${o.s.icon} ${o.s.name}</span><span style="color:${o.s.color}">${pct}% — ${fmt(o.total)}</span></div><div class="bar-track"><div class="bar-fill" style="width:${w}%;background:${o.s.color}"></div></div></div>`;}).join("");
+    const dr=Array.from(f).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,50).map(x=>{const s2=STORES.find(s=>s.id===x.store)||STORES[0];return`<div class="sale-row"><div><div style="font-weight:700;color:${x.type==="store"?s2.color:"#38bdf8"}">${fmt(x.amount)}</div><div class="sale-emp">${s2.icon} ${s2.name} · ${x.emp||"—"}</div></div><div><span class="badge ${x.type==="store"?"badge-s":"badge-d"}">${x.type==="store"?"🏪":"🚚"}</span></div><div class="sale-time">${x.date}<br/>${x.time||""}</div><div></div></div>`;}).join("");
+    return`<div class="sec-title">📊 التقارير</div>
     <div style="background:var(--card);border:1px solid var(--border);border-radius:18px;padding:16px;margin-bottom:14px">
-      <div class="inp-lbl mb8">الفترة</div>
-      <div class="filter-chips">${pb}</div>
+      <div class="inp-lbl" style="margin-bottom:8px">الفترة</div><div class="filter-chips">${pb}</div>
       <div class="date-range-row">
-        <div><div class="inp-lbl">من</div><input class="date-inp" type="date" value="${S.repFrom}" onchange="S.repPeriod='custom';S.repFrom=this.value;window._applyDates()"/></div>
-        <div style="color:var(--muted);padding-top:22px">←</div>
-        <div><div class="inp-lbl">إلى</div><input class="date-inp" type="date" value="${S.repTo}" onchange="S.repPeriod='custom';S.repTo=this.value;window._applyDates()"/></div>
+        <div><div class="inp-lbl">من</div><input class="date-inp" type="date" value="${S.repFrom}" onchange="S.repFrom=this.value;S.repPeriod='custom';renderReportPage()"/></div>
+        <div style="color:#7b6fa0;padding-top:22px">←</div>
+        <div><div class="inp-lbl">إلى</div><input class="date-inp" type="date" value="${S.repTo}" onchange="S.repTo=this.value;S.repPeriod='custom';renderReportPage()"/></div>
       </div>
-      <div class="inp-lbl mb8">المحل</div>
-      <div class="filter-chips mb8">${sb}</div>
-      <div class="inp-lbl mb8">النوع</div>
-      <div class="filter-chips">${tb}</div>
+      <div class="inp-lbl" style="margin-bottom:8px">المحل</div><div class="filter-chips" style="margin-bottom:12px">${sb}</div>
+      <div class="inp-lbl" style="margin-bottom:8px">النوع</div><div class="filter-chips">${tb}</div>
     </div>
-    <div class="grand-card">
-      <div>
-        <div style="font-size:11px;color:var(--muted)">📅 ${S.repFrom} ← ${S.repTo}</div>
-        <div style="font-size:12px;color:var(--muted)">${f.length} فاتورة</div>
-        <div class="grand-total" style="color:var(--purple2)">${fmt(grand)}</div>
-      </div>
-      <div class="grand-subs">
-        <div class="grand-sub"><div class="grand-sub-lbl">🏪 المحلات</div><div class="grand-sub-val" style="color:var(--purple2)">${fmt(gS)}</div></div>
-        <div class="grand-sub"><div class="grand-sub-lbl">🚚 التوصيل</div><div class="grand-sub-val" style="color:var(--blue)">${fmt(gD)}</div></div>
-      </div>
-    </div>
+    <div class="grand-card"><div><div style="font-size:11px;color:#7b6fa0">📅 ${S.repFrom} ← ${S.repTo}</div><div style="font-size:12px;color:#7b6fa0">${f.length} فاتورة</div><div class="grand-total" style="color:#a78bfa">${fmt(grand)}</div></div><div class="grand-subs"><div class="grand-sub"><div class="grand-sub-lbl">🏪 المحلات</div><div class="grand-sub-val" style="color:#a78bfa">${fmt(gS)}</div></div><div class="grand-sub"><div class="grand-sub-lbl">🚚 التوصيل</div><div class="grand-sub-val" style="color:#38bdf8">${fmt(gD)}</div></div></div></div>
     <div class="rep-cards">${rc||`<div style="grid-column:1/-1" class="empty">لا توجد بيانات</div>`}</div>
     <div class="chart-box"><div style="font-weight:700;margin-bottom:12px">📈 مقارنة</div>${grand===0?`<div class="empty">لا توجد مبيعات</div>`:bars}</div>
-    <div class="sales-table-wrap">
-      <div style="padding:14px 16px;font-weight:700;border-bottom:1px solid var(--border)">📋 التفاصيل</div>
-      ${f.length===0?`<div class="empty">لا توجد فواتير</div>`:dr}
-    </div>
-  `;
-}
+    <div class="sales-table-wrap"><div style="padding:14px 16px;font-weight:700;border-bottom:1px solid var(--border)">📋 التفاصيل</div>${f.length===0?`<div class="empty">لا توجد فواتير</div>`:dr}</div>`;
+  }
+  window.S=S;
+  window.setRP=function(p){setRepPeriod(p);};
+  window.setRS=function(v){S.repStore=(v==="all"?"all":Number(v)||v);render();};
+  window.setRT=function(v){S.repType=v;render();};
+  window.renderReportPage=function(){const pg=document.getElementById("page-report");if(pg)pg.innerHTML=renderReport();};
 
-// ===== RENDER WALLETS =====
-function renderWallets(){
-  const cards=EMPS.map(([name,icon])=>{
-    const w=S.wallets[name]||{balance:0,points:0};const c=EMP_COLORS[name]||"var(--purple2)";
-    const myTxs=S.txs.filter(x=>x.emp===name).slice(0,6);
-    const txRows=myTxs.length===0?`<div class="empty" style="padding:12px">لا توجد معاملات</div>`:myTxs.map(x=>{
-      const cls={salary:"tx-salary",points:"tx-points",withdraw:"tx-withdraw",convert:"tx-convert",add:"tx-add",reset:"tx-reset"}[x.type]||"";
-      const isNeg=x.type==="withdraw"||x.type==="reset"||(x.type==="points"&&x.amount<0);
-      return`<div class="tx-item">
-        <div><span class="tx-badge" style="background:${isNeg?"var(--red)":"var(--green)"}18;border:1px solid ${isNeg?"var(--red)":"var(--green)"}44;color:${isNeg?"var(--red)":"var(--green)"}">${x.note||x.type}</span><div style="font-size:10px;color:var(--muted);margin-top:3px">${x.date||""}</div></div>
-        <div style="display:flex;align-items:center;gap:6px">
-          <span style="color:${isNeg?"var(--red)":"var(--green)"};font-weight:700">${isNeg?"- ":"+ "}${x.type==="points"?fmtPts(Math.abs(x.amount)):fmt(Math.abs(x.amount))}</span>
-          <button onclick="window._delTx('${x.id}')" style="background:var(--red)15;border:1px solid var(--red)33;color:var(--red);border-radius:6px;padding:2px 7px;cursor:pointer;font-size:11px">🗑️</button>
-        </div>
-      </div>`;
+  // ===== RENDER WALLETS =====
+  function renderWallets(){
+    const cards=EMPS.map(([name,icon])=>{
+      const w=S.wallets[name]||{balance:0,points:0};const c=EMP_COLORS[name]||"#a78bfa";
+      const myTxs=S.txs.filter(x=>x.emp===name).slice(0,6);
+      const txRows=myTxs.length===0?`<div class="empty" style="padding:12px">لا توجد معاملات</div>`:myTxs.map(x=>{const isNeg=x.type==="withdraw"||x.type==="reset"||(x.type==="points"&&x.amount<0);return`<div class="tx-item"><div><span style="background:${isNeg?"#ef444418":"#10b98118"};border:1px solid ${isNeg?"#ef444444":"#10b98144"};color:${isNeg?"#ef4444":"#10b981"};padding:2px 8px;border-radius:20px;font-size:10px">${x.note||x.type}</span><div style="font-size:10px;color:#7b6fa0;margin-top:3px">${x.date||""}</div></div><div style="display:flex;align-items:center;gap:6px"><span style="color:${isNeg?"#ef4444":"#10b981"};font-weight:700">${isNeg?"- ":"+ "}${x.type==="points"?fmtPts(Math.abs(x.amount)):fmt(Math.abs(x.amount))}</span><button onclick="doDelTx('${x.id}')" style="background:#ef444415;border:1px solid #ef444433;color:#ef4444;border-radius:6px;padding:2px 7px;cursor:pointer;font-size:11px">🗑️</button></div></div>`;}).join("");
+      return`<div class="wallet-card" style="border-color:${c}44"><div class="wc-name" style="color:${c}">${icon} ${name}</div><div class="wc-balance-row"><div class="wc-bal" style="border-color:${c}33"><div class="wc-bal-lbl">💰 الرصيد</div><div class="wc-bal-val" style="color:${c}">${fmt(w.balance||0)}</div></div><div class="wc-bal" style="border-color:#ffd70033"><div class="wc-bal-lbl">🏅 النقاط</div><div class="wc-bal-val" style="color:#ffd700">${w.points||0} <span style="font-size:12px;color:#7b6fa0">= ${fmt((w.points||0)*PV)}</span></div></div></div><div class="wc-actions"><button class="wc-btn" style="background:#10b98115;color:#10b981;border:1px solid #10b98144" onclick="doSalary('${name}')">💰 راتب</button><button class="wc-btn" style="background:#ffd70015;color:#ffd700;border:1px solid #ffd70044" onclick="doConvert('${name}')">🎯 نقاط</button><button class="wc-btn" style="background:#a78bfa15;color:#a78bfa;border:1px solid #a78bfa44" onclick="openManagePts('${name}')">±🏅</button><button class="wc-btn" style="background:#38bdf815;color:#38bdf8;border:1px solid #38bdf844" onclick="openAddMoney('${name}')">💵 إضافة</button><button class="wc-btn" style="background:#f9731615;color:#f97316;border:1px solid #f9731644" onclick="openWithdraw('${name}')">💸 سحب</button><button class="wc-btn" style="background:#ef444415;color:#ef4444;border:1px solid #ef444444" onclick="doReset('${name}')">🔄 تصفير</button></div><div class="tx-list"><div style="font-size:11px;color:#7b6fa0;margin-bottom:8px">آخر المعاملات</div>${txRows}</div></div>`;
     }).join("");
+    return`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:10px"><div class="sec-title">💰 إدارة المحافظ</div><button onclick="doSalaryAll()" style="background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none;border-radius:12px;padding:10px 16px;font-family:'Cairo',sans-serif;font-size:12px;font-weight:700;cursor:pointer">💰 رواتب الجمعة للجميع</button></div>${cards}`;
+  }
+  window.doSalary=addSalary;window.doSalaryAll=addSalaryAll;window.doConvert=convertPoints;window.doReset=resetWallet;window.doDelTx=deleteTx;
+  window.openManagePts=function(emp){S.modal={type:"managepoints",emp};render();};
+  window.openAddMoney=function(emp){S.modal={type:"addmoney",emp};render();};
+  window.openWithdraw=function(emp){S.modal={type:"withdraw",emp};render();};
 
-    return`<div class="wallet-card" style="border-color:${c}44">
-      <div class="wc-header">
-        <div class="wc-name" style="color:${c}">${icon} ${name}</div>
-      </div>
-      <div class="wc-balance-row">
-        <div class="wc-bal" style="border-color:${c}33">
-          <div class="wc-bal-lbl">💰 الرصيد</div>
-          <div class="wc-bal-val" style="color:${c}">${fmt(w.balance||0)}</div>
-        </div>
-        <div class="wc-bal" style="border-color:var(--gold)33">
-          <div class="wc-bal-lbl">🏅 النقاط</div>
-          <div class="wc-bal-val" style="color:var(--gold2)">${w.points||0} <span style="font-size:12px;color:var(--muted)">= ${fmt((w.points||0)*PV)}</span></div>
-        </div>
-      </div>
-      <div class="wc-actions">
-        <button class="wc-btn" style="background:var(--green)15;color:var(--green);border:1px solid var(--green)44" onclick="window._salary('${name}')">💰 راتب</button>
-        <button class="wc-btn" style="background:var(--gold)15;color:var(--gold2);border:1px solid var(--gold)44" onclick="window._convert('${name}')">🎯 نقاط</button>
-        <button class="wc-btn" style="background:var(--purple)15;color:var(--purple2);border:1px solid var(--purple)44" onclick="window._openManagePoints('${name}')">±🏅</button>
-        <button class="wc-btn" style="background:var(--blue)15;color:var(--blue);border:1px solid var(--blue)44" onclick="window._openAddMoney('${name}')">💵 إضافة</button>
-        <button class="wc-btn" style="background:var(--orange)15;color:var(--orange);border:1px solid var(--orange)44" onclick="window._openWithdraw('${name}')">💸 سحب</button>
-        <button class="wc-btn" style="background:var(--red)15;color:var(--red);border:1px solid var(--red)44" onclick="window._reset('${name}')">🔄 تصفير</button>
-      </div>
-      <div class="tx-list"><div style="font-size:11px;color:var(--muted);margin-bottom:8px">آخر المعاملات</div>${txRows}</div>
-    </div>`;
-  }).join("");
+  // ===== RENDER ATTEND ADMIN =====
+  function renderAttendAdmin(){
+    const td=today();
+    const tc=EMPS.map(([name,icon])=>{const c=EMP_COLORS[name];const rec=S.attendance.find(x=>x.emp===name&&x.date===td);let st,sc,dt;if(!rec){st="غائب";sc="#ef4444";dt="لم يسجل";}else if(!rec.punchOut){st="في الدوام";sc="#ffd700";dt="حضر: "+rec.punchIn+(rec.lateBy>0?" (متأخر "+rec.lateBy+"د)":"");}else{st="انصرف";sc="#10b981";dt=rec.punchIn+" — "+rec.punchOut+" | "+rec.hours+"س";}return`<div class="attend-emp-card" style="border-color:${c}44"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-weight:700;color:${c}">${icon} ${name}</span><span style="padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;background:${sc}18;border:1px solid ${sc}44;color:${sc}">${st}</span></div><div style="font-size:11px;color:#7b6fa0">${dt}</div></div>`;}).join("");
+    const ar=Array.from(S.attendance).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,50);
+    const rows=ar.map(r=>{const c=EMP_COLORS[r.emp]||"#a78bfa";return`<div class="sale-row"><div><div style="font-weight:700;color:${c}">${r.emp}</div><div class="sale-time">${r.date}</div></div><div style="color:#10b981;font-size:12px">${r.punchIn||"—"}${r.lateBy>0?`<span style="color:#ef4444"> +${r.lateBy}د</span>`:""}</div><div style="color:#a78bfa;font-size:12px">${r.punchOut||"⏳"}</div><div style="font-size:12px">${r.hours!=null?r.hours+"س":"—"}</div></div>`;}).join("");
+    return`<div class="sec-title">📍 متابعة الحضور</div><div style="font-size:12px;color:#7b6fa0;margin-bottom:12px">حالة اليوم — ${td}</div><div class="attend-today-grid">${tc}</div><div class="sales-table-wrap"><div style="padding:14px 16px;font-weight:700;border-bottom:1px solid var(--border)">📋 سجل الحضور</div><div class="sales-table-head"><div>الموظف</div><div>حضور</div><div>خروج</div><div>الساعات</div></div>${ar.length===0?`<div class="empty">لا يوجد سجل</div>`:rows}</div>`;
+  }
 
-  return`
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:10px">
-      <div class="sec-title">💰 إدارة المحافظ</div>
-      <button onclick="window._salaryAll()" style="background:linear-gradient(135deg,var(--green),#059669);color:#fff;border:none;border-radius:12px;padding:10px 16px;font-family:'Cairo',sans-serif;font-size:12px;font-weight:700;cursor:pointer">💰 رواتب الجمعة للجميع</button>
-    </div>
-    ${cards}
-  `;
+  // ===== RENDER MORE =====
+  function renderMore(){
+    const bc=S.notifs.filter(n=>n.type==="broadcast").slice(0,10);
+    const bcRows=bc.length===0?`<div class="empty">لا توجد رسائل</div>`:bc.map(n=>`<div class="notif-item"><div style="flex:1"><div style="font-weight:700;margin-bottom:4px">📢 ${n.msg}</div><div style="font-size:11px;color:#7b6fa0">${n.date} — قرأها ${Object.keys(n.readBy||{}).length} موظف</div></div></div>`).join("");
+    const recent=Array.from(S.sales).sort((a,b)=>b.date.localeCompare(a.date)||(((b.createdAt&&b.createdAt.seconds)||0)-((a.createdAt&&a.createdAt.seconds)||0))).slice(0,30);
+    const settRows=recent.map(x=>{const st=STORES.find(s=>s.id===x.store)||STORES[0];return`<div class="sale-row"><div><div style="font-weight:700;color:${x.type==="store"?st.color:"#38bdf8"}">${fmt(x.amount)}</div><div class="sale-emp">${st.icon} ${st.name} · ${x.emp||"—"}</div></div><div class="sale-time">${x.date}<br/>${x.time||""}</div><div></div><div><button class="act-btn" onclick="openSaleEdit('${x.id}')">✏️</button></div></div>`;}).join("");
+    return`<div class="sec-title">المزيد</div><div class="pos-box" style="margin-bottom:16px"><div style="font-weight:700;margin-bottom:14px">📢 رسالة جديدة</div><textarea class="bc-area" id="broadcast-msg" placeholder="اكتب رسالتك..."></textarea><button onclick="doSendBroadcast()" style="width:100%;padding:13px;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;border:none;border-radius:13px;font-family:'Cairo',sans-serif;font-size:14px;font-weight:900;cursor:pointer;margin-top:12px">📢 إرسال للجميع</button></div><div style="font-weight:700;margin-bottom:12px">الرسائل السابقة</div>${bcRows}<div style="height:24px"></div><div class="sec-title">⚙️ تعديل المبيعات</div><div style="background:#7c3aed11;border:1px solid #7c3aed33;border-radius:12px;padding:12px;font-size:12px;color:#a78bfa;margin-bottom:14px">⚠️ للمالك فقط</div><div class="sales-table-wrap">${settRows}</div>`;
+
 }
+window.doSendBroadcast=sendBroadcast;
+window.openSaleEdit=function(id){S.editSaleId=id;S.modal=null;render();};
 
-// ===== RENDER ATTEND ADMIN =====
-function renderAttendAdmin(){
-  const td=today();
-  const tc=EMPS.map(([name,icon])=>{
-    const c=EMP_COLORS[name]||"var(--purple2)";const rec=S.attendance.find(x=>x.emp===name&&x.date===td);
-    let st,sc,dt;
-    if(!rec){st="غائب";sc="var(--red)";dt="لم يسجل";}
-    else if(!rec.punchOut){st="في الدوام";sc="var(--gold2)";dt="حضر: "+rec.punchIn+(rec.lateBy>0?" (متأخر "+rec.lateBy+"د)":"");}
-    else{st="انصرف";sc="var(--green)";dt=rec.punchIn+" — "+rec.punchOut+" | "+rec.hours+"س";}
-    return`<div class="attend-emp-card" style="border-color:${c}44">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-        <span style="font-weight:700;color:${c}">${icon} ${name}</span>
-        <span style="padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;background:${sc}18;border:1px solid ${sc}44;color:${sc}">${st}</span>
-      </div>
-      <div style="font-size:11px;color:var(--muted)">${dt}</div>
-    </div>`;
-  }).join("");
-
-  const ar=Array.from(S.attendance).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,50);
-  const rows=ar.map(r=>{
-    const c=EMP_COLORS[r.emp]||"var(--purple2)";
-    return`<div class="sale-row">
-      <div><div style="font-weight:700;color:${c}">${r.emp}</div><div class="sale-time">${r.date}</div></div>
-      <div style="color:var(--green);font-size:12px">${r.punchIn||"—"}${r.lateBy>0?`<span style="color:var(--red)"> +${r.lateBy}د</span>`:""}</div>
-      <div style="color:var(--purple2);font-size:12px">${r.punchOut||"⏳"}</div>
-      <div style="font-size:12px">${r.hours!=null?r.hours+"س":"—"}</div>
-    </div>`;
-  }).join("");
-
-  return`
-    <div class="sec-title">📍 متابعة الحضور</div>
-    <div style="font-size:12px;color:var(--muted);margin-bottom:12px">حالة اليوم — ${td}</div>
-    <div class="attend-today-grid">${tc}</div>
-    <div class="sales-table-wrap">
-      <div style="padding:14px 16px;font-weight:700;border-bottom:1px solid var(--border)">📋 سجل الحضور</div>
-      <div class="sales-table-head"><div>الموظف</div><div>حضور</div><div>خروج</div><div>الساعات</div></div>
-      ${ar.length===0?`<div class="empty">لا يوجد سجل</div>`:rows}
-    </div>
-  `;
-}
-
-// ===== RENDER MORE (owner) =====
-function renderMore(){
-  const bc=S.notifs.filter(n=>n.type==="broadcast").slice(0,10);
-  const bcRows=bc.length===0?`<div class="empty">لا توجد رسائل</div>`:bc.map(n=>`
-    <div class="notif-item">
-      <div style="flex:1">
-        <div style="font-weight:700;margin-bottom:4px">📢 ${n.msg}</div>
-        <div style="font-size:11px;color:var(--muted)">${n.date} — قرأها ${Object.keys(n.readBy||{}).length} موظف</div>
-      </div>
-    </div>`).join("");
-
-  // settings - recent sales
-  const recent=Array.from(S.sales).sort((a,b)=>b.date.localeCompare(a.date)||(((b.createdAt&&b.createdAt.seconds)||0)-((a.createdAt&&a.createdAt.seconds)||0))).slice(0,30);
-  const settRows=recent.map(x=>{const st=STORES.find(s=>s.id===x.store)||STORES[0];return`<div class="sale-row">
-    <div><div style="font-weight:700;color:${x.type==="store"?st.color:"var(--blue)"}">${fmt(x.amount)}</div><div class="sale-emp">${st.icon} ${st.name} · ${x.emp||"—"}</div></div>
-    <div class="sale-time">${x.date}<br/>${x.time||""}</div>
-    <div></div>
-    <div><button class="act-btn" onclick="window._openSaleEdit('${x.id}')">✏️</button></div>
-  </div>`;}).join("");
-
-  return`
-    <div class="sec-title">المزيد</div>
-    <div class="pos-box" style="margin-bottom:16px">
-      <div style="font-weight:700;margin-bottom:14px">📢 رسالة جديدة</div>
-      <div class="form-row">
-        <textarea class="bc-area" id="broadcast-msg" placeholder="اكتب رسالتك..."></textarea>
-
-```
-  </div>
-  <button onclick="window._sendBroadcast()" style="width:100%;padding:13px;background:linear-gradient(135deg,var(--purple),var(--purple3));color:#fff;border:none;border-radius:13px;font-family:'Cairo',sans-serif;font-size:14px;font-weight:900;cursor:pointer">📢 إرسال للجميع</button>
-</div>
-<div style="font-weight:700;margin-bottom:12px">الرسائل السابقة</div>
-${bcRows}
-<div style="height:24px"></div>
-<div class="sec-title">⚙️ تعديل المبيعات</div>
-<div style="background:var(--purple)11;border:1px solid var(--purple)33;border-radius:12px;padding:12px;font-size:12px;color:var(--purple2);margin-bottom:14px">⚠️ للمالك فقط — تعديل المبيعات السابقة</div>
-<div class="sales-table-wrap">${settRows}</div>
-```
-
-`;
-}
-
-// ===== RENDER MY WALLET (emp) =====
+// ===== RENDER MY WALLET =====
 function renderMyWallet(nm){
-const w=S.wallets[nm]||{balance:0,points:0};const c=EMP_COLORS[nm]||“var(–purple2)”;const icon=EMP_ICONS[nm]||“👤”;
+const w=S.wallets[nm]||{balance:0,points:0};const c=EMP_COLORS[nm]||”#a78bfa”;const icon=EMP_ICONS[nm]||“👤”;
 const myTxs=S.txs.filter(x=>x.emp===nm);
-const txRows=myTxs.length===0?`<div class="empty">لا توجد معاملات</div>`:myTxs.map(x=>{
-const isNeg=x.type===“withdraw”||x.type===“reset”||(x.type===“points”&&x.amount<0);
-return`<div class="sale-row"> <div><div style="font-size:11px;font-weight:700;color:${isNeg?"var(--red)":"var(--green)"}">${isNeg?"− ":"+ "}${x.type==="points"?fmtPts(Math.abs(x.amount)):fmt(Math.abs(x.amount))}</div><div class="sale-emp">${x.note||x.type}</div></div> <div></div><div class="sale-time">${x.date||""}</div><div></div> </div>`;
-}).join(””);
-
-return` <div class="my-wallet-hero" style="border-color:${c}55"> <div class="my-avatar">${icon}</div> <div class="my-name" style="color:${c}">${nm}</div> <div style="font-size:12px;color:var(--muted);margin-top:4px">محفظتي الشخصية</div> <div class="my-bal-grid"> <div class="my-bal-box" style="border-color:${c}44"> <div class="wc-bal-lbl">💰 رصيدي</div> <div style="font-size:20px;font-weight:900;color:${c}">${fmt(w.balance||0)}</div> </div> <div class="my-bal-box" style="border-color:var(--gold)44"> <div class="wc-bal-lbl">🏅 نقاطي</div> <div style="font-size:20px;font-weight:900;color:var(--gold2)">${w.points||0}</div> <div style="font-size:11px;color:var(--muted)">= ${fmt((w.points||0)*PV)}</div> </div> </div> <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"> <button onclick="window._convert('${nm}')" style="padding:12px;background:linear-gradient(135deg,var(--gold2),var(--gold3));color:#000;border:none;border-radius:12px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:900;cursor:pointer">🎯 تحويل نقاط</button> <button onclick="window._openWithdraw('${nm}')" style="padding:12px;background:var(--blue)18;border:1px solid var(--blue)44;color:var(--blue);border-radius:12px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;cursor:pointer">💸 طلب سلفة</button> </div> </div> <div class="sec-title">📋 سجل المعاملات</div> <div class="sales-table-wrap">${myTxs.length===0?`<div class="empty">لا توجد معاملات</div>`:txRows}</div> `;
+const txRows=myTxs.length===0?`<div class="empty">لا توجد معاملات</div>`:myTxs.map(x=>{const isNeg=x.type===“withdraw”||x.type===“reset”||(x.type===“points”&&x.amount<0);return`<div class="sale-row"><div><div style="font-size:11px;font-weight:700;color:${isNeg?"#ef4444":"#10b981"}">${isNeg?"− ":"+ "}${x.type==="points"?fmtPts(Math.abs(x.amount)):fmt(Math.abs(x.amount))}</div><div class="sale-emp">${x.note||x.type}</div></div><div></div><div class="sale-time">${x.date||""}</div><div></div></div>`;}).join(””);
+return`<div class="my-wallet-hero" style="border-color:${c}55"><div style="font-size:56px;margin-bottom:10px">${icon}</div><div style="font-size:22px;font-weight:900;color:${c}">${nm}</div><div style="font-size:12px;color:#7b6fa0;margin-top:4px">محفظتي الشخصية</div><div class="my-bal-grid"><div class="my-bal-box" style="border-color:${c}44"><div class="wc-bal-lbl">💰 رصيدي</div><div style="font-size:20px;font-weight:900;color:${c}">${fmt(w.balance||0)}</div></div><div class="my-bal-box" style="border-color:#ffd70044"><div class="wc-bal-lbl">🏅 نقاطي</div><div style="font-size:20px;font-weight:900;color:#ffd700">${w.points||0}</div><div style="font-size:11px;color:#7b6fa0">= ${fmt((w.points||0)*PV)}</div></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><button onclick="doConvert('${nm}')" style="padding:12px;background:linear-gradient(135deg,#ffd700,#b8860b);color:#000;border:none;border-radius:12px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:900;cursor:pointer">🎯 تحويل نقاط</button><button onclick="openWithdraw('${nm}')" style="padding:12px;background:#38bdf818;border:1px solid #38bdf844;color:#38bdf8;border-radius:12px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;cursor:pointer">💸 طلب سلفة</button></div></div><div class="sec-title">📋 سجل المعاملات</div><div class="sales-table-wrap">${myTxs.length===0?`<div class="empty">لا توجد معاملات</div>`:txRows}</div>`;
 }
 
-// ===== RENDER MY ATTEND (emp) =====
+// ===== RENDER MY ATTEND =====
 function renderMyAttend(nm){
-const c=EMP_COLORS[nm]||“var(–purple2)”;const td=today();
+const c=EMP_COLORS[nm]||”#a78bfa”;const td=today();
 const tr=S.attendance.find(x=>x.emp===nm&&x.date===td);
 const mr=Array.from(S.attendance.filter(x=>x.emp===nm)).sort((a,b)=>b.date.localeCompare(a.date));
-
 let statusBox=””;
-if(tr&&tr.punchOut){statusBox=`<div style="background:var(--green)18;border:1px solid var(--green)44;border-radius:16px;padding:18px;text-align:center;margin-bottom:16px"><div style="font-size:32px;margin-bottom:8px">✅</div><div style="font-weight:700;color:var(--green);font-size:16px">اكتمل دوامك</div><div style="font-size:12px;color:var(--muted);margin-top:6px">حضور: ${tr.punchIn} — خروج: ${tr.punchOut} | ${tr.hours}س</div></div>`;}
-else if(tr){statusBox=`<div style="background:var(--gold)18;border:1px solid var(--gold)44;border-radius:16px;padding:18px;text-align:center;margin-bottom:16px"><div style="font-size:32px;margin-bottom:8px">⏳</div><div style="font-weight:700;color:var(--gold2);font-size:16px">أنت في الدوام</div><div style="font-size:12px;color:var(--muted);margin-top:6px">بصمة: ${tr.punchIn}</div>${tr.lateBy>0?`<div style="font-size:11px;color:var(--red)">⚠️ متأخر ${tr.lateBy} دقيقة</div>`:`<div style="font-size:11px;color:var(--green)">🟢 في الوقت</div>`}</div>`;}
-else{statusBox=`<div style="background:var(--red)18;border:1px solid var(--red)44;border-radius:16px;padding:18px;text-align:center;margin-bottom:16px"><div style="font-size:32px;margin-bottom:8px">📍</div><div style="font-weight:700;color:var(--red);font-size:16px">لم تسجل حضورك بعد</div></div>`;}
-
-const tD=mr.filter(x=>x.punchOut).length;
-const tH=mr.filter(x=>x.hours).reduce((a,b)=>a+(b.hours||0),0);
-const lD=mr.filter(x=>x.lateBy>0).length;
-
-const rows=mr.slice(0,14).map(r=>`<div class="sale-row"> <div class="sale-time">${r.date}</div> <div style="color:var(--green);font-size:12px">${r.punchIn||"—"}${r.lateBy>0?`<span style="color:var(--red)"> +${r.lateBy}د</span>`:””}</div>
-<div style="color:var(--purple2);font-size:12px">${r.punchOut||”—”}</div>
-<div style="font-size:12px">${r.hours!=null?r.hours+“س”:”—”}</div>
-
-  </div>`).join("");
-
-return` <div class="sec-title" style="color:${c}">📍 حضوري — ${nm}</div> ${statusBox} <div class="punch-btns"> <button class="punch-btn" style="background:linear-gradient(135deg,var(--green),#059669)" onclick="window._punchIn()" ${S.gpsLoading?"disabled":""}> ${S.gpsLoading?"⏳ جاري...":"📍 بصمة حضور"} </button> <button class="punch-btn" style="background:linear-gradient(135deg,var(--red),#dc2626)" onclick="window._punchOut()" ${S.gpsLoading?"disabled":""}> ${S.gpsLoading?"⏳ جاري...":"🚪 بصمة خروج"} </button> </div> <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px"> <div class="sum-card"><div class="sum-lbl">📅 أيام</div><div class="sum-val" style="color:var(--green)">${tD}</div></div> <div class="sum-card"><div class="sum-lbl">⏱ ساعات</div><div class="sum-val" style="color:${c}">${Math.round(tH*10)/10}</div></div> <div class="sum-card"><div class="sum-lbl">⚠️ تأخير</div><div class="sum-val" style="color:var(--red)">${lD}</div></div> </div> <div class="sales-table-wrap"> <div style="padding:14px 16px;font-weight:700;border-bottom:1px solid var(--border)">📋 سجل الحضور</div> <div class="sales-table-head"><div>التاريخ</div><div>حضور</div><div>خروج</div><div>الساعات</div></div> ${mr.length===0?`<div class="empty">لا يوجد سجل</div>`:rows} </div> `;
+if(tr&&tr.punchOut)statusBox=`<div style="background:#10b98118;border:1px solid #10b98144;border-radius:16px;padding:18px;text-align:center;margin-bottom:16px"><div style="font-size:32px;margin-bottom:8px">✅</div><div style="font-weight:700;color:#10b981;font-size:16px">اكتمل دوامك</div><div style="font-size:12px;color:#7b6fa0;margin-top:6px">حضور: ${tr.punchIn} — خروج: ${tr.punchOut} | ${tr.hours}س</div></div>`;
+else if(tr)statusBox=`<div style="background:#ffd70018;border:1px solid #ffd70044;border-radius:16px;padding:18px;text-align:center;margin-bottom:16px"><div style="font-size:32px;margin-bottom:8px">⏳</div><div style="font-weight:700;color:#ffd700;font-size:16px">أنت في الدوام</div><div style="font-size:12px;color:#7b6fa0;margin-top:6px">بصمة: ${tr.punchIn}</div>${tr.lateBy>0?`<div style="font-size:11px;color:#ef4444">⚠️ متأخر ${tr.lateBy} دقيقة</div>`:`<div style="font-size:11px;color:#10b981">🟢 في الوقت</div>`}</div>`;
+else statusBox=`<div style="background:#ef444418;border:1px solid #ef444444;border-radius:16px;padding:18px;text-align:center;margin-bottom:16px"><div style="font-size:32px;margin-bottom:8px">📍</div><div style="font-weight:700;color:#ef4444;font-size:16px">لم تسجل حضورك بعد</div></div>`;
+const tD=mr.filter(x=>x.punchOut).length;const tH=mr.filter(x=>x.hours).reduce((a,b)=>a+(b.hours||0),0);const lD=mr.filter(x=>x.lateBy>0).length;
+const rows=mr.slice(0,14).map(r=>`<div class="sale-row"><div class="sale-time">${r.date}</div><div style="color:#10b981;font-size:12px">${r.punchIn||"—"}${r.lateBy>0?`<span style="color:#ef4444"> +${r.lateBy}د</span>`:""}</div><div style="color:#a78bfa;font-size:12px">${r.punchOut||"—"}</div><div style="font-size:12px">${r.hours!=null?r.hours+"س":"—"}</div></div>`).join(””);
+return`<div class="sec-title" style="color:${c}">📍 حضوري — ${nm}</div>${statusBox}<div class="punch-btns"><button class="punch-btn" style="background:linear-gradient(135deg,#10b981,#059669)" onclick="doPunchIn()" ${S.gpsLoading?"disabled":""}>${S.gpsLoading?"⏳ جاري...":"📍 بصمة حضور"}</button><button class="punch-btn" style="background:linear-gradient(135deg,#ef4444,#dc2626)" onclick="doPunchOut()" ${S.gpsLoading?"disabled":""}>${S.gpsLoading?"⏳ جاري...":"🚪 بصمة خروج"}</button></div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px"><div class="sum-card"><div class="sum-lbl">📅 أيام</div><div class="sum-val" style="color:#10b981">${tD}</div></div><div class="sum-card"><div class="sum-lbl">⏱ ساعات</div><div class="sum-val" style="color:${c}">${Math.round(tH*10)/10}</div></div><div class="sum-card"><div class="sum-lbl">⚠️ تأخير</div><div class="sum-val" style="color:#ef4444">${lD}</div></div></div><div class="sales-table-wrap"><div style="padding:14px 16px;font-weight:700;border-bottom:1px solid var(--border)">📋 سجل الحضور</div><div class="sales-table-head"><div>التاريخ</div><div>حضور</div><div>خروج</div><div>الساعات</div></div>${mr.length===0?`<div class="empty">لا يوجد سجل</div>`:rows}</div>`;
 }
+window.doPunchIn=punchIn;window.doPunchOut=punchOut;
 
-// ===== RENDER MY NOTIFS (emp) =====
+// ===== RENDER MY NOTIFS =====
 function renderMyNotifs(nm){
 const mn=S.notifs.filter(n=>n.to===nm||n.to===“all”).slice(0,30);
 const ur=mn.filter(n=>!(n.readBy||{})[nm]).length;
-const rows=mn.length===0?`<div class="empty">لا توجد إشعارات</div>`:mn.map(n=>{
-const ir=(n.readBy||{})[nm];
-const ic={salary:“💰”,points:“🏆”,withdraw:“💸”,convert:“🎯”,add:“💵”,broadcast:“📢”,reset:“🔄”}[n.type]||“🔔”;
-return`<div class="notif-item${!ir?" unread":""}"> ${!ir?`<div class="notif-dot"></div>`:`<div style="width:8px"></div>`} <div style="flex:1"> <div style="font-size:13px;margin-bottom:4px">${ic} ${n.msg}</div> <div style="font-size:11px;color:var(--muted)">${n.date||""}</div> </div> </div>`;
-}).join(””);
-
-return` <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px"> <div class="sec-title">🔔 الإشعارات${ur>0?` <span style="background:var(--red);color:#fff;padding:2px 8px;border-radius:20px;font-size:12px;font-weight:700">${ur}</span>`:""}</div> ${ur>0?`<button onclick="window._markAllRead()" style="background:var(--bg);border:1px solid var(--border);color:var(--muted);padding:7px 14px;border-radius:10px;font-family:'Cairo',sans-serif;font-size:11px;cursor:pointer">✓ قراءة الكل</button>`:""} </div> ${rows} `;
+const rows=mn.length===0?`<div class="empty">لا توجد إشعارات</div>`:mn.map(n=>{const ir=(n.readBy||{})[nm];const ic={salary:“💰”,points:“🏆”,withdraw:“💸”,convert:“🎯”,add:“💵”,broadcast:“📢”,reset:“🔄”}[n.type]||“🔔”;return`<div class="notif-item${!ir?" unread":""}">${!ir?`<div class="notif-dot"></div>`:`<div style="width:8px"></div>`}<div style="flex:1"><div style="font-size:13px;margin-bottom:4px">${ic} ${n.msg}</div><div style="font-size:11px;color:#7b6fa0">${n.date||""}</div></div></div>`;}).join(””);
+return`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px"><div class="sec-title">🔔 الإشعارات${ur>0?` <span style="background:#ef4444;color:#fff;padding:2px 8px;border-radius:20px;font-size:12px">${ur}</span>`:""}</div>${ur>0?`<button onclick="doMarkAllRead()" style="background:var(--bg);border:1px solid var(--border);color:#7b6fa0;padding:7px 14px;border-radius:10px;font-family:'Cairo',sans-serif;font-size:11px;cursor:pointer">✓ قراءة الكل</button>`:""}</div>${rows}`;
 }
+window.doMarkAllRead=markAllRead;
 
 // ===== RENDER MODAL =====
 function renderModal(){
 const m=S.modal;
-if(S.editId){
-const sale=S.sales.find(x=>x.id===S.editId);if(!sale)return””;
-return`<div class="overlay" onclick="if(event.target===this)window._closeModal()"><div class="modal"> <div class="modal-title">✏️ تعديل</div> <div class="form-row"><div class="inp-lbl">المحل</div><select class="inp" id="edit-store">${STORES.map(s=>`<option value=”${s.id}”${sale.store===s.id?” selected”:””}>${s.icon} ${s.name}</option>`).join("")}</select></div> <div class="form-row"><div class="inp-lbl">الموظف</div><select class="inp" id="edit-emp">${EMPS.map(e=>`<option value=”${e[0]}”${sale.emp===e[0]?” selected”:””}>${e[1]} ${e[0]}</option>`).join("")}</select></div> <div class="form-row"><div class="inp-lbl">النوع</div><select class="inp" id="edit-type"><option value="store"${sale.type==="store"?" selected":""}>🏪 محل</option><option value="delivery"${sale.type==="delivery"?" selected":""}>🚚 توصيل</option></select></div> <div class="form-row"><div class="inp-lbl">المبلغ</div><input class="inp" id="edit-amount" type="number" value="${sale.amount}"/></div> <div class="form-actions"><button class="modal-btn" style="background:var(--bg);border:1px solid var(--border);color:var(--muted)" onclick="window._closeModal()">إلغاء</button><button class="modal-btn" style="background:linear-gradient(135deg,var(--purple),var(--purple3));color:#fff" onclick="window._saveEdit()">💾 حفظ</button></div> </div></div>`;
-}
-if(S.editSaleId){
-const s2=S.sales.find(x=>x.id===S.editSaleId);if(!s2)return””;const st=STORES.find(s=>s.id===s2.store);
-return`<div class="overlay" onclick="if(event.target===this)window._closeModal()"><div class="modal"> <div class="modal-title">⚙️ تعديل</div> <div style="background:var(--bg);border-radius:10px;padding:12px;margin-bottom:16px;font-size:12px;color:var(--muted)">${st?st.icon:""} ${st?st.name:""} - ${s2.emp||""} - ${s2.time||""}</div> <div class="form-row"><div class="inp-lbl">التاريخ</div><input class="inp" id="se-date" type="date" value="${s2.date}"/></div> <div class="form-row"><div class="inp-lbl">المبلغ</div><input class="inp" id="se-amount" type="number" value="${s2.amount}"/></div> <div class="form-actions"><button class="modal-btn" style="background:var(--bg);border:1px solid var(--border);color:var(--muted)" onclick="window._closeModal()">إلغاء</button><button class="modal-btn" style="background:linear-gradient(135deg,var(--purple),var(--purple3));color:#fff" onclick="window._saveSaleEdit()">💾 حفظ</button></div> </div></div>`;
-}
+if(S.editId){const sale=S.sales.find(x=>x.id===S.editId);if(!sale)return””;return`<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-title">✏️ تعديل</div><div class="form-row"><div class="inp-lbl">المحل</div><select class="inp" id="edit-store">${STORES.map(s=>`<option value=”${s.id}”${sale.store===s.id?” selected”:””}>${s.icon} ${s.name}</option>`).join("")}</select></div><div class="form-row"><div class="inp-lbl">الموظف</div><select class="inp" id="edit-emp">${EMPS.map(e=>`<option value=”${e[0]}”${sale.emp===e[0]?” selected”:””}>${e[1]} ${e[0]}</option>`).join("")}</select></div><div class="form-row"><div class="inp-lbl">النوع</div><select class="inp" id="edit-type"><option value="store"${sale.type==="store"?" selected":""}>🏪 محل</option><option value="delivery"${sale.type==="delivery"?" selected":""}>🚚 توصيل</option></select></div><div class="form-row"><div class="inp-lbl">المبلغ</div><input class="inp" id="edit-amount" type="number" value="${sale.amount}"/></div><div class="form-actions"><button class="modal-btn" style="background:var(--bg);border:1px solid var(--border);color:#7b6fa0" onclick="closeModal()">إلغاء</button><button class="modal-btn" style="background:linear-gradient(135deg,#a78bfa,#7c3aed);color:#fff" onclick="doSaveEdit()">💾 حفظ</button></div></div></div>`;}
+if(S.editSaleId){const s2=S.sales.find(x=>x.id===S.editSaleId);if(!s2)return””;const st=STORES.find(s=>s.id===s2.store);return`<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-title">⚙️ تعديل</div><div style="background:var(--bg);border-radius:10px;padding:12px;margin-bottom:16px;font-size:12px;color:#7b6fa0">${st?st.icon:""} ${st?st.name:""} - ${s2.emp||""} - ${s2.time||""}</div><div class="form-row"><div class="inp-lbl">التاريخ</div><input class="inp" id="se-date" type="date" value="${s2.date}"/></div><div class="form-row"><div class="inp-lbl">المبلغ</div><input class="inp" id="se-amount" type="number" value="${s2.amount}"/></div><div class="form-actions"><button class="modal-btn" style="background:var(--bg);border:1px solid var(--border);color:#7b6fa0" onclick="closeModal()">إلغاء</button><button class="modal-btn" style="background:linear-gradient(135deg,#a78bfa,#7c3aed);color:#fff" onclick="doSaveSaleEdit()">💾 حفظ</button></div></div></div>`;}
 if(!m)return””;
-if(m.type===“addmoney”){return`<div class="overlay" onclick="if(event.target===this)window._closeModal()"><div class="modal">
-<div class="modal-title">💵 إضافة — ${m.emp}</div>
-<div style="background:var(--bg);border-radius:12px;padding:14px;margin-bottom:18px;text-align:center;border:1px solid var(--green)33"><div class="sum-lbl">الرصيد</div><div style="font-size:22px;font-weight:900;color:var(--green)">${fmt((S.wallets[m.emp]||{}).balance||0)}</div></div>
-<div class="form-row"><div class="inp-lbl">المبلغ</div><input class="inp" id="am-amount" type="number" placeholder="50000"/></div>
-<div class="form-row"><div class="inp-lbl">السبب</div><select class="inp" id="am-note"><option>إضافة أموال</option><option>مكافأة</option><option>عمولة</option><option>أخرى</option></select></div>
-<div class="form-actions"><button class="modal-btn" style="background:var(--bg);border:1px solid var(--border);color:var(--muted)" onclick="window._closeModal()">إلغاء</button><button class="modal-btn" style="background:linear-gradient(135deg,var(--green),#059669);color:#fff" onclick="window._doAddMoney()">✅ إضافة</button></div>
-
-  </div></div>`;}
-  if(m.type==="withdraw"){return`<div class="overlay" onclick="if(event.target===this)window._closeModal()"><div class="modal">
-    <div class="modal-title">💸 سحب — ${m.emp}</div>
-    <div style="background:var(--bg);border-radius:12px;padding:14px;margin-bottom:18px;text-align:center;border:1px solid var(--green)33"><div class="sum-lbl">الرصيد</div><div style="font-size:22px;font-weight:900;color:var(--green)">${fmt((S.wallets[m.emp]||{}).balance||0)}</div></div>
-    <div class="form-row"><div class="inp-lbl">المبلغ</div><input class="inp" id="wd-amount" type="number" placeholder="50000"/></div>
-    <div class="form-row"><div class="inp-lbl">السبب</div><select class="inp" id="wd-note"><option>سلفة</option><option>سحب راتب</option><option>مصاريف</option><option>أخرى</option></select></div>
-    <div class="form-actions"><button class="modal-btn" style="background:var(--bg);border:1px solid var(--border);color:var(--muted)" onclick="window._closeModal()">إلغاء</button><button class="modal-btn" style="background:linear-gradient(135deg,var(--red),#dc2626);color:#fff" onclick="window._doWithdraw()">💸 تأكيد</button></div>
-  </div></div>`;}
-  if(m.type==="managepoints"){const w=S.wallets[m.emp]||{points:0};return`<div class="overlay" onclick="if(event.target===this)window._closeModal()"><div class="modal">
-    <div class="modal-title">🏅 نقاط — ${m.emp}</div>
-    <div style="background:var(--bg);border-radius:12px;padding:14px;margin-bottom:18px;text-align:center;border:1px solid var(--gold)33"><div class="sum-lbl">النقاط</div><div style="font-size:28px;font-weight:900;color:var(--gold2)">${w.points||0} نقطة</div><div style="font-size:12px;color:var(--muted)">= ${fmt((w.points||0)*PV)}</div></div>
-    <div class="form-row"><div class="inp-lbl">عدد النقاط</div><input class="inp" id="pts-amount" type="number" placeholder="5" min="1"/></div>
-    <div class="form-actions"><button class="modal-btn" style="background:var(--bg);border:1px solid var(--border);color:var(--muted)" onclick="window._closeModal()">إلغاء</button><button class="modal-btn" style="background:linear-gradient(135deg,var(--red),#dc2626);color:#fff" onclick="window._managePoints('${m.emp}',false)">➖ حذف</button><button class="modal-btn" style="background:linear-gradient(135deg,var(--gold2),var(--gold3));color:#000" onclick="window._managePoints('${m.emp}',true)">➕ إضافة</button></div>
-  </div></div>`;}
-  return"";
+if(m.type===“addmoney”)return`<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-title">💵 إضافة — ${m.emp}</div><div style="background:var(--bg);border-radius:12px;padding:14px;margin-bottom:18px;text-align:center;border:1px solid #10b98133"><div class="sum-lbl">الرصيد</div><div style="font-size:22px;font-weight:900;color:#10b981">${fmt((S.wallets[m.emp]||{}).balance||0)}</div></div><div class="form-row"><div class="inp-lbl">المبلغ</div><input class="inp" id="am-amount" type="number" placeholder="50000"/></div><div class="form-row"><div class="inp-lbl">السبب</div><select class="inp" id="am-note"><option>إضافة أموال</option><option>مكافأة</option><option>عمولة</option><option>أخرى</option></select></div><div class="form-actions"><button class="modal-btn" style="background:var(--bg);border:1px solid var(--border);color:#7b6fa0" onclick="closeModal()">إلغاء</button><button class="modal-btn" style="background:linear-gradient(135deg,#10b981,#059669);color:#fff" onclick="doAddMoneyConfirm()">✅ إضافة</button></div></div></div>`;
+if(m.type===“withdraw”)return`<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-title">💸 سحب — ${m.emp}</div><div style="background:var(--bg);border-radius:12px;padding:14px;margin-bottom:18px;text-align:center;border:1px solid #10b98133"><div class="sum-lbl">الرصيد</div><div style="font-size:22px;font-weight:900;color:#10b981">${fmt((S.wallets[m.emp]||{}).balance||0)}</div></div><div class="form-row"><div class="inp-lbl">المبلغ</div><input class="inp" id="wd-amount" type="number" placeholder="50000"/></div><div class="form-row"><div class="inp-lbl">السبب</div><select class="inp" id="wd-note"><option>سلفة</option><option>سحب راتب</option><option>مصاريف</option><option>أخرى</option></select></div><div class="form-actions"><button class="modal-btn" style="background:var(--bg);border:1px solid var(--border);color:#7b6fa0" onclick="closeModal()">إلغاء</button><button class="modal-btn" style="background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff" onclick="doWithdrawConfirm()">💸 تأكيد</button></div></div></div>`;
+if(m.type===“managepoints”){const w=S.wallets[m.emp]||{points:0};return`<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-title">🏅 نقاط — ${m.emp}</div><div style="background:var(--bg);border-radius:12px;padding:14px;margin-bottom:18px;text-align:center;border:1px solid #ffd70033"><div class="sum-lbl">النقاط</div><div style="font-size:28px;font-weight:900;color:#ffd700">${w.points||0} نقطة</div><div style="font-size:12px;color:#7b6fa0">= ${fmt((w.points||0)*PV)}</div></div><div class="form-row"><div class="inp-lbl">عدد النقاط</div><input class="inp" id="pts-amount" type="number" placeholder="5" min="1"/></div><div class="form-actions"><button class="modal-btn" style="background:var(--bg);border:1px solid var(--border);color:#7b6fa0" onclick="closeModal()">إلغاء</button><button class="modal-btn" style="background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff" onclick="doManagePts('${m.emp}',false)">➖ حذف</button><button class="modal-btn" style="background:linear-gradient(135deg,#ffd700,#b8860b);color:#000" onclick="doManagePts('${m.emp}',true)">➕ إضافة</button></div></div></div>`;}
+return””;
 }
+window.closeModal=function(){S.modal=null;S.editId=null;S.editSaleId=null;render();};
+window.doSaveEdit=saveEdit;
+window.doSaveSaleEdit=saveSaleEdit;
+window.doAddMoneyConfirm=async function(){const a=document.getElementById(“am-amount”),n=document.getElementById(“am-note”);const amt=a?parseFloat(a.value):0;const note=n?n.value:””;if(!amt||amt<=0){alert(“أدخل مبلغ!”);return;}await addMoney(S.modal.emp,amt,note);};
+window.doWithdrawConfirm=async function(){const a=document.getElementById(“wd-amount”),n=document.getElementById(“wd-note”);const amt=a?parseFloat(a.value):0;const note=n?n.value:””;if(!amt||amt<=0){alert(“أدخل مبلغ!”);return;}await doWithdraw(S.modal.emp,amt,note);};
+window.doManagePts=async function(emp,add){const pts=parseInt(document.getElementById(“pts-amount”)?document.getElementById(“pts-amount”).value:0);if(!pts||pts<=0){alert(“أدخل عدد صحيح!”);return;}await managePoints(emp,pts,add);};
 
 // ===== MAIN RENDER =====
 function render(){
-document.getElementById(“loading”).style.display=“none”;
 if(!S.loggedIn){
+document.getElementById(“loading”).style.display=“none”;
 document.getElementById(“screen-login”).className=“screen active”;
 document.getElementById(“screen-app”).className=“screen”;
 return;
 }
+document.getElementById(“loading”).style.display=“none”;
 document.getElementById(“screen-login”).className=“screen”;
 document.getElementById(“screen-app”).className=“screen active”;
-
-// update header
 const rb=document.getElementById(“role-badge”);
 if(rb){rb.textContent=S.role===“owner”?“👑 مالك”:“💼 “+S.empName;rb.className=“role-pill”+(S.role===“employee”?” emp”:””);}
-
-// winner banner
 document.getElementById(“winner-banner”).innerHTML=renderWinnerBanner();
-
-// bottom nav
 document.getElementById(“bottom-nav”).innerHTML=renderBottomNav();
-
-// render current page
 const pages=[“pos”,“report”,“wallets”,“attend”,“more”,“mywallet”,“myattend”,“notifs”];
 pages.forEach(p=>{document.getElementById(“page-”+p).className=“page”;});
-
 const isO=S.role===“owner”,isE=S.role===“employee”&&S.empName;
 let content=””,pageId=S.tab;
-
-if(S.tab===“pos”&&!S.loaded){content=`<div style="text-align:center;padding:40px;color:var(--muted)"><div class="spin" style="margin:0 auto 12px"></div>جاري التحميل...</div>`;pageId=“pos”;}
-else if(S.tab===“pos”)content=renderPOS();
+if(S.tab===“pos”)content=renderPOS();
 else if(S.tab===“report”&&isO)content=renderReport();
 else if(S.tab===“wallets”&&isO)content=renderWallets();
 else if(S.tab===“attend”&&isO)content=renderAttendAdmin();
@@ -1356,69 +728,26 @@ else if(S.tab===“myattend”&&isE)content=renderMyAttend(S.empName);
 else if(S.tab===“notifs”&&isE)content=renderMyNotifs(S.empName);
 else if(isE){S.tab=“mywallet”;content=renderMyWallet(S.empName);pageId=“mywallet”;}
 else content=renderPOS();
-
 const pg=document.getElementById(“page-”+pageId);
 if(pg){pg.innerHTML=content;pg.className=“page active”;}
-
-// modal
-document.getElementById(“modal-wrap”).innerHTML=S.modal||S.editId||S.editSaleId?renderModal():””;
-
-// broadcast alert
-if(S.pendingNotif){
-const n=S.pendingNotif;
-document.getElementById(“modal-wrap”).innerHTML=` <div class="broadcast-alert"> <div class="ba-box"> <div style="font-size:40px;margin-bottom:12px">📢</div> <div style="font-weight:900;font-size:17px;margin-bottom:8px">رسالة من المالك</div> <div style="background:var(--bg);border-radius:12px;padding:16px;margin-bottom:20px;font-size:15px;line-height:1.7;border:1px solid var(--purple)33">${n.msg}</div> <div style="font-size:11px;color:var(--muted);margin-bottom:20px">${n.date||""}</div> <button onclick="window._dismissNotif()" style="width:100%;padding:14px;background:linear-gradient(135deg,var(--purple),var(--purple3));color:#fff;border:none;border-radius:13px;font-family:'Cairo',sans-serif;font-size:15px;font-weight:900;cursor:pointer">✅ حسناً</button> </div> </div>`;
+document.getElementById(“modal-wrap”).innerHTML=(S.modal||S.editId||S.editSaleId)?renderModal():””;
+if(S.pendingNotif){const n=S.pendingNotif;document.getElementById(“modal-wrap”).innerHTML=`<div class="broadcast-alert"><div class="ba-box"><div style="font-size:40px;margin-bottom:12px">📢</div><div style="font-weight:900;font-size:17px;margin-bottom:8px">رسالة من المالك</div><div style="background:var(--bg);border-radius:12px;padding:16px;margin-bottom:20px;font-size:15px;line-height:1.7;border:1px solid #7c3aed33">${n.msg}</div><div style="font-size:11px;color:#7b6fa0;margin-bottom:20px">${n.date||""}</div><button onclick="doDismiss()" style="width:100%;padding:14px;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;border:none;border-radius:13px;font-family:'Cairo',sans-serif;font-size:15px;font-weight:900;cursor:pointer">✅ حسناً</button></div></div>`;}
 }
-}
+window.doDismiss=dismissPendingNotif;
 
-// ===== WINDOW BINDINGS =====
-// ===== LOGIN EVENT LISTENERS =====
-document.getElementById(“role-owner”).addEventListener(“click”,()=>setRole(“owner”));
-document.getElementById(“role-emp”).addEventListener(“click”,()=>setRole(“emp”));
-document.getElementById(“login-btn”).addEventListener(“click”,tryLogin);
-document.getElementById(“pass-inp”).addEventListener(“keydown”,e=>{if(e.key===“Enter”)tryLogin();});
-
-// ===== WINDOW BINDINGS for dynamic onclick HTML =====
-window.logout=logout;
-window._tab=function(t){
-if(t===“report”&&S.role!==“owner”){alert(“للمالك فقط!”);return;}
-S.tab=t;render();
-};
-window._store=function(id){S.sel=id;render();};
-window._type=function(t){S.saleType=t;render();};
-window._add=addSale;
-window._del=delSale;
-window._edit=function(id){S.editId=id;S.modal=null;render();};
-window._saveEdit=saveEdit;
-window._openSaleEdit=function(id){S.editSaleId=id;S.modal=null;render();};
-window._saveSaleEdit=saveSaleEdit;
-window._closeModal=function(){S.modal=null;S.editId=null;S.editSaleId=null;render();};
-window._empMenu=function(){const m=document.getElementById(“emp-menu”);if(!m)return;const open=m.style.display===“block”;m.style.display=open?“none”:“block”;if(!open)setTimeout(()=>{document.addEventListener(“click”,function(e){const m2=document.getElementById(“emp-menu”);if(m2&&!m2.contains(e.target))m2.style.display=“none”;},{once:true});},0);};
-window._emp=function(name,icon){S.empSel=name;const lb=document.getElementById(“emp-label”);if(lb)lb.textContent=icon+” “+name;const m=document.getElementById(“emp-menu”);if(m)m.style.display=“none”;render();};
-window._applyDates=function(){const f=document.getElementById(“date-from”);const t=document.getElementById(“date-to”);if(f)S.repFrom=f.value;if(t)S.repTo=t.value;S.repPeriod=“custom”;const pg=document.getElementById(“page-report”);if(pg&&S.tab===“report”){pg.innerHTML=renderReport();}};
-window._repStore=function(v){S.repStore=(v===“all”?“all”:Number(v)||v);render();};
-window._repType=function(v){S.repType=v;render();};
-window._setPeriod=setRepPeriod;
-window._salary=addSalary;
-window._salaryAll=addSalaryAll;
-window._convert=convertPoints;
-window._reset=resetWallet;
-window._delTx=deleteTx;
-window._openManagePoints=function(emp){S.modal={type:“managepoints”,emp};render();};
-window._managePoints=async function(emp,add){const pts=parseInt(document.getElementById(“pts-amount”)?.value);if(!pts||pts<=0){alert(“أدخل عدد صحيح!”);return;}await managePoints(emp,pts,add);};
-window._openAddMoney=function(emp){S.modal={type:“addmoney”,emp};render();};
-window._doAddMoney=async function(){const a=document.getElementById(“am-amount”),n=document.getElementById(“am-note”);const amt=a?parseFloat(a.value):0;const note=n?n.value:””;if(!amt||amt<=0){alert(“أدخل مبلغ!”);return;}await addMoney(S.modal.emp,amt,note);};
-window._openWithdraw=function(emp){S.modal={type:“withdraw”,emp};render();};
-window._doWithdraw=async function(){const a=document.getElementById(“wd-amount”),n=document.getElementById(“wd-note”);const amt=a?parseFloat(a.value):0;const note=n?n.value:””;if(!amt||amt<=0){alert(“أدخل مبلغ!”);return;}await doWithdraw(S.modal.emp,amt,note);};
-window._punchIn=punchIn;
-window._punchOut=punchOut;
-window._sendBroadcast=sendBroadcast;
-window._dismissNotif=dismissPendingNotif;
-window._markAllRead=markAllRead;
-
-// Initial render — show login immediately without waiting for Firebase
-document.getElementById(“loading”).style.display=“none”;
-document.getElementById(“screen-login”).className=“screen active”;
+// Show login immediately
 render();
+}
+
+// Wait for Firebase SDKs to load then start
+function waitForFirebase(){
+if(typeof firebase !== “undefined” && firebase.firestore){
+startApp();
+} else {
+setTimeout(waitForFirebase, 50);
+}
+}
+waitForFirebase();
 </script>
 
 </body>
