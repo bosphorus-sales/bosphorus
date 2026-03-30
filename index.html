@@ -1314,13 +1314,12 @@ if(m.type===“addmoney”){return`<div class="overlay" onclick="if(event.target
 
 // ===== MAIN RENDER =====
 function render(){
-if(!S.loggedIn){
 document.getElementById(“loading”).style.display=“none”;
+if(!S.loggedIn){
 document.getElementById(“screen-login”).className=“screen active”;
 document.getElementById(“screen-app”).className=“screen”;
 return;
 }
-document.getElementById(“loading”).style.display=“none”;
 document.getElementById(“screen-login”).className=“screen”;
 document.getElementById(“screen-app”).className=“screen active”;
 
@@ -1403,7 +1402,9 @@ window._sendBroadcast=sendBroadcast;
 window._dismissNotif=dismissPendingNotif;
 window._markAllRead=markAllRead;
 
-// Initial render
+// Initial render — show login immediately without waiting for Firebase
+document.getElementById(“loading”).style.display=“none”;
+document.getElementById(“screen-login”).className=“screen active”;
 render();
 </script>
 
