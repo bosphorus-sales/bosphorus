@@ -550,14 +550,14 @@ select option{background:var(–card2);}
   </div>
   <div class="login-box">
     <div class="role-toggle">
-      <button class="role-btn active" id="role-owner" onclick="setRole('owner')">👑 مالك</button>
-      <button class="role-btn" id="role-emp" onclick="setRole('emp')">💼 موظف</button>
+      <button class="role-btn active" id="role-owner">👑 مالك</button>
+      <button class="role-btn" id="role-emp">💼 موظف</button>
     </div>
     <div class="inp-wrap">
       <span class="inp-icon">🔒</span>
-      <input class="l-inp" id="pass-inp" type="password" placeholder="كلمة المرور" onkeydown="if(event.key==='Enter')tryLogin()"/>
+      <input class="l-inp" id="pass-inp" type="password" placeholder="كلمة المرور"/>
     </div>
-    <button class="login-btn-main" onclick="tryLogin()">🔐 تسجيل الدخول</button>
+    <button class="login-btn-main" id="login-btn">🔐 تسجيل الدخول</button>
     <div class="login-err" id="login-err"></div>
   </div>
 </div>
@@ -614,6 +614,8 @@ const txCol=collection(db,"wallet_tx");
 const attendCol=collection(db,"attendance");
 const notifsCol=collection(db,"notifications");
 
+const ST=serverTimestamp;
+
 const STORES=[{id:1,name:"محل 1",icon:"🏪",color:"#a78bfa"},{id:2,name:"محل 2",icon:"🏬",color:"#10B981"},{id:3,name:"محل 3",icon:"🛒",color:"#F59E0B"}];
 const EMPS=[["عمار","👨‍💼"],["جعفر","👨‍💼"],["مثنى","👨‍💼"],["نوره","👩‍💼"]];
 const EMP_PASS={"عمار":"111","جعفر":"222","مثنى":"333","نوره":"444"};
@@ -668,19 +670,22 @@ onSnapshot(query(notifsCol,orderBy("createdAt","desc")),snap=>{
 });
 
 async function initWallets(){
-  for(const[name]of EMPS){const ref=doc(db,"wallets",name);const snap=await getDoc(ref);if(!snap.exists())await setDoc(ref,{name,balance:0,points:0,createdAt:serverTimestamp()});}
+  for(const[name]of EMPS){
+    const snap=await getDoc(doc(db,"wallets",name));
+    if(!snap.exists())await setDoc(doc(db,"wallets",name),{name,balance:0,points:0,createdAt:serverTimestamp()});
+  }
 }
 initWallets();
 
 function syncOk(){const d=document.getElementById("sync-dot");if(d){d.style.background="var(--green)";d.title="متصل";}}
 function syncErr(){const d=document.getElementById("sync-dot");if(d){d.style.background="var(--red)";d.title="غير متصل";}}
 
-// ===== LOGIN =====
-window.setRole=function(r){
+// ===== LOGIN EVENT LISTENERS (inside module) =====
+function setRole(r){
   document.getElementById("role-owner").className="role-btn"+(r==="owner"?" active":"");
   document.getElementById("role-emp").className="role-btn"+(r==="emp"?" active":"");
-};
-window.tryLogin=function(){
+}
+function tryLogin(){
   const pass=document.getElementById("pass-inp").value.trim();
   const err=document.getElementById("login-err");
   if(pass===PASS.owner){S.loggedIn=true;S.role="owner";S.empName=null;render();return;}
@@ -690,7 +695,7 @@ window.tryLogin=function(){
       if(u)S.pendingNotif=u;render();return;}
   }
   err.textContent="❌ كلمة المرور غلط";document.getElementById("pass-inp").value="";
-};
+}
 function logout(){S.loggedIn=false;S.role=null;S.empName=null;S.empSel="";S.tab="pos";S.pendingNotif=null;render();}
 window.logout=logout;
 
@@ -796,7 +801,7 @@ async function resetWallet(empName){
 async function deleteTx(id){
   if(!confirm("حذف هذه المعاملة?"))return;
   const tx=S.txs.find(x=>x.id===id);if(!tx)return;
-  const wRef=doc(db,"wallets",tx.emp);const wSnap=await getDoc(wRef);if(!wSnap.exists())return;
+  const wRef=doc(db,"wallets",tx.emp);const wSnap=await getDoc(wRef);if(!wSnap.exists)return;
   const w=wSnap.data();
   if(tx.type==="salary"||tx.type==="add")await updateDoc(wRef,{balance:Math.max(0,(w.balance||0)-tx.amount)});
   else if(tx.type==="withdraw")await updateDoc(wRef,{balance:(w.balance||0)+tx.amount});
@@ -1366,6 +1371,14 @@ document.getElementById(“modal-wrap”).innerHTML=` <div class="broadcast-aler
 }
 
 // ===== WINDOW BINDINGS =====
+// ===== LOGIN EVENT LISTENERS =====
+document.getElementById(“role-owner”).addEventListener(“click”,()=>setRole(“owner”));
+document.getElementById(“role-emp”).addEventListener(“click”,()=>setRole(“emp”));
+document.getElementById(“login-btn”).addEventListener(“click”,tryLogin);
+document.getElementById(“pass-inp”).addEventListener(“keydown”,e=>{if(e.key===“Enter”)tryLogin();});
+
+// ===== WINDOW BINDINGS for dynamic onclick HTML =====
+window.logout=logout;
 window._tab=function(t){
 if(t===“report”&&S.role!==“owner”){alert(“للمالك فقط!”);return;}
 S.tab=t;render();
