@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html lang="ar" dir="rtl">
+<html lang=))"ar" dir="rtl">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -458,15 +458,23 @@ if(m.type==="addmoney"){return'<div class="overlay" onclick="if(event.target===t
 if(m.type==="withdraw"){return'<div class="overlay" onclick="if(event.target===this)window._closeModal()"><div class="modal"><div class="modal-title">\uD83D\uDCB8 \u0633\u062d\u0628 - '+m.emp+'</div><div style="background:#0d0d1a;border-radius:12px;padding:14px;margin-bottom:18px;text-align:center"><div style="font-size:12px;color:#8888aa">\u0627\u0644\u0631\u0635\u064a\u062f</div><div style="font-size:22px;font-weight:900;color:#10B981">'+fmt((S.wallets[m.emp]||{}).balance||0)+'</div></div><div class="form-row"><div class="lbl">\u0627\u0644\u0645\u0628\u0644\u063a</div><input class="inp" id="wd-amount" type="number" placeholder="50000"/></div><div class="form-row"><div class="lbl">\u0627\u0644\u0633\u0628\u0628</div><select class="inp" id="wd-note"><option>\u0633\u0644\u0641\u0629</option><option>\u0633\u062d\u0628 \u0631\u0627\u062a\u0628</option><option>\u0645\u0635\u0627\u0631\u064a\u0641</option><option>\u0623\u062e\u0631\u0649</option></select></div><div class="form-actions"><button class="btn btn-g" onclick="window._closeModal()">\u0625\u0644\u063a\u0627\u0621</button><button class="btn btn-red" onclick="window._doWithdraw()">\uD83D\uDCB8 \u062a\u0623\u0643\u064a\u062f</button></div></div></div>';}
 if(m.type==="managepoints"){const w=S.wallets[m.emp]||{points:0};return'<div class="overlay" onclick="if(event.target===this)window._closeModal()"><div class="modal"><div class="modal-title">\uD83C\uDFC5 \u0646\u0642\u0627\u0637 - '+m.emp+'</div><div style="background:#0d0d1a;border-radius:12px;padding:14px;margin-bottom:18px;text-align:center"><div style="font-size:12px;color:#8888aa">\u0627\u0644\u0646\u0642\u0627\u0637</div><div style="font-size:28px;font-weight:900;color:#F59E0B">'+(w.points||0)+' \u0646\u0642\u0637\u0629</div><div style="font-size:12px;color:#8888aa">= '+fmt((w.points||0)*PV)+'</div></div><div class="form-row"><div class="lbl">\u0639\u062f\u062f \u0627\u0644\u0646\u0642\u0627\u0637</div><input class="inp" id="pts-amount" type="number" placeholder="5" min="1"/></div><div class="form-actions"><button class="btn btn-g" onclick="window._closeModal()">\u0625\u0644\u063a\u0627\u0621</button><button class="btn btn-red" onclick="window._managePoints(\''+m.emp+'\',false)">\u2796 \u062d\u0630\u0641</button><button class="btn btn-yellow" onclick="window._managePoints(\''+m.emp+'\',true)">\u2795 \u0625\u0636\u0627\u0641\u0629</button></div></div></div>';}
 if(m.type==="statement"){
-const nm=m.emp;
-const w=S.wallets[nm]||{balance:0,points:0};
-const c2=EMP_COLORS[nm]||"#a78bfa";
-const icon=EMP_ICONS[nm]||"\uD83D\uDC64";
-const allTxs=S.txs.filter(function(x){return x.emp===nm;});
-const totalIn=allTxs.filter(function(x){return x.type==="salary"||x.type==="add"||x.type==="convert";}).reduce(function(a,b){return a+(b.amount||0);},0);
-const totalOut=allTxs.filter(function(x){return x.type==="withdraw";}).reduce(function(a,b){return a+(b.amount||0);},0);
-const txRows=allTxs.length===0?'<tr><td colspan="3" style="text-align:center;padding:20px;color:#555577">\u0644\u0627 \u062a\u0648\u062c\u062f \u0645\u0639\u0627\u0645\u0644\u0627\u062a</td></tr>':allTxs.map(function(x){const cls={salary:"tx-salary",points:"tx-points",withdraw:"tx-withdraw",convert:"tx-convert",add:"tx-add",reset:"tx-reset"}[x.type]||"";const isOut=x.type==="withdraw"||x.type==="reset"||(x.type==="points"&&x.amount<0);return'<tr><td style="color:#8888aa;font-size:11px">'+(x.date||"")+'</td><td><span class="tx-badge '+cls+'">'+(x.note||x.type)+'</span></td><td style="font-weight:700;color:'+(isOut?"#EF4444":"#10B981")+';text-align:left">'+(isOut?"- ":"+ ")+(x.type==="points"?fmtPts(Math.abs(x.amount||0)):fmt(Math.abs(x.amount||0)))+'</td></tr>';}).join("");
-return'<div class="overlay" onclick="if(event.target===this)window._closeModal()"><div class="modal" style="max-width:500px"><div style="text-align:center;margin-bottom:16px"><div style="font-size:36px">'+icon+'</div><div style="font-size:17px;font-weight:900;color:'+c2+';margin-top:6px">\u0643\u0634\u0641 \u062d\u0633\u0627\u0628 - '+nm+'</div></div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px"><div style="background:#0d0d1a;border-radius:10px;padding:12px;text-align:center;border:1px solid '+c2+'44"><div style="font-size:10px;color:#8888aa;margin-bottom:4px">\uD83D\uDCB0 \u0627\u0644\u0631\u0635\u064a\u062f</div><div style="font-size:15px;font-weight:900;color:'+c2+'">'+fmt(w.balance||0)+'</div></div><div style="background:#0d0d1a;border-radius:10px;padding:12px;text-align:center;border:1px solid #10B98144"><div style="font-size:10px;color:#8888aa;margin-bottom:4px">\u2795 \u0625\u062c\u0645\u0627\u0644\u064a \u0627\u0644\u0648\u0627\u0631\u062f</div><div style="font-size:15px;font-weight:900;color:#10B981">'+fmt(totalIn)+'</div></div><div style="background:#0d0d1a;border-radius:10px;padding:12px;text-align:center;border:1px solid #EF444444"><div style="font-size:10px;color:#8888aa;margin-bottom:4px">\u2796 \u0625\u062c\u0645\u0627\u0644\u064a \u0627\u0644\u0633\u062d\u0628</div><div style="font-size:15px;font-weight:900;color:#EF4444">'+fmt(totalOut)+'</div></div></div><div style="max-height:340px;overflow-y:auto"><table style="margin-top:0"><thead><tr><th>\u0627\u0644\u062a\u0627\u0631\u064a\u062e</th><th>\u0627\u0644\u0628\u064a\u0627\u0646</th><th>\u0627\u0644\u0645\u0628\u0644\u063a</th></tr></thead><tbody>'+txRows+'</tbody></table></div><div class="form-actions"><button class="btn btn-g" onclick="window._closeModal()">\u0625\u063a\u0644\u0627\u0642</button></div></div></div>';
+var nm=m.emp;
+var w=S.wallets[nm]||{balance:0,points:0};
+var c2=EMP_COLORS[nm]||"#a78bfa";
+var icon=EMP_ICONS[nm]||"\uD83D\uDC64";
+var allTxs=S.txs.filter(function(x){return x.emp===nm;});
+var totalIn=allTxs.filter(function(x){return x.type==="salary"||x.type==="add"||x.type==="convert";}).reduce(function(a,b){return a+(b.amount||0);},0);
+var totalOut=allTxs.filter(function(x){return x.type==="withdraw";}).reduce(function(a,b){return a+(b.amount||0);},0);
+var txRows=allTxs.length===0?"<tr><td colspan='3' style='text-align:center;padding:20px;color:#555'>\u0644\u0627 \u062a\u0648\u062c\u062f \u0645\u0639\u0627\u0645\u0644\u0627\u062a</td></tr>":allTxs.map(function(x){var isOut=x.type==="withdraw"||x.type==="reset"||(x.type==="points"&&x.amount<0);var cls={salary:"tx-salary",points:"tx-points",withdraw:"tx-withdraw",convert:"tx-convert",add:"tx-add",reset:"tx-reset"}[x.type]||"";return"<tr><td style='color:#8888aa;font-size:11px'>"+(x.date||"")+"</td><td><span class='tx-badge "+cls+"'>"+(x.note||x.type)+"</span></td><td style='font-weight:700;color:"+(isOut?"#EF4444":"#10B981")+"'>"+(isOut?"- ":"+ ")+(x.type==="points"?fmtPts(Math.abs(x.amount||0)):fmt(Math.abs(x.amount||0)))+"</td></tr>";}).join("");
+var html='<div class="overlay" onclick="if(event.target===this)window._closeModal()"><div class="modal" style="max-width:500px">';
+html+='<div style="text-align:center;margin-bottom:16px"><div style="font-size:36px">'+icon+'</div><div style="font-size:17px;font-weight:900;color:'+c2+';margin-top:6px">\u0643\u0634\u0641 \u062d\u0633\u0627\u0628 - '+nm+'</div></div>';
+html+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px">';
+html+='<div style="background:#0d0d1a;border-radius:10px;padding:12px;text-align:center;border:1px solid '+c2+'44"><div style="font-size:10px;color:#8888aa;margin-bottom:4px">\uD83D\uDCB0 \u0627\u0644\u0631\u0635\u064a\u062f</div><div style="font-size:15px;font-weight:900;color:'+c2+'">'+fmt(w.balance||0)+'</div></div>';
+html+='<div style="background:#0d0d1a;border-radius:10px;padding:12px;text-align:center;border:1px solid #10B98144"><div style="font-size:10px;color:#8888aa;margin-bottom:4px">\u2795 \u0625\u062c\u0645\u0627\u0644\u064a \u0627\u0644\u0648\u0627\u0631\u062f</div><div style="font-size:15px;font-weight:900;color:#10B981">'+fmt(totalIn)+'</div></div>';
+html+='<div style="background:#0d0d1a;border-radius:10px;padding:12px;text-align:center;border:1px solid #EF444444"><div style="font-size:10px;color:#8888aa;margin-bottom:4px">\u2796 \u0625\u062c\u0645\u0627\u0644\u064a \u0627\u0644\u0633\u062d\u0628</div><div style="font-size:15px;font-weight:900;color:#EF4444">'+fmt(totalOut)+'</div></div></div>';
+html+='<div style="max-height:300px;overflow-y:auto"><table style="margin-top:0"><thead><tr><th>\u0627\u0644\u062a\u0627\u0631\u064a\u062e</th><th>\u0627\u0644\u0628\u064a\u0627\u0646</th><th>\u0627\u0644\u0645\u0628\u0644\u063a</th></tr></thead><tbody>'+txRows+'</tbody></table></div>';
+html+='<div class="form-actions" style="justify-content:space-between;flex-wrap:wrap;gap:8px"><button class="btn btn-g" onclick="window._closeModal()">\u0625\u063a\u0644\u0627\u0642</button><div style="display:flex;gap:8px"><button class="btn" onclick="window._printStatement(S.modal.emp)" style="background:linear-gradient(135deg,#6366f1,#4f46e5);color:#fff">\uD83D\uDDB8 \u0637\u0628\u0627\u0639\u0629</button><button class="btn" onclick="window._whatsappStatement(S.modal.emp)" style="background:linear-gradient(135deg,#25D366,#128C7E);color:#fff">\uD83D\uDCF1 \u0648\u0627\u062a\u0633</button></div></div></div></div>';
+return html;
 }
 return"";
 }
@@ -568,7 +576,65 @@ window._openWithdraw=function(emp){S.modal={type:"withdraw",emp:emp};render();};
 window._doWithdraw=async function(){const a=document.getElementById("wd-amount"),n=document.getElementById("wd-note");const amt=a?parseFloat(a.value):0;const note=n?n.value:"";if(!amt||amt<=0){alert("\u0623\u062f\u062e\u0644 \u0645\u0628\u0644\u063a!");return;}await doWithdraw(S.modal.emp,amt,note);};
 window._punchIn=punchIn;window._punchOut=punchOut;
 window._sendBroadcast=sendBroadcast;
+window._printStatement=function(emp){
+const w=S.wallets[emp]||{balance:0,points:0};
+const c2=EMP_COLORS[emp]||"#a78bfa";
+const icon=EMP_ICONS[emp]||"\uD83D\uDC64";
+const allTxs=S.txs.filter(function(x){return x.emp===emp;});
+const totalIn=allTxs.filter(function(x){return x.type==="salary"||x.type==="add"||x.type==="convert";}).reduce(function(a,b){return a+(b.amount||0);},0);
+const totalOut=allTxs.filter(function(x){return x.type==="withdraw";}).reduce(function(a,b){return a+(b.amount||0);},0);
+const txRows=allTxs.map(function(x){const isOut=x.type==="withdraw"||x.type==="reset"||(x.type==="points"&&x.amount<0);return'<tr><td style="padding:7px 10px;border-bottom:1px solid #eee;font-size:13px;color:#666">'+(x.date||"")+'</td><td style="padding:7px 10px;border-bottom:1px solid #eee;font-size:13px">'+(x.note||x.type)+'</td><td style="padding:7px 10px;border-bottom:1px solid #eee;font-size:13px;color:'+(isOut?"#dc2626":"#16a34a")+';font-weight:700;text-align:left">'+(isOut?"- ":"+ ")+(x.type==="points"?fmtPts(Math.abs(x.amount||0)):fmt(Math.abs(x.amount||0)))+'</td></tr>';}).join("");
+const win=window.open("","_blank");
+win.document.write('<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"/><title>\u0643\u0634\u0641 \u062d\u0633\u0627\u0628 - '+emp+'</title><style>body{font-family:Arial,sans-serif;direction:rtl;padding:30px;color:#111;background:#fff}h1{font-size:20px;margin-bottom:4px}h2{font-size:14px;color:#555;font-weight:normal;margin-bottom:20px}.stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:24px}.stat{border:1px solid #e5e7eb;border-radius:8px;padding:12px;text-align:center}.stat-lbl{font-size:11px;color:#888;margin-bottom:4px}.stat-val{font-size:16px;font-weight:700}table{width:100%;border-collapse:collapse}th{padding:8px 10px;text-align:right;background:#f9fafb;border-bottom:2px solid #e5e7eb;font-size:13px}td{padding:7px 10px;border-bottom:1px solid #eee;font-size:13px}.footer{margin-top:24px;font-size:11px;color:#888;text-align:center}@media print{button{display:none}}</style></head><body><div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:16px"><div><h1>\uD83D\uDCC4 \u0643\u0634\u0641 \u062d\u0633\u0627\u0628</h1><h2>'+icon+' '+emp+'</h2></div><div style="text-align:left;font-size:12px;color:#888">\u062a\u0627\u0631\u064a\u062e \u0627\u0644\u0637\u0628\u0627\u0639\u0629: '+new Date().toLocaleDateString("ar-IQ")+'</div></div><div class="stats"><div class="stat"><div class="stat-lbl">\uD83D\uDCB0 \u0627\u0644\u0631\u0635\u064a\u062f</div><div class="stat-val" style="color:'+c2+'">'+fmt(w.balance||0)+'</div></div><div class="stat"><div class="stat-lbl">\u2795 \u0625\u062c\u0645\u0627\u0644\u064a \u0627\u0644\u0648\u0627\u0631\u062f</div><div class="stat-val" style="color:#16a34a">'+fmt(totalIn)+'</div></div><div class="stat"><div class="stat-lbl">\u2796 \u0625\u062c\u0645\u0627\u0644\u064a \u0627\u0644\u0633\u062d\u0628</div><div class="stat-val" style="color:#dc2626">'+fmt(totalOut)+'</div></div></div><table><thead><tr><th>\u0627\u0644\u062a\u0627\u0631\u064a\u062e</th><th>\u0627\u0644\u0628\u064a\u0627\u0646</th><th>\u0627\u0644\u0645\u0628\u0644\u063a</th></tr></thead><tbody>'+txRows+'</tbody></table><div class="footer">\u0646\u0638\u0627\u0645 \u0645\u0628\u064a\u0639\u0627\u062a \u0627\u0644\u0628\u0633\u0641\u0648\u0631</div><br/><button onclick="window.print()" style="padding:10px 24px;background:#6366f1;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:14px">\uD83D\uDDB8 \u0637\u0628\u0627\u0639\u0629</button></body></html>');
+win.document.close();
+win.focus();
+};
+window._whatsappStatement=function(emp){
+const w=S.wallets[emp]||{balance:0,points:0};
+const allTxs=S.txs.filter(function(x){return x.emp===emp;});
+const totalIn=allTxs.filter(function(x){return x.type==="salary"||x.type==="add"||x.type==="convert";}).reduce(function(a,b){return a+(b.amount||0);},0);
+const totalOut=allTxs.filter(function(x){return x.type==="withdraw";}).reduce(function(a,b){return a+(b.amount||0);},0);
+let msg="\uD83D\uDCC4 *\u0643\u0634\u0641 \u062d\u0633\u0627\u0628 - "+emp+"*\n";
+msg+="\uD83D\uDCC5 "+new Date().toLocaleDateString("ar-IQ")+"\n\n";
+msg+="\uD83D\uDCB0 *\u0627\u0644\u0631\u0635\u064a\u062f:* "+fmt(w.balance||0)+"\n";
+msg+="\u2795 *\u0625\u062c\u0645\u0627\u0644\u064a \u0627\u0644\u0648\u0627\u0631\u062f:* "+fmt(totalIn)+"\n";
+msg+="\u2796 *\u0625\u062c\u0645\u0627\u0644\u064a \u0627\u0644\u0633\u062d\u0628:* "+fmt(totalOut)+"\n\n";
+msg+="*\u0622\u062e\u0631 \u0627\u0644\u0645\u0639\u0627\u0645\u0644\u0627\u062a:*\n";
+allTxs.slice(0,15).forEach(function(x){const isOut=x.type==="withdraw"||x.type==="reset"||(x.type==="points"&&x.amount<0);msg+=(isOut?"\uD83D\uDD34 ":"\uD83D\uDFE2 ")+(x.date||"")+" | "+(x.note||x.type)+" | "+(isOut?"- ":"+ ")+(x.type==="points"?fmtPts(Math.abs(x.amount||0)):fmt(Math.abs(x.amount||0)))+"\n";});
+msg+="\n\uD83C\uDFEA \u0646\u0638\u0627\u0645 \u0645\u0628\u064a\u0639\u0627\u062a \u0627\u0644\u0628\u0633\u0641\u0648\u0631";
+const url="https://wa.me/?text="+encodeURIComponent(msg);
+window.open(url,"_blank");
+};
 window._openStatement=function(emp){S.modal={type:"statement",emp:emp};render();};
+window._dismissNotif=dismissPendingNotif;
+window._markAllRead=markAllRead;
+window._printStatement=function(emp){
+var w=S.wallets[emp]||{balance:0,points:0};
+var c2=EMP_COLORS[emp]||"#a78bfa";
+var icon=EMP_ICONS[emp]||"\uD83D\uDC64";
+var allTxs=S.txs.filter(function(x){return x.emp===emp;});
+var totalIn=allTxs.filter(function(x){return x.type==="salary"||x.type==="add"||x.type==="convert";}).reduce(function(a,b){return a+(b.amount||0);},0);
+var totalOut=allTxs.filter(function(x){return x.type==="withdraw";}).reduce(function(a,b){return a+(b.amount||0);},0);
+var rows=allTxs.map(function(x){var isOut=x.type==="withdraw"||x.type==="reset"||(x.type==="points"&&x.amount<0);return"<tr><td style='padding:8px;border-bottom:1px solid #eee;font-size:13px;color:#666'>"+(x.date||"")+"</td><td style='padding:8px;border-bottom:1px solid #eee;font-size:13px'>"+(x.note||x.type)+"</td><td style='padding:8px;border-bottom:1px solid #eee;font-size:13px;font-weight:700;color:"+(isOut?"#dc2626":"#16a34a")+"'>"+(isOut?"- ":"+ ")+(x.type==="points"?fmtPts(Math.abs(x.amount||0)):fmt(Math.abs(x.amount||0)))+"</td></tr>";}).join("");
+var d=new Date().toLocaleDateString("ar-IQ");
+var h="<!DOCTYPE html><html lang='ar' dir='rtl'><head><meta charset='UTF-8'/><title>\u0643\u0634\u0641</title><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:Arial,sans-serif;direction:rtl;padding:30px;background:#fff;color:#111}.hdr{display:flex;justify-content:space-between;margin-bottom:20px}h2{font-size:18px;margin-bottom:4px}.sub{color:#555;font-size:14px}.date{font-size:12px;color:#888}.stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px}.stat{border:1px solid #e5e7eb;border-radius:8px;padding:12px;text-align:center}.lbl{font-size:11px;color:#888;margin-bottom:4px}.val{font-size:16px;font-weight:700}table{width:100%;border-collapse:collapse;margin-bottom:20px}th{padding:9px;text-align:right;background:#f9fafb;border-bottom:2px solid #e5e7eb;font-size:13px}td{padding:8px;border-bottom:1px solid #eee;font-size:13px}.footer{text-align:center;font-size:11px;color:#888}.pbtn{margin-top:16px;padding:10px 24px;background:#6366f1;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:14px}@media print{.pbtn{display:none}}</style></head><body>";
+h+="<div class='hdr'><div><h2>\uD83D\uDCC4 \u0643\u0634\u0641 \u062d\u0633\u0627\u0628</h2><p class='sub'>"+icon+" "+emp+"</p></div><div class='date'>"+d+"</div></div>";
+h+="<div class='stats'><div class='stat'><div class='lbl'>\uD83D\uDCB0 \u0627\u0644\u0631\u0635\u064a\u062f</div><div class='val' style='color:"+c2+"'>"+fmt(w.balance||0)+"</div></div><div class='stat'><div class='lbl'>\u2795 \u0625\u062c\u0645\u0627\u0644\u064a \u0627\u0644\u0648\u0627\u0631\u062f</div><div class='val' style='color:#16a34a'>"+fmt(totalIn)+"</div></div><div class='stat'><div class='lbl'>\u2796 \u0625\u062c\u0645\u0627\u0644\u064a \u0627\u0644\u0633\u062d\u0628</div><div class='val' style='color:#dc2626'>"+fmt(totalOut)+"</div></div></div>";
+h+="<table><thead><tr><th>\u0627\u0644\u062a\u0627\u0631\u064a\u062e</th><th>\u0627\u0644\u0628\u064a\u0627\u0646</th><th>\u0627\u0644\u0645\u0628\u0644\u063a</th></tr></thead><tbody>"+rows+"</tbody></table>";
+h+="<div class='footer'>\u0646\u0638\u0627\u0645 \u0645\u0628\u064a\u0639\u0627\u062a \u0627\u0644\u0628\u0633\u0641\u0648\u0631</div><br/><button class='pbtn' onclick='window.print()'>\uD83D\uDDB8 \u0637\u0628\u0627\u0639\u0629 / \u062d\u0641\u0638 PDF</button></body></html>";
+var win=window.open("","_blank");win.document.write(h);win.document.close();win.focus();
+};
+window._whatsappStatement=function(emp){
+var w=S.wallets[emp]||{balance:0,points:0};
+var allTxs=S.txs.filter(function(x){return x.emp===emp;});
+var totalIn=allTxs.filter(function(x){return x.type==="salary"||x.type==="add"||x.type==="convert";}).reduce(function(a,b){return a+(b.amount||0);},0);
+var totalOut=allTxs.filter(function(x){return x.type==="withdraw";}).reduce(function(a,b){return a+(b.amount||0);},0);
+var msg="\uD83D\uDCC4 *\u0643\u0634\u0641 \u062d\u0633\u0627\u0628 - "+emp+"*\n\uD83D\uDCC5 "+new Date().toLocaleDateString("ar-IQ")+"\n\n";
+msg+="\uD83D\uDCB0 *\u0627\u0644\u0631\u0635\u064a\u062f:* "+fmt(w.balance||0)+"\n\u2795 *\u0625\u062c\u0645\u0627\u0644\u064a \u0627\u0644\u0648\u0627\u0631\u062f:* "+fmt(totalIn)+"\n\u2796 *\u0625\u062c\u0645\u0627\u0644\u064a \u0627\u0644\u0633\u062d\u0628:* "+fmt(totalOut)+"\n\n*\u0622\u062e\u0631 \u0627\u0644\u0645\u0639\u0627\u0645\u0644\u0627\u062a:*\n";
+allTxs.slice(0,15).forEach(function(x){var isOut=x.type==="withdraw"||x.type==="reset"||(x.type==="points"&&x.amount<0);msg+=(isOut?"\uD83D\uDD34 ":"\uD83D\uDFE2 ")+(x.date||"")+" | "+(x.note||x.type)+" | "+(isOut?"- ":"+ ")+(x.type==="points"?fmtPts(Math.abs(x.amount||0)):fmt(Math.abs(x.amount||0)))+"\n";});
+msg+="\n\uD83C\uDFEA \u0646\u0638\u0627\u0645 \u0645\u0628\u064a\u0639\u0627\u062a \u0627\u0644\u0628\u0633\u0641\u0648\u0631";
+window.open("https://wa.me/?text="+encodeURIComponent(msg),"_blank");
+};
 window._dismissNotif=dismissPendingNotif;
 window._markAllRead=markAllRead;
 </script>
