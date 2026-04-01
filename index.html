@@ -140,6 +140,35 @@ const EMP_COLORS={"\u0639\u0645\u0627\u0631":"#a78bfa","\u062C\u0639\u0641\u0631
 const PASS={owner:"0000"};
 const PPW=5;const PV=1000;const WORK_START="12:00";const SHOP_LAT=33.31033;const SHOP_LNG=44.32380;const MAX_DISTANCE=100;
 function today(){return new Date().toLocaleDateString("en-CA");}
+function getFilteredSales(){
+ function printReport(){
+  const data = getFilteredSales();
+  let html = "<h2>كشف حساب</h2>";
+
+  data.forEach(function(x){
+    html += `<p>${x.date} - ${x.emp} - ${x.amount}</p>`;
+  });
+
+  const w = window.open("");
+  w.document.write(html);
+  w.print();
+}
+ function printReport(){
+  const data = getFilteredSales();
+  let html = "<h2>كشف حساب</h2>";
+
+  data.forEach(function(x){
+    html += `<p>${x.date} - ${x.emp} - ${x.amount}</p>`;
+  });
+
+  const w = window.open("");
+  w.document.write(html);
+  w.print();
+}
+  return S.sales.filter(function(x){
+    return x.date >= S.repFrom && x.date <= S.repTo;
+  });
+}
 function fmt(n){return Number(n||0).toLocaleString("en-IQ")+" \u062F.\u0639";}
 function fmtPts(n){return Number(n||0)+" \u0646\u0642\u0637\u0629";}
 function calcDistance(a,b,c,d){const R=6371000,x=(c-a)*Math.PI/180,y=(d-b)*Math.PI/180;const q=Math.sin(x/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(y/2)**2;return R*2*Math.atan2(Math.sqrt(q),Math.sqrt(1-q));}
