@@ -145,7 +145,7 @@ function fmtPts(n){return Number(n||0)+" \u0646\u0642\u0637\u0629";}
 function calcDistance(a,b,c,d){const R=6371000,x=(c-a)*Math.PI/180,y=(d-b)*Math.PI/180;const q=Math.sin(x/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(y/2)**2;return R*2*Math.atan2(Math.sqrt(q),Math.sqrt(1-q));}
 function timeToMins(t){const[h,m]=t.split(":").map(Number);return h*60+m;}
 function getWeekStart(){const d=new Date(),day=d.getDay(),diff=d.getDate()-((day+6)%7);const mon=new Date(d);mon.setDate(diff);return mon.toLocaleDateString("en-CA");}
-window.S={loggedIn:false,role:null,empName:null,tab:"pos",sel:1,saleType:"store",sales:[],wallets:{},txs:[],attendance:[],notifs:[],empSel:"",loaded:false,editId:null,editSaleId:null,repFrom:today(),repTo:today(),repStore:"all",repType:"all",repPeriod:"today",modal:null,gpsLoading:false,pendingNotif:null,camType:null,camReady:false,repSalesPeriod:"today",repSalesFrom:today(),repSalesTo:today()};
+window.S={loggedIn:false,role:null,empName:null,tab:"pos",sel:1,saleType:"store",sales:[],wallets:{},txs:[],attendance:[],notifs:[],empSel:"",loaded:false,editId:null,editSaleId:null,repFrom:today(),repTo:today(),repStore:"all",repType:"all",repPeriod:"today",modal:null,gpsLoading:false,pendingNotif:null,camType:null,camReady:false,camNeedsPlay:false,repSalesPeriod:"today",repSalesFrom:today(),repSalesTo:today()};
 let cdI=null,cdS=0,camStream=null;
 function setSyncUI(s){const dot=document.getElementById("sync-dot"),txt=document.getElementById("sync-txt");if(!dot||!txt)return;if(s==="ok"){dot.className="dot dot-green";txt.textContent="\u0645\u062a\u0635\u0644";}else if(s==="saving"){dot.className="dot dot-yellow";txt.textContent="\u062c\u0627\u0631\u064a...";}else{dot.className="dot dot-red";txt.textContent="\u063a\u064a\u0631 \u0645\u062a\u0635\u0644";}}
 onSnapshot(query(salesCol,orderBy("createdAt","desc")),function(snap){S.sales=snap.docs.map(function(d){return Object.assign({},d.data(),{id:d.id});});S.loaded=true;setSyncUI("ok");const td=today();const sw=new Set(S.sales.filter(function(x){return x.date===td&&x.type==="store";}).map(function(x){return x.store;}));const ar=STORES.every(function(s){return sw.has(s.id);});if(ar&&!cdI&&cdS===0){getDoc(doc(db,"winners","winner_"+td)).then(function(ws){if(!ws.exists())startCD();});}render();},function(){setSyncUI("error");});
@@ -176,7 +176,7 @@ async function markNotifRead(id,empName){const ref=doc(db,"notifications",id);co
 async function dismissPendingNotif(){if(S.pendingNotif){if(S.empName)await markNotifRead(S.pendingNotif.id,S.empName);S.pendingNotif=null;render();}}
 async function markAllRead(){const myN=S.notifs.filter(function(n){return(n.to===S.empName||n.to==="all")&&!(n.readBy||{})[S.empName];});for(const n of myN)await markNotifRead(n.id,S.empName);}
 async function startCamera(type){
-S.camType=type;S.camReady=false;render();
+S.camType=type;S.camReady=false;S.camNeedsPlay=false;render();
 setTimeout(async function(){
 try{
 if(camStream){camStream.getTracks().forEach(function(t){t.stop();});camStream=null;}
@@ -185,14 +185,20 @@ camStream=stream;
 var vid=document.getElementById("cam-vid");
 if(vid){
 vid.srcObject=stream;
-vid.play().catch(function(){});
-S.camReady=true;render();
+S.camNeedsPlay=true;render();
 }
 }catch(e){
 alert("❌ "+e.name+": "+e.message);
 S.camType=null;render();
 }
-},500);}
+},300);}
+window._startVideo=async function(){
+var vid=document.getElementById("cam-vid");
+if(!vid||!camStream)return;
+vid.srcObject=camStream;
+try{await vid.play();}catch(e){}
+S.camReady=true;S.camNeedsPlay=false;render();
+};
 function stopCamera(){if(camStream){camStream.getTracks().forEach(function(t){t.stop();});camStream=null;}S.camType=null;S.camReady=false;render();}
 async function captureAndSave(){const vid=document.getElementById("cam-vid");if(!vid)return;const canvas=document.createElement("canvas");canvas.width=280;canvas.height=210;const ctx=canvas.getContext("2d");ctx.save();ctx.scale(-1,1);ctx.drawImage(vid,-280,0,280,210);ctx.restore();const photo=canvas.toDataURL("image/jpeg",0.45);const empName=S.empName;const td=today();const now=new Date();const ts=now.toLocaleTimeString("en",{hour:"2-digit",minute:"2-digit"});const nm=now.getHours()*60+now.getMinutes();const type=S.camType||"in";stopCamera();if(type==="in"){const existing=S.attendance.find(function(x){return x.emp===empName&&x.date===td&&x.punchIn&&!x.punchOut;});if(existing){alert("أنت مسجل حضور بالفعل!");return;}const lb=Math.max(0,nm-timeToMins(WORK_START));await addDoc(attendCol,{emp:empName,date:td,punchIn:ts,punchOut:null,punchInMins:nm,punchOutMins:null,lateBy:lb,hours:null,photoIn:photo,createdAt:serverTimestamp()});alert("✅ تسجيل الحضور - "+ts+(lb>0?" - ⚠️ متأخر "+lb+" دقيقة":" - ✅ في الوقت"));}else{const existing=S.attendance.find(function(x){return x.emp===empName&&x.date===td&&x.punchIn&&!x.punchOut;});if(!existing){alert("ما عندك بصمة حضور!");return;}const hrs=Math.round((nm-existing.punchInMins)/60*10)/10;await updateDoc(doc(db,"attendance",existing.id),{punchOut:ts,punchOutMins:nm,hours:hrs,photoOut:photo});alert("✅ تسجيل الخروج - "+ts+" - ساعات: "+hrs);}render();}
 async function punchIn(){await startCamera("in");}
@@ -260,7 +266,7 @@ const tr=S.attendance.find(function(x){return x.emp===nm&&x.date===td;});
 const mr=Array.from(S.attendance.filter(function(x){return x.emp===nm;})).sort(function(a,b){return b.date.localeCompare(a.date);});
 if(S.camType){
 const lbl=S.camType==="in"?"بصمة حضور":"بصمة خروج";
-return'<div class="overlay"><div class="modal" style="max-width:380px;text-align:center"><div style="font-size:15px;font-weight:900;margin-bottom:14px">صورة: '+lbl+'</div><div style="position:relative;background:#000;border-radius:12px;overflow:hidden;min-height:200px;margin-bottom:14px"><video id="cam-vid" autoplay playsinline muted style="width:100%;min-height:180px;background:#000;display:block"></video><div style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:11px;color:#fff;background:#0009;padding:3px 10px;border-radius:20px">'+(S.camReady?"✅ جاهزة":"⏳ جاري...")+'</div></div><div style="display:flex;gap:10px"><button class="btn btn-g" style="flex:1" onclick="window._stopCamera()">❌ إلغاء</button><button class="btn btn-p" style="flex:1" '+(S.camReady?"":"disabled ")+'onclick="window._capture()">تصوير</button></div></div></div>';
+return'<div class="overlay"><div class="modal" style="max-width:380px;text-align:center"><div style="font-size:15px;font-weight:900;margin-bottom:14px">صورة: '+lbl+'</div><div style="position:relative;background:#000;border-radius:12px;overflow:hidden;min-height:200px;margin-bottom:14px"><video id="cam-vid" autoplay playsinline muted style="width:100%;min-height:200px;background:#000;display:block"></video><div id="cam-tap" onclick="window._startVideo()" style="position:absolute;inset:0;display:'+( S.camNeedsPlay?'flex':'none' )+';flex-direction:column;align-items:center;justify-content:center;background:#0008;cursor:pointer"><div style="font-size:44px">▶️</div><div style="color:#fff;font-size:14px;margin-top:8px">اضغط لتشغيل الكاميرا</div></div><div style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:11px;color:#fff;background:#0009;padding:3px 10px;border-radius:20px">'+(S.camReady?'"✅ جاهزة"':S.camNeedsPlay?'"اضغط للتشغيل"':'"⏳ جاري..."')+'</div></div><div style="display:flex;gap:10px"><button class="btn btn-g" style="flex:1" onclick="window._stopCamera()">❌ إلغاء</button><button class="btn btn-p" style="flex:1" '+(S.camReady?'':' disabled ')+'onclick="window._capture()">تصوير</button></div></div></div>';
 }
 const sb=tr?tr.punchOut?'<div style="background:#10B98118;border:1px solid #10B98144;border-radius:14px;padding:18px;text-align:center;margin-bottom:20px"><div style="font-size:32px;margin-bottom:8px">✅</div><div style="font-weight:700;color:#10B981;font-size:16px">اكتمل دوامك</div><div style="font-size:13px;color:#8888aa;margin-top:6px">حضور: '+tr.punchIn+' — خروج: '+tr.punchOut+'</div><div style="font-size:13px;color:#10B981;margin-top:4px">⏱ '+tr.hours+' ساعة</div>'+(tr.photoIn||tr.photoOut?'<div style="display:flex;gap:8px;justify-content:center;margin-top:8px">'+(tr.photoIn?'<img src="'+tr.photoIn+'" style="width:70px;height:52px;border-radius:8px;object-fit:cover"/>':'')+(tr.photoOut?'<img src="'+tr.photoOut+'" style="width:70px;height:52px;border-radius:8px;object-fit:cover"/>':'')+'</div>':'')+'</div>':'<div style="background:#F59E0B18;border:1px solid #F59E0B44;border-radius:14px;padding:18px;text-align:center;margin-bottom:20px"><div style="font-size:32px;margin-bottom:8px">⏳</div><div style="font-weight:700;color:#F59E0B;font-size:16px">أنت في الدوام</div><div style="font-size:13px;color:#8888aa;margin-top:6px">دخول: '+tr.punchIn+'</div>'+(tr.lateBy>0?'<div style="font-size:12px;color:#EF4444;margin-top:4px">⚠️ متأخر '+tr.lateBy+' دقيقة</div>':'<div style="font-size:12px;color:#10B981;margin-top:4px">✅ في الوقت</div>')+(tr.photoIn?'<div style="margin-top:8px"><img src="'+tr.photoIn+'" style="width:70px;height:52px;border-radius:8px;object-fit:cover"/></div>':'')+'</div>':'<div style="background:#EF444418;border:1px solid #EF444444;border-radius:14px;padding:18px;text-align:center;margin-bottom:20px"><div style="font-size:32px;margin-bottom:8px">⚠️</div><div style="font-weight:700;color:#EF4444;font-size:16px">لم تسجل حضورك بعد</div></div>';
 const rows=mr.slice(0,14).map(function(r){return'<tr><td style="color:#8888aa;font-size:12px">'+r.date+'</td><td style="color:#10B981;font-weight:700">'+(r.punchIn||"—")+(r.lateBy>0?' <span style="color:#EF4444;font-size:11px">+'+r.lateBy+'د</span>':' <span style="color:#10B981;font-size:11px">✓</span>')+'</td><td style="color:#a78bfa;font-weight:700">'+(r.punchOut||"—")+'</td><td>'+(r.hours!=null?r.hours+" س":"—")+'</td></tr>';}).join("");
