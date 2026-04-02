@@ -152,9 +152,7 @@ onSnapshot(query(salesCol,orderBy("createdAt","desc")),function(snap){S.sales=sn
 onSnapshot(walletsCol,function(snap){S.wallets={};snap.docs.forEach(function(d){S.wallets[d.id]=Object.assign({},d.data(),{id:d.id});});render();});
 onSnapshot(query(txCol,orderBy("createdAt","desc")),function(snap){S.txs=snap.docs.map(function(d){return Object.assign({},d.data(),{id:d.id});});render();});
 onSnapshot(query(attendCol,orderBy("createdAt","desc")),function(snap){S.attendance=snap.docs.map(function(d){return Object.assign({},d.data(),{id:d.id});});render();});
-onSnapshot(query(notifsCol,orderBy("createdAt","desc")),function(snap){S.notifs=snap.docs.map(function(d){return Object.assign({},d.data(),{id:d.id});
-onSnapshot(supCol,function(snap){S.suppliers=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});render();});
-onSnapshot(supPayCol,function(snap){S.supPayments=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});render();});});if(S.loggedIn&&S.empName&&!S.pendingNotif){const u=S.notifs.find(function(n){return n.type==="broadcast"&&!(n.readBy||{})[S.empName];});if(u)S.pendingNotif=u;}render();});
+onSnapshot(query(notifsCol,orderBy("createdAt","desc")),function(snap){S.notifs=snap.docs.map(function(d){return Object.assign({},d.data(),{id:d.id});});if(S.loggedIn&&S.empName&&!S.pendingNotif){const u=S.notifs.find(function(n){return n.type==="broadcast"&&!(n.readBy||{})[S.empName];});if(u)S.pendingNotif=u;}render();});
 async function initWallets(){for(const[name]of EMPS){const ref=doc(db,"wallets",name);const snap=await getDoc(ref);if(!snap.exists())await setDoc(ref,{name,balance:0,points:0,createdAt:serverTimestamp()});}}
 initWallets();
 function tryLogin(){const pass=document.getElementById("pass-inp").value.trim();const err=document.getElementById("login-err");if(pass===PASS.owner){S.loggedIn=true;S.role="owner";S.empName=null;render();return;}for(const[name,p]of Object.entries(EMP_PASS)){if(pass===p){S.loggedIn=true;S.role="employee";S.empName=name;S.empSel=name;S.tab="pos";const u=S.notifs.find(function(n){return n.type==="broadcast"&&!(n.readBy||{})[name];});if(u)S.pendingNotif=u;render();return;}}err.textContent="\u274c \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u063a\u0644\u0637";document.getElementById("pass-inp").value="";}
@@ -271,7 +269,13 @@ h+=”<div class='footer'>🏪 البسفور | كشف “+sup.name+” | “+pD
 var pw=window.open(””,”_blank”);if(pw){pw.document.write(h);pw.document.close();pw.focus();}
 }
 
-function switchTab(t){if(t===“report”&&S.role!==“owner”){alert(”\u0644\u0644\u0645\u0627\u0644\u0643 \u0641\u0642\u0637!”);return;}S.tab=t;render();}
+function loadSuppliers(){
+if(S._supLoaded)return;
+S._supLoaded=true;
+onSnapshot(supCol,function(snap){S.suppliers=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});render();});
+onSnapshot(supPayCol,function(snap){S.supPayments=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});render();});
+}
+function switchTab(t){if(t===“suppliers”)loadSuppliers();if(t===“report”&&S.role!==“owner”){alert(”\u0644\u0644\u0645\u0627\u0644\u0643 \u0641\u0642\u0637!”);return;}S.tab=t;render();}
 function selectStore(id){S.sel=id;render();}
 function setSaleType(t){S.saleType=t;render();}
 function toggleEmpMenu(){const m=document.getElementById(“emp-menu”);if(!m)return;const open=m.style.display===“block”;m.style.display=open?“none”:“block”;if(!open)setTimeout(function(){document.addEventListener(“click”,function(e){const m2=document.getElementById(“emp-menu”);if(m2&&!m2.contains(e.target))m2.style.display=“none”;},{once:true});},0);}
