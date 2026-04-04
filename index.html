@@ -140,7 +140,7 @@ const EMP_ICONS={"\u0639\u0645\u0627\u0631":"\uD83D\uDC68\u200D\uD83D\uDCBC","\u
 const EMP_COLORS={"\u0639\u0645\u0627\u0631":"#a78bfa","\u062C\u0639\u0641\u0631":"#10B981","\u0645\u062B\u0646\u0649":"#38bdf8","\u0627\u062f\u0645\u0646":"#F59E0B"};
 const PASS={owner:"0000"};
 const PPW=5;const PV=1000;const WORK_START="12:00";const SHOP_LAT=33.31033;const SHOP_LNG=44.32380;const MAX_DISTANCE=100;
-function today(){return new Date().toLocaleDateString("en-CA");}function yesterday(){const d=new Date();d.setDate(d.getDate()-1);return d.toLocaleDateString("en-CA");}
+function today(){var d=new Date();var m=String(d.getMonth()+1).padStart(2,"0");var day=String(d.getDate()).padStart(2,"0");return d.getFullYear()+"-"+m+"-"+day;}function yesterday(){const d=new Date();d.setDate(d.getDate()-1);return d.toLocaleDateString("en-CA");}
 function fmt(n){return Number(n||0).toLocaleString("en-IQ")+" \u062F.\u0639";}
 function fmtPts(n){return Number(n||0)+" \u0646\u0642\u0637\u0629";}
 function calcDistance(a,b,c,d){const R=6371000,x=(c-a)*Math.PI/180,y=(d-b)*Math.PI/180;const q=Math.sin(x/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(y/2)**2;return R*2*Math.atan2(Math.sqrt(q),Math.sqrt(1-q));}
@@ -152,7 +152,7 @@ function setSyncUI(s){const dot=document.getElementById("sync-dot"),txt=document
 onSnapshot(query(salesCol,orderBy("createdAt","desc")),function(snap){S.sales=snap.docs.map(function(d){return Object.assign({},d.data(),{id:d.id});});S.loaded=true;setSyncUI("ok");const td=today();const sw=new Set(S.sales.filter(function(x){return x.date===td&&x.type==="store";}).map(function(x){return x.store;}));const ar=STORES.every(function(s){return sw.has(s.id);});if(ar&&!cdI&&cdS===0){getDoc(doc(db,"winners","winner_"+td)).then(function(ws){if(!ws.exists())startCD();});}render();},function(){setSyncUI("error");S.loaded=true;render();});
 onSnapshot(walletsCol,function(snap){S.wallets={};snap.docs.forEach(function(d){S.wallets[d.id]=Object.assign({},d.data(),{id:d.id});});render();});
 onSnapshot(query(txCol,orderBy("createdAt","desc")),function(snap){S.txs=snap.docs.map(function(d){return Object.assign({},d.data(),{id:d.id});});render();});
-onSnapshot(query(attendCol,orderBy("createdAt","desc")),function(snap){S.attendance=snap.docs.map(function(d){return Object.assign({},d.data(),{id:d.id});});render();});
+onSnapshot(query(attendCol,orderBy("createdAt","desc")),function(snap){S.attendance=snap.docs.map(function(d){var data=Object.assign({},d.data(),{id:d.id});if(data.date&&data.date.indexOf("-")===-1){try{var parts=data.date.split("/");if(parts.length===3){var m=parts[0].padStart(2,"0"),dy=parts[1].padStart(2,"0"),yr=parts[2];data.date=yr+"-"+m+"-"+dy;}}catch(e){}}return data;});render();});
 onSnapshot(query(notifsCol,orderBy("createdAt","desc")),function(snap){S.notifs=snap.docs.map(function(d){return Object.assign({},d.data(),{id:d.id});});if(S.loggedIn&&S.empName&&!S.pendingNotif){const u=S.notifs.find(function(n){return n.type==="broadcast"&&!(n.readBy||{})[S.empName];});if(u)S.pendingNotif=u;}render();});
 async function initWallets(){for(const[name]of EMPS){const ref=doc(db,"wallets",name);const snap=await getDoc(ref);if(!snap.exists())await setDoc(ref,{name,balance:0,points:0,createdAt:serverTimestamp()});}}
 initWallets();
