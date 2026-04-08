@@ -193,6 +193,7 @@ const txCol=collection(db,"wallet_tx");
 const attendCol=collection(db,"attendance");
 const notifsCol=collection(db,"notifications");
 const supCol=collection(db,"suppliers");
+const empSettCol=collection(db,"emp_settings");
 const cashCol=collection(db,"cashbox");
 const expCol=collection(db,"expenses");
 const supPayCol=collection(db,"sup_payments");
@@ -211,7 +212,7 @@ function fmtPts(n){return Number(n||0)+" \u0646\u0642\u0637\u0629";}
 function calcDistance(a,b,c,d){const R=6371000,x=(c-a)*Math.PI/180,y=(d-b)*Math.PI/180;const q=Math.sin(x/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(y/2)**2;return R*2*Math.atan2(Math.sqrt(q),Math.sqrt(1-q));}
 function timeToMins(t){const[h,m]=t.split(":").map(Number);return h*60+m;}
 function getWeekStart(){const d=new Date(),day=d.getDay(),diff=d.getDate()-((day+6)%7);const mon=new Date(d);mon.setDate(diff);return mon.toLocaleDateString("en-CA");}
-window.S={loggedIn:false,role:null,empName:null,tab:"pos",sel:1,saleType:"store",sales:[],wallets:{},txs:[],attendance:[],notifs:[],empSel:"",loaded:false,editId:null,editSaleId:null,repFrom:today(),repTo:today(),repStore:"all",repType:"all",repPeriod:"today",modal:null,gpsLoading:false,pendingNotif:null,camType:null,camReady:false,camNeedsPlay:false,repSalesPeriod:"today",repSalesFrom:today(),repSalesTo:today(),repSalesType:"all",suppliers:[],supPayments:[],supModal:null,_supLoaded:false,cashEntries:[],expenses:[],_cashLoaded:false};
+window.S={loggedIn:false,role:null,empName:null,tab:"pos",sel:1,saleType:"store",sales:[],wallets:{},txs:[],attendance:[],notifs:[],empSel:"",loaded:false,editId:null,editSaleId:null,repFrom:today(),repTo:today(),repStore:"all",repType:"all",repPeriod:"today",modal:null,gpsLoading:false,pendingNotif:null,camType:null,camReady:false,camNeedsPlay:false,repSalesPeriod:"today",repSalesFrom:today(),repSalesTo:today(),repSalesType:"all",suppliers:[],supPayments:[],supModal:null,_supLoaded:false,cashEntries:[],expenses:[],_cashLoaded:false,empSettings:[],_empLoaded:false,empSettings:[],_empLoaded:false};
 let cdI=null,cdS=0,camStream=null;
 function setSyncUI(s){const dot=document.getElementById("sync-dot"),txt=document.getElementById("sync-txt");if(!dot||!txt)return;if(s==="ok"){dot.className="dot dot-green";txt.textContent="\u0645\u062a\u0635\u0644";}else if(s==="saving"){dot.className="dot dot-yellow";txt.textContent="\u062c\u0627\u0631\u064a...";}else{dot.className="dot dot-red";txt.textContent="\u063a\u064a\u0631 \u0645\u062a\u0635\u0644";}}
 onSnapshot(query(salesCol,orderBy("createdAt","desc")),function(snap){S.sales=snap.docs.map(function(d){return Object.assign({},d.data(),{id:d.id});});S.loaded=true;setSyncUI("ok");const td=today();const sw=new Set(S.sales.filter(function(x){return x.date===td&&x.type==="store";}).map(function(x){return x.store;}));const ar=STORES.every(function(s){return sw.has(s.id);});if(ar&&!cdI&&cdS===0){getDoc(doc(db,"winners","winner_"+td)).then(function(ws){if(!ws.exists())startCD();});}render();},function(){setSyncUI("error");S.loaded=true;render();});
@@ -442,7 +443,7 @@ onSnapshot(supCol,function(snap){S.suppliers=snap.docs.map(function(d){return Ob
 onSnapshot(supPayCol,function(snap){S.supPayments=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});render();});
 }
 
-function switchTab(t){if(t==="suppliers")loadSuppliers();if(t==="cashbox")loadCashbox();if(t==="report"&&S.role!=="owner"){alert("\u0644\u0644\u0645\u0627\u0644\u0643 \u0641\u0642\u0637!");return;}S.tab=t;render();}
+function switchTab(t){if(t==="suppliers")loadSuppliers();if(t==="cashbox")loadCashbox();if(t==="settings"){loadEmpSettings();saveEmpSettings();}if(t==="settings")loadEmpSettings();if(t==="report"&&S.role!=="owner"){alert("\u0644\u0644\u0645\u0627\u0644\u0643 \u0641\u0642\u0637!");return;}S.tab=t;render();}
 function selectStore(id){S.sel=id;render();}
 function setSaleType(t){S.saleType=t;render();}
 function toggleEmpMenu(){const m=document.getElementById("emp-menu");if(!m)return;const open=m.style.display==="block";m.style.display=open?"none":"block";if(!open)setTimeout(function(){document.addEventListener("click",function(e){const m2=document.getElementById("emp-menu");if(m2&&!m2.contains(e.target))m2.style.display="none";},{once:true});},0);}
@@ -581,7 +582,72 @@ html+='<div class="form-actions" style="justify-content:space-between;flex-wrap:
 return html;
 }
 return"";}
-function renderSettings(){const recent=Array.from(S.sales).sort(function(a,b){return b.date.localeCompare(a.date)||((b.createdAt&&b.createdAt.seconds)||0)-((a.createdAt&&a.createdAt.seconds)||0);}).slice(0,50);const rows=recent.length===0?'<div style="text-align:center;padding:30px;color:#555577">\u0644\u0627 \u062a\u0648\u062c\u062f \u0645\u0628\u064a\u0639\u0627\u062a</div>':recent.map(function(x){const st=STORES.find(function(s){return s.id===x.store;})||STORES[0];return'<tr><td style="color:#8888aa;font-size:11px">'+x.date+'<br/>'+(x.time||"")+'</td><td>'+st.icon+' '+st.name+'<br/><span style="color:#8888aa">'+(x.emp||"\u2014")+'</span></td><td style="font-weight:700;color:'+(x.type==="store"?st.color:"#38bdf8")+'">'+fmt(x.amount)+'</td><td><button class="btn-edit" onclick="window._openSaleEdit(\''+x.id+'\')">&#9999; \u062a\u0639\u062f\u064a\u0644</button></td></tr>';}).join("");return'<div style="font-size:16px;font-weight:900;margin-bottom:20px">\u2699\ufe0f \u0625\u0639\u062f\u0627\u062f\u0627\u062a</div><div class="pos-box"><div style="background:#a78bfa11;border:1px solid #a78bfa33;border-radius:10px;padding:12px;font-size:12px;color:#a78bfa;margin-bottom:16px">\u26a0\ufe0f \u0644\u0644\u0645\u0627\u0644\u0643 \u0641\u0642\u0637</div><table><thead><tr><th>\u0627\u0644\u062a\u0627\u0631\u064a\u062e</th><th>\u0627\u0644\u0645\u062d\u0644</th><th>\u0627\u0644\u0645\u0628\u0644\u063a</th><th>\u062a\u0639\u062f\u064a\u0644</th></tr></thead><tbody>'+rows+'</tbody></table></div>';}
+function renderSettings(){
+// Employee cards
+var empCards=S.empSettings.length===0
+?"<div style='text-align:center;padding:20px;color:#555'>\u062c\u0627\u0631\u064a \u0627\u0644\u062a\u062d\u0645\u064a\u0644...</div>"
+:S.empSettings.map(function(e){
+var storeName=e.store===1?"\u0627\u0644\u062c\u0627\u0645\u0639\u0629 \u0645\u0648\u0644":"\u0634\u0627\u0631\u0639 \u0627\u0644\u0631\u0628\u064a\u0639";
+return "<div class='sum-box' style='margin-bottom:12px'>"
++"<div style='display:flex;justify-content:space-between;align-items:center;margin-bottom:10px'>"
++"<div style='font-size:15px;font-weight:900;color:#a78bfa'>"+e.icon+" "+e.name+"</div>"
++"<button onclick=\"window._delEmp('"+e.name+"')\" style='background:#EF444418;border:1px solid #EF444433;color:#EF4444;border-radius:8px;padding:4px 10px;font-size:12px;cursor:pointer'>\u062d\u0630\u0641</button>"
++"</div>"
++"<div style='display:grid;grid-template-columns:1fr 1fr;gap:8px'>"
++"<div style='background:#0d0d1a;border-radius:10px;padding:10px'>"
++"<div style='font-size:10px;color:#8888aa;margin-bottom:3px'>\uD83C\uDFEA \u0627\u0644\u0641\u0631\u0639</div>"
++"<div style='font-size:13px;font-weight:700'>"+storeName+"</div>"
++"<button onclick=\"window._editEmpField('"+e.name+"','store','\u0627\u0644\u0641\u0631\u0639 (1=\u062c\u0627\u0645\u0639\u0629, 3=\u0631\u0628\u064a\u0639)','"+e.store+"')\" style='background:#a78bfa18;border:1px solid #a78bfa44;color:#a78bfa;border-radius:6px;padding:3px 8px;font-size:11px;cursor:pointer;margin-top:4px'>\u062a\u0639\u062f\u064a\u0644</button>"
++"</div>"
++"<div style='background:#0d0d1a;border-radius:10px;padding:10px'>"
++"<div style='font-size:10px;color:#8888aa;margin-bottom:3px'>\uD83D\uDCB0 \u0627\u0644\u0631\u0627\u062a\u0628</div>"
++"<div style='font-size:13px;font-weight:700'>"+Number(e.salary||0).toLocaleString()+" \u062F.\u0639</div>"
++"<button onclick=\"window._editEmpField('"+e.name+"','salary','\u0627\u0644\u0631\u0627\u062a\u0628','"+e.salary+"')\" style='background:#10B98118;border:1px solid #10B98144;color:#10B981;border-radius:6px;padding:3px 8px;font-size:11px;cursor:pointer;margin-top:4px'>\u062a\u0639\u062f\u064a\u0644</button>"
++"</div>"
++"<div style='background:#0d0d1a;border-radius:10px;padding:10px'>"
++"<div style='font-size:10px;color:#8888aa;margin-bottom:3px'>\u23F0 \u0648\u0642\u062a \u0627\u0644\u062f\u0648\u0627\u0645</div>"
++"<div style='font-size:13px;font-weight:700'>"+(e.workStart||"12:00")+"</div>"
++"<button onclick=\"window._editEmpField('"+e.name+"','workStart','\u0648\u0642\u062a \u0627\u0644\u062f\u0648\u0627\u0645','"+e.workStart+"')\" style='background:#F59E0B18;border:1px solid #F59E0B44;color:#F59E0B;border-radius:6px;padding:3px 8px;font-size:11px;cursor:pointer;margin-top:4px'>\u062a\u0639\u062f\u064a\u0644</button>"
++"</div>"
++"<div style='background:#0d0d1a;border-radius:10px;padding:10px'>"
++"<div style='font-size:10px;color:#8888aa;margin-bottom:3px'>\uD83D\uDD12 \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631</div>"
++"<div style='font-size:13px;font-weight:700'>"+"●".repeat((e.pass||"").length)+"</div>"
++"<button onclick=\"window._editEmpField('"+e.name+"','pass','\u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631','"+e.pass+"')\" style='background:#38bdf818;border:1px solid #38bdf844;color:#38bdf8;border-radius:6px;padding:3px 8px;font-size:11px;cursor:pointer;margin-top:4px'>\u062a\u0639\u062f\u064a\u0644</button>"
++"</div>"
++"</div></div>";
+}).join("");
+
+// Add new employee form
+var addForm="<div class='pos-box' style='margin-bottom:16px'>"
++"<div style='font-size:15px;font-weight:900;margin-bottom:14px'>\u2795 \u0625\u0636\u0627\u0641\u0629 \u0645\u0648\u0638\u0641 \u062c\u062f\u064a\u062f</div>"
++"<div style='display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px'>"
++"<div><div class='lbl'>\u0627\u0633\u0645 \u0627\u0644\u0645\u0648\u0638\u0641</div><input id='new-emp-name' type='text' class='inp' placeholder='\u0639\u0644\u064a'/></div>"
++"<div><div class='lbl'>\u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631</div><input id='new-emp-pass' type='text' class='inp' placeholder='1234' inputmode='numeric'/></div>"
++"<div><div class='lbl'>\u0627\u0644\u0631\u0627\u062a\u0628 (IQD)</div><input id='new-emp-salary' type='number' class='inp' placeholder='200000' inputmode='decimal'/></div>"
++"<div><div class='lbl'>\u0648\u0642\u062a \u0627\u0644\u062f\u0648\u0627\u0645</div><input id='new-emp-work' type='time' class='inp' value='12:00'/></div>"
++"</div>"
++"<div class='lbl' style='margin-bottom:6px'>\u0627\u0644\u0641\u0631\u0639</div>"
++"<select id='new-emp-store' class='inp' style='margin-bottom:12px'>"
++"<option value='1'>\uD83C\uDFEC \u0627\u0644\u0628\u0633\u0641\u0648\u0631 - \u0627\u0644\u062c\u0627\u0645\u0639\u0629 \u0645\u0648\u0644</option>"
++"<option value='3'>\uD83C\uDFEA \u0627\u0644\u0628\u0633\u0641\u0648\u0631 - \u0634\u0627\u0631\u0639 \u0627\u0644\u0631\u0628\u064a\u0639</option>"
++"</select>"
++"<button onclick=\"window._addEmp()\" class='btn btn-p' style='width:100%'>\u2795 \u0625\u0636\u0627\u0641\u0629 \u0645\u0648\u0638\u0641</button>"
++"</div>";
+
+// Recent sales (existing settings content)
+var recent=Array.from(S.sales).sort(function(a,b){return b.date.localeCompare(a.date)||((b.createdAt&&b.createdAt.seconds)||0)-((a.createdAt&&a.createdAt.seconds)||0);}).slice(0,30);
+var rows=recent.length===0?"<div style='text-align:center;padding:30px;color:#555577'>\u0644\u0627 \u062a\u0648\u062c\u062f \u0645\u0628\u064a\u0639\u0627\u062a</div>":recent.map(function(x){var st=STORES.find(function(s){return s.id===x.store;})||STORES[0];return"<tr><td style='color:#8888aa;font-size:11px'>"+x.date+"<br/>"+(x.time||"")+"</td><td>"+st.icon+" "+st.name+"<br/><span style='color:#8888aa'>"+(x.emp||"\u2014")+"</span></td><td style='font-weight:700;color:"+(x.type==="store"?st.color:"#38bdf8")+"'>"+fmt(x.amount)+"</td><td><button class='btn-edit' onclick=\"window._openSaleEdit('"+x.id+"')\">&#9999; \u062a\u0639\u062f\u064a\u0644</button></td></tr>";}).join("");
+
+return "<div style='font-size:16px;font-weight:900;margin-bottom:16px'>\u2699\uFE0F \u0625\u0639\u062f\u0627\u062f\u0627\u062a</div>"
++addForm
++"<div class='pos-box' style='margin-bottom:16px'>"
++"<div style='font-size:15px;font-weight:900;margin-bottom:14px'>\uD83D\uDC65 \u0625\u062f\u0627\u0631\u0629 \u0627\u0644\u0645\u0648\u0638\u0641\u064a\u0646</div>"
++empCards
++"</div>"
++"<div class='pos-box'><div style='background:#a78bfa11;border:1px solid #a78bfa33;border-radius:10px;padding:12px;font-size:12px;color:#a78bfa;margin-bottom:16px'>\u26a0\uFE0F \u062a\u0639\u062f\u064a\u0644 \u0627\u0644\u0645\u0628\u064a\u0639\u0627\u062a - \u0644\u0644\u0645\u0627\u0644\u0643 \u0641\u0642\u0637</div><table><thead><tr><th>\u0627\u0644\u062a\u0627\u0631\u064a\u062e</th><th>\u0627\u0644\u0645\u062d\u0644</th><th>\u0627\u0644\u0645\u0628\u0644\u063a</th><th>\u062a\u0639\u062f\u064a\u0644</th></tr></thead><tbody>"+rows+"</tbody></table></div>";
+}
+
+
 function renderBroadcast(){const bc=S.notifs.filter(function(n){return n.type==="broadcast";}).slice(0,20);const rows=bc.length===0?'<div style="text-align:center;padding:30px;color:#555577">\u0644\u0627 \u062a\u0648\u062c\u062f \u0631\u0633\u0627\u0626\u0644</div>':bc.map(function(n){return'<div class="notif-item"><div style="flex:1"><div style="font-weight:700;margin-bottom:6px">\uD83D\uDCE2 '+n.msg+'</div><div style="font-size:11px;color:#8888aa">'+n.date+' - \u0642\u0631\u0623\u0647\u0627 '+Object.keys(n.readBy||{}).length+' \u0645\u0648\u0638\u0641</div></div></div>';}).join("");return'<div style="font-size:16px;font-weight:900;margin-bottom:20px">\uD83D\uDCE2 \u0631\u0633\u0627\u0626\u0644</div><div class="pos-box" style="margin-bottom:24px"><div class="pos-title">\u270d\ufe0f \u0631\u0633\u0627\u0644\u0629 \u062c\u062f\u064a\u062f\u0629</div><div class="form-row"><textarea class="inp" id="broadcast-msg" rows="4" placeholder="\u0627\u0643\u062a\u0628 \u0631\u0633\u0627\u0644\u062a\u0643..." style="resize:vertical"></textarea></div><button class="btn btn-p" style="width:100%;padding:14px" onclick="window._sendBroadcast()">\uD83D\uDCE2 \u0625\u0631\u0633\u0627\u0644 \u0644\u0644\u062c\u0645\u064a\u0639</button></div><div class="chart-box">'+rows+'</div>';}
 function renderMyNotifs(nm){const mn=S.notifs.filter(function(n){return n.to===nm||n.to==="all";}).slice(0,30);const ur=mn.filter(function(n){return!(n.readBy||{})[nm];}).length;const rows=mn.length===0?'<div style="text-align:center;padding:30px;color:#555577">\u0644\u0627 \u062a\u0648\u062c\u062f \u0625\u0634\u0639\u0627\u0631\u0627\u062a</div>':mn.map(function(n){const ir=(n.readBy||{})[nm];const ic={salary:"\uD83D\uDCB0",points:"\uD83C\uDFC6",withdraw:"\uD83D\uDCB8",convert:"\uD83C\uDFAF",add:"\uD83D\uDCB5",broadcast:"\uD83D\uDCE2",reset:"\uD83D\uDD04"}[n.type]||"\uD83D\uDD14";return'<div class="notif-item '+((!ir)?"notif-unread":"")+'">'+(!ir?'<div class="notif-dot"></div>':'<div style="width:8px"></div>')+'<div style="flex:1"><div style="font-size:14px;margin-bottom:4px">'+ic+' '+n.msg+'</div><div style="font-size:11px;color:#8888aa">'+(n.date||"")+'</div></div></div>';}).join("");return'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px"><div style="font-size:16px;font-weight:900">\uD83D\uDD14 \u0627\u0644\u0625\u0634\u0639\u0627\u0631\u0627\u062a '+(ur>0?'<span style="background:#EF4444;color:#fff;padding:2px 8px;border-radius:20px;font-size:12px">'+ur+'</span>':"")+'</div>'+(ur>0?'<button class="btn btn-g" style="font-size:12px" onclick="window._markAllRead()">\u2713 \u0642\u0631\u0627\u0621\u0629 \u0627\u0644\u0643\u0644</button>':"")+'</div>'+rows;}
 function renderWallets(){const cards=EMPS.map(function(e){const name=e[0],icon=e[1];const w=S.wallets[name]||{balance:0,points:0};const c=EMP_COLORS[name]||"#a78bfa";const myTxs=S.txs.filter(function(x){return x.emp===name;}).slice(0,8);const txRows=myTxs.length===0?'<div style="padding:12px;text-align:center;color:#555577;font-size:12px">\u0644\u0627 \u062a\u0648\u062c\u062f \u0645\u0639\u0627\u0645\u0644\u0627\u062a</div>':myTxs.map(function(x){const cls={salary:"tx-salary",points:"tx-points",withdraw:"tx-withdraw",convert:"tx-convert",add:"tx-add",reset:"tx-reset"}[x.type]||"";return'<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #2a2a4a22;font-size:12px"><div style="display:flex;flex-direction:column;gap:3px"><span class="tx-badge '+cls+'">'+(x.note||x.type)+'</span><span style="font-size:10px;color:#555577">'+(x.date||"")+'</span></div><div style="display:flex;align-items:center;gap:8px"><span style="color:'+(x.type==="withdraw"||x.type==="reset"?"#EF4444":"#10B981")+';font-weight:700">'+(x.type==="withdraw"?"- ":x.type==="points"&&x.amount<0?"- ":"+ ")+(x.type==="points"?fmtPts(Math.abs(x.amount)):fmt(Math.abs(x.amount)))+'</span><button onclick="window._delTx(\''+x.id+'\')" style="background:#EF444415;border:1px solid #EF444433;color:#EF4444;border-radius:6px;padding:2px 7px;cursor:pointer;font-size:11px">&#128465;</button></div></div>';}).join("");return'<div class="wallet-card" style="border-color:'+c+'44"><div class="wc-name" style="color:'+c+'">'+icon+' '+name+'</div><div class="wc-row"><span class="wc-lbl">\uD83D\uDCB0 \u0627\u0644\u0631\u0635\u064a\u062f</span><span class="wc-val" style="color:'+c+'">'+fmt(w.balance||0)+'</span></div><div class="wc-row" style="border:none"><span class="wc-lbl">\uD83C\uDFC5 \u0627\u0644\u0646\u0642\u0627\u0637</span><span style="font-size:15px;font-weight:700;color:#F59E0B">'+(w.points||0)+' \u0646\u0642\u0637\u0629 = '+fmt((w.points||0)*PV)+'</span></div><div class="wc-actions"><button class="wc-btn btn-green" onclick="window._salary(\''+name+'\')">\uD83D\uDCB0 \u0631\u0627\u062a\u0628</button><button class="wc-btn btn-yellow" onclick="window._convert(\''+name+'\')">\uD83C\uDFAF \u0646\u0642\u0627\u0637</button><button class="wc-btn" style="background:#F59E0B15;border:1px solid #F59E0B44;color:#F59E0B" onclick="window._openManagePoints(\''+name+'\')">\uD83C\uDFC5 \u00b1\u0646\u0642\u0627\u0637</button><button class="wc-btn" style="background:#10B98115;border:1px solid #10B98144;color:#10B981" onclick="window._openAddMoney(\''+name+'\')">\uD83D\uDCB5 \u0625\u0636\u0627\u0641\u0629</button><button class="wc-btn" style="background:#38bdf815;border:1px solid #38bdf844;color:#38bdf8" onclick="window._openWithdraw(\''+name+'\')">\uD83D\uDCB8 \u0633\u062d\u0628</button><button class="wc-btn btn-red" onclick="window._reset(\''+name+'\')">\uD83D\uDD04 \u062a\u0635\u0641\u064a\u0631</button><button class="wc-btn" style="background:#a78bfa15;border:1px solid #a78bfa44;color:#a78bfa" onclick="window._openStatement(\''+name+'\')">\uD83D\uDCC4 \u0643\u0634\u0641</button></div><div style="margin-top:12px;border-top:1px solid #2a2a4a;padding-top:10px"><div style="font-size:11px;color:#8888aa;margin-bottom:6px">\u0622\u062e\u0631 \u0627\u0644\u0645\u0639\u0627\u0645\u0644\u0627\u062a</div>'+txRows+'</div></div>';}).join("");return'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:10px"><div style="font-size:16px;font-weight:900">\uD83D\uDCB0 \u0625\u062f\u0627\u0631\u0629 \u0627\u0644\u0645\u062d\u0627\u0641\u0638</div><button class="btn btn-green" onclick="window._salaryAll()">\uD83D\uDCB0 \u0631\u0648\u0627\u062a\u0628 \u0627\u0644\u062c\u0645\u0639\u0629 \u0644\u0644\u062c\u0645\u064a\u0639</button></div><div class="wallet-grid">'+cards+'</div>';}
@@ -825,6 +891,229 @@ window._numKey=function(k){if(k==="del"){window._numVal=window._numVal.slice(0,-
 window._sideTab=function(t){window._tab(t);window._closeSide();};
 window._openSide=function(){var m=document.getElementById("side-menu");var o=document.getElementById("side-overlay");if(m)m.classList.add("open");if(o)o.classList.add("open");};
 window._closeSide=function(){var m=document.getElementById("side-menu");var o=document.getElementById("side-overlay");if(m)m.classList.remove("open");if(o)o.classList.remove("open");};
+
+async function saveEmpField(id,field,val){
+await updateDoc(doc(db,"emp_settings",id),{[field]:val});
+alert("\u2705 \u062a\u0645 \u0627\u0644\u062a\u0639\u062f\u064a\u0644");
+}
+
+async function addNewEmp(){
+var name=(document.getElementById("new-emp-name")||{value:""}).value.trim();
+var pass=(document.getElementById("new-emp-pass")||{value:""}).value.trim();
+var salary=parseFloat((document.getElementById("new-emp-salary")||{value:"0"}).value)||0;
+var store=parseInt((document.getElementById("new-emp-store")||{value:"1"}).value)||1;
+var workStart=(document.getElementById("new-emp-work")||{value:"12:00"}).value||"12:00";
+if(!name){alert("\u0627\u0643\u062a\u0628 \u0627\u0633\u0645 \u0627\u0644\u0645\u0648\u0638\u0641");return;}
+if(!pass){alert("\u0627\u0643\u062a\u0628 \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631");return;}
+// Check no duplicate
+if(EMP_PASS[name]||S.empSettings.find(function(x){return x.name===name;})){
+alert("\u0627\u0633\u0645 \u0627\u0644\u0645\u0648\u0638\u0641 \u0645\u0648\u062c\u0648\u062f \u0645\u0633\u0628\u0642\u0627\u064b");return;
+}
+await addDoc(empSettCol,{name:name,pass:pass,salary:salary,store:store,workStart:workStart,icon:"\uD83D\uDC64",color:"#a78bfa",createdAt:serverTimestamp()});
+// Init wallet
+var wRef=doc(db,"wallets",name);
+var wSnap=await getDoc(wRef);
+if(!wSnap.exists())await setDoc(wRef,{name:name,balance:0,points:0,createdAt:serverTimestamp()});
+document.getElementById("new-emp-name").value="";
+document.getElementById("new-emp-pass").value="";
+document.getElementById("new-emp-salary").value="";
+alert("\u2705 \u062a\u0645 \u0625\u0636\u0627\u0641\u0629 \u0627\u0644\u0645\u0648\u0638\u0641");
+}
+
+async function deleteEmp(id,name){
+if(!confirm("\u062d\u0630\u0641 "+name+"\u061f"))return;
+await deleteDoc(doc(db,"emp_settings",id));
+// Remove from runtime
+var idx=EMPS.findIndex(function(x){return x[0]===name;});
+if(idx>-1)EMPS.splice(idx,1);
+delete EMP_PASS[name];
+delete SALARIES[name];
+delete EMP_STORE[name];
+render();
+}
+
+function renderEmpSettings(){
+var storeOpts=STORES.map(function(s){return s.id+":"+s.name;}).join(", ");
+
+// Get all employees: static + dynamic
+var allEmps=[];
+// Static employees (عمار, جعفر, مثنى, ادمن)
+EMPS.forEach(function(e){
+var name=e[0];
+var dynEmp=S.empSettings.find(function(x){return x.name===name;});
+allEmps.push({
+name:name,
+pass:EMP_PASS[name]||"",
+salary:SALARIES[name]||0,
+store:EMP_STORE[name]||1,
+workStart:(dynEmp&&dynEmp.workStart)||WORK_START,
+id:dynEmp?dynEmp.id:null,
+isStatic:!dynEmp
+});
+});
+// Dynamic employees not in static list
+S.empSettings.forEach(function(e){
+if(!EMPS.find(function(x){return x[0]===e.name;})){
+allEmps.push({name:e.name,pass:e.pass||"",salary:e.salary||0,store:e.store||1,workStart:e.workStart||"12:00",id:e.id,isStatic:false});
+}
+});
+
+var empCards=allEmps.map(function(e){
+var storeName=STORES.find(function(s){return s.id===e.store;});
+storeName=storeName?storeName.name:"?";
+var storeOpt=STORES.map(function(s){return"<option value='"+s.id+"'"+(e.store===s.id?" selected":"")+">"+s.name+"</option>";}).join("");
+return "<div class='pos-box' style='margin-bottom:12px'>"
++"<div style='display:flex;justify-content:space-between;align-items:center;margin-bottom:12px'>"
++"<div style='font-size:16px;font-weight:900'>"+e.name+"</div>"
++(e.id?"<button onclick=\"window._delEmp('"+e.id+"','"+e.name+"')\" style='background:#EF444415;border:1px solid #EF444433;color:#EF4444;border-radius:8px;padding:5px 10px;font-size:12px;cursor:pointer'>\u062d\u0630\u0641</button>":"")
++"</div>"
++"<div style='display:grid;grid-template-columns:1fr 1fr;gap:8px'>"
+
+// Pass
++"<div style='background:#0d0d1a;border-radius:10px;padding:10px'>"
++"<div style='font-size:10px;color:#8888aa;margin-bottom:4px'>\uD83D\uDD11 \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631</div>"
++"<div style='font-size:15px;font-weight:700;color:#a78bfa'>"+e.pass+"</div>"
++(e.id?"<button onclick=\"window._editEmpField('"+e.id+"','pass','\u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631','"+e.pass+"')\" style='margin-top:6px;background:#a78bfa22;border:none;border-radius:6px;padding:4px 10px;color:#a78bfa;font-size:11px;cursor:pointer'>\u062a\u0639\u062f\u064a\u0644</button>":"")
++"</div>"
+
+// Salary
++"<div style='background:#0d0d1a;border-radius:10px;padding:10px'>"
++"<div style='font-size:10px;color:#8888aa;margin-bottom:4px'>\uD83D\uDCB0 \u0627\u0644\u0631\u0627\u062a\u0628</div>"
++"<div style='font-size:15px;font-weight:700;color:#10B981'>"+fmt(e.salary)+"</div>"
++(e.id?"<button onclick=\"window._editEmpField('"+e.id+"','salary','\u0627\u0644\u0631\u0627\u062a\u0628','"+e.salary+"')\" style='margin-top:6px;background:#10B98122;border:none;border-radius:6px;padding:4px 10px;color:#10B981;font-size:11px;cursor:pointer'>\u062a\u0639\u062f\u064a\u0644</button>":"")
++"</div>"
+
+// Store
++"<div style='background:#0d0d1a;border-radius:10px;padding:10px'>"
++"<div style='font-size:10px;color:#8888aa;margin-bottom:4px'>\uD83C\uDFEC \u0627\u0644\u0641\u0631\u0639</div>"
++"<div style='font-size:13px;font-weight:700;color:#F59E0B'>"+storeName+"</div>"
++(e.id?"<select onchange=\"window._editEmpStore('"+e.id+"',this.value)\" style='margin-top:6px;width:100%;padding:5px;border-radius:6px;border:1px solid #2a2a4a;background:#13132a;color:#e8e8f0;font-size:11px'>"+storeOpt+"</select>":"")
++"</div>"
+
+// Work Start
++"<div style='background:#0d0d1a;border-radius:10px;padding:10px'>"
++"<div style='font-size:10px;color:#8888aa;margin-bottom:4px'>\u23F0 \u0628\u062f\u0627\u064a\u0629 \u0627\u0644\u062f\u0648\u0627\u0645</div>"
++"<div style='font-size:15px;font-weight:700;color:#38bdf8'>"+e.workStart+"</div>"
++(e.id?"<input type='time' value='"+e.workStart+"' onchange=\"window._editEmpTime('"+e.id+"',this.value)\" style='margin-top:6px;width:100%;padding:4px;border-radius:6px;border:1px solid #2a2a4a;background:#13132a;color:#e8e8f0;font-size:11px'/>":"")
++"</div>"
++"</div></div>";
+}).join("");
+
+// Add new employee form
+var addForm="<div class='pos-box' style='margin-top:16px;border-color:#10B98133'>"
++"<div style='font-size:14px;font-weight:900;margin-bottom:14px;color:#10B981'>\u2795 \u0625\u0636\u0627\u0641\u0629 \u0645\u0648\u0638\u0641 \u062c\u062f\u064a\u062f</div>"
++"<div style='display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px'>"
++"<div><div class='lbl'>\u0627\u0633\u0645 \u0627\u0644\u0645\u0648\u0638\u0641</div><input id='new-emp-name' type='text' class='inp' placeholder='\u0645\u062b\u0644\u0627\u064b: \u0623\u062d\u0645\u062f'/></div>"
++"<div><div class='lbl'>\u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631</div><input id='new-emp-pass' type='text' class='inp' inputmode='numeric' placeholder='1234'/></div>"
++"<div><div class='lbl'>\u0627\u0644\u0631\u0627\u062a\u0628 (IQD)</div><input id='new-emp-salary' type='number' class='inp' inputmode='decimal' placeholder='250000'/></div>"
++"<div><div class='lbl'>\u0628\u062f\u0627\u064a\u0629 \u0627\u0644\u062f\u0648\u0627\u0645</div><input id='new-emp-work' type='time' class='inp' value='12:00'/></div>"
++"</div>"
++"<div class='lbl' style='margin-bottom:6px'>\u0627\u0644\u0641\u0631\u0639</div>"
++"<select id='new-emp-store' class='inp' style='margin-bottom:12px'>"
++STORES.map(function(s){return"<option value='"+s.id+"'>"+s.name+"</option>";}).join("")
++"</select>"
++"<button onclick='window._addNewEmp()' class='btn btn-green' style='width:100%'>\u2795 \u0625\u0636\u0627\u0641\u0629</button>"
++"</div>";
+
+return "<div style='font-size:16px;font-weight:900;margin-bottom:16px'>\u2699\uFE0F \u0625\u0639\u062f\u0627\u062f\u0627\u062a</div>"
++"<div style='font-size:14px;font-weight:700;margin-bottom:12px;color:#a78bfa'>\uD83D\uDC65 \u0625\u062f\u0627\u0631\u0629 \u0627\u0644\u0645\u0648\u0638\u0641\u064a\u0646</div>"
++empCards
++addForm
++"<div style='margin-top:16px' class='pos-box'>"
++"<div style='font-size:14px;font-weight:700;margin-bottom:12px'>\u2699\uFE0F \u0623\u062d\u062f\u062b \u0627\u0644\u0645\u0628\u064a\u0639\u0627\u062a (\u062a\u0639\u062f\u064a\u0644)</div>"
++renderSettingsLegacy()
++"</div>";
+}
+
+function renderSettingsLegacy(){
+var recent=Array.from(S.sales).sort(function(a,b){return b.date.localeCompare(a.date)||((b.createdAt&&b.createdAt.seconds)||0)-((a.createdAt&&a.createdAt.seconds)||0);}).slice(0,30);
+var rows=recent.length===0?"<div style='text-align:center;padding:20px;color:#555577'>\u0644\u0627 \u062a\u0648\u062c\u062f \u0645\u0628\u064a\u0639\u0627\u062a</div>":recent.map(function(x){var st=STORES.find(function(s){return s.id===x.store;})||STORES[0];return"<tr><td style='color:#8888aa;font-size:11px'>"+x.date+"<br/>"+(x.time||"")+"</td><td>"+st.icon+" "+st.name+"<br/><span style='color:#8888aa'>"+(x.emp||"\u2014")+"</span></td><td style='font-weight:700;color:"+(x.type==="store"?st.color:"#38bdf8")+"'>"+fmt(x.amount)+"</td><td><button class='btn-edit' onclick=\"window._openSaleEdit('"+x.id+"')\">\u062a\u0639\u062f\u064a\u0644</button></td></tr>";}).join("");
+return"<table><thead><tr><th>\u0627\u0644\u062a\u0627\u0631\u064a\u062e</th><th>\u0627\u0644\u0645\u062d\u0644</th><th>\u0627\u0644\u0645\u0628\u0644\u063a</th><th></th></tr></thead><tbody>"+rows+"</tbody></table>";
+}
+
+
+function loadEmpSettings(){
+if(S._empLoaded)return;
+S._empLoaded=true;
+onSnapshot(empSettCol,function(snap){
+S.empSettings=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});
+syncEmpData();
+render();
+});
+}
+
+function syncEmpData(){
+if(!S.empSettings.length)return;
+// Rebuild EMPS array
+EMPS.length=0;
+S.empSettings.forEach(function(e){
+EMPS.push([e.name,e.icon||"\uD83D\uDC64"]);
+EMP_PASS[e.name]=e.pass||"0000";
+SALARIES[e.name]=e.salary||0;
+EMP_STORE[e.name]=e.store||1;
+EMP_COLORS[e.name]=e.color||"#a78bfa";
+EMP_ICONS[e.name]=e.icon||"\uD83D\uDC64";
+});
+// Remove entries not in empSettings
+var names=S.empSettings.map(function(e){return e.name;});
+Object.keys(EMP_PASS).forEach(function(k){if(!names.includes(k)){delete EMP_PASS[k];delete SALARIES[k];delete EMP_STORE[k];delete EMP_COLORS[k];delete EMP_ICONS[k];}});
+}
+
+async function saveEmpSettings(){
+// Initialize Firestore with current EMPS if empty
+if(S.empSettings.length)return;
+for(var i=0;i<EMPS.length;i++){
+var name=EMPS[i][0];
+await setDoc(doc(db,"emp_settings",name),{
+name:name,
+icon:EMPS[i][1]||"\uD83D\uDC64",
+pass:EMP_PASS[name]||"0000",
+salary:SALARIES[name]||0,
+store:EMP_STORE[name]||1,
+color:EMP_COLORS[name]||"#a78bfa",
+workStart:"12:00"
+});
+}
+}
+
+async function addEmp(){
+var name=(document.getElementById("new-emp-name")||{value:""}).value.trim();
+var pass=(document.getElementById("new-emp-pass")||{value:""}).value.trim();
+var salary=parseFloat((document.getElementById("new-emp-salary")||{value:"0"}).value)||0;
+var store=parseInt((document.getElementById("new-emp-store")||{value:"1"}).value)||1;
+var workStart=(document.getElementById("new-emp-work")||{value:"12:00"}).value||"12:00";
+if(!name){alert("\u0627\u0643\u062a\u0628 \u0627\u0633\u0645 \u0627\u0644\u0645\u0648\u0638\u0641");return;}
+if(!pass){alert("\u0627\u0643\u062a\u0628 \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631");return;}
+if(S.empSettings.find(function(e){return e.name===name;})){alert("\u0627\u0644\u0645\u0648\u0638\u0641 \u0645\u0648\u062c\u0648\u062f \u0645\u0633\u0628\u0642\u0627\u064b");return;}
+await setDoc(doc(db,"emp_settings",name),{name:name,icon:"\uD83D\uDC64",pass:pass,salary:salary,store:store,workStart:workStart,color:"#a78bfa"});
+// Init wallet
+var wRef=doc(db,"wallets",name);
+var wSnap=await getDoc(wRef);
+if(!wSnap.exists())await setDoc(wRef,{name:name,balance:0,points:0,createdAt:serverTimestamp()});
+alert("\u2705 \u062a\u0645 \u0625\u0636\u0627\u0641\u0629 "+name);
+document.getElementById("new-emp-name").value="";
+document.getElementById("new-emp-pass").value="";
+document.getElementById("new-emp-salary").value="";
+}
+
+async function editEmpField(name,field,label,currentVal){
+var newVal=prompt(label+": "+name,currentVal);
+if(newVal===null)return;
+newVal=newVal.trim();
+if(!newVal)return;
+var upd={};
+if(field==="salary")upd.salary=parseFloat(newVal)||0;
+else if(field==="store")upd.store=parseInt(newVal)||1;
+else upd[field]=newVal;
+await updateDoc(doc(db,"emp_settings",name),upd);
+alert("\u2705 \u062a\u0645 \u0627\u0644\u062a\u0639\u062f\u064a\u0644");
+}
+
+async function delEmp(name){
+if(!confirm("\u062d\u0630\u0641 "+name+"?"))return;
+await deleteDoc(doc(db,"emp_settings",name));
+}
+
 window._login=function(){var pass=window._numVal||"";var err=document.getElementById("login-err");if(pass===PASS.owner){window._numVal="";S.loggedIn=true;S.role="owner";S.empName=null;render();return;}for(var i=0;i<Object.keys(EMP_PASS).length;i++){var name=Object.keys(EMP_PASS)[i];if(pass===EMP_PASS[name]){window._numVal="";S.loggedIn=true;S.role="employee";S.empName=name;S.empSel=name;S.tab="pos";var u=S.notifs.find(function(n){return n.type==="broadcast"&&!(n.readBy||{})[name];});if(u)S.pendingNotif=u;render();return;}}if(err){err.textContent="\u274c \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u063a\u0644\u0637";window._numVal="";}render();};window._logout=logout;window._tab=switchTab;
 window._store=selectStore;window._type=setSaleType;
 window._add=addSale;window._del=delSale;
@@ -883,7 +1172,13 @@ var win=window.open("","_blank");if(win){win.document.write(h);win.document.clos
 window._stopCamera=stopCamera;
 window._delAttend=delAttend;
 window._addSup=addSup;
+window._addNewEmp=addNewEmp;
+window._editEmpField=editEmpField;
+window._editEmpStore=function(id,v){saveEmpField(id,"store",parseInt(v)||1);};
+window._editEmpTime=function(id,v){saveEmpField(id,"workStart",v);};
+window._delEmp=deleteEmp;
 window._addCash=addCash;
+window._addEmp=addEmp;
 window._addExp=addExp;
 window._delCash=delCash;
 window._delExp=delExp;
