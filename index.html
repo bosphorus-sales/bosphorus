@@ -542,7 +542,16 @@ function toggleEmpMenu(){const m=document.getElementById("emp-menu");if(!m)retur
 function selectEmp(name,icon){S.empSel=name;const lb=document.getElementById("emp-label");if(lb)lb.textContent=icon+" "+name;const m=document.getElementById("emp-menu");if(m)m.style.display="none";render();}
 function setRepPeriod(p){S.repPeriod=p;if(p==="today"){S.repFrom=today();S.repTo=today();}else if(p==="week"){S.repFrom=getWeekStart();S.repTo=today();}else if(p==="month"){const d=new Date();S.repFrom=new Date(d.getFullYear(),d.getMonth(),1).toLocaleDateString("en-CA");S.repTo=today();}else if(p==="all"){S.repFrom="2020-01-01";S.repTo=today();}render();}
 function closeModal(){S.modal=null;S.editId=null;S.editSaleId=null;render();}
-function render(){const root=document.getElementById("root");if(!root)return;if(!S.loggedIn){root.innerHTML=renderLogin();return;}if(S.pendingNotif){root.innerHTML=renderApp()+renderBroadcastAlert();return;}if(S.modal||S.editId||S.editSaleId){root.innerHTML=renderApp()+renderModal();return;}root.innerHTML=renderApp();if(S._invCamReady&&invCamStream){requestAnimationFrame(function(){var v=document.getElementById("inv-cam-vid");if(v&&!v.srcObject){v.srcObject=invCamStream;v.play().catch(function(){});}});}}
+function render(){const root=document.getElementById("root");if(!root)return;if(!S.loggedIn){root.innerHTML=renderLogin();return;}if(S.pendingNotif){root.innerHTML=renderApp()+renderBroadcastAlert();return;}if(S.modal||S.editId||S.editSaleId){root.innerHTML=renderApp()+renderModal();return;}root.innerHTML=renderApp();if(S._invCamReady&&invCamStream){requestAnimationFrame(function(){var v=document.getElementById("inv-cam-vid");if(v&&!v.srcObject){v.srcObject=invCamStream;v.play().catch(function(){});}});}
+// Attach side menu button
+requestAnimationFrame(function(){
+  var btn=document.getElementById("btn-sidemenu");
+  if(btn){
+    btn.addEventListener("touchstart",function(e){e.preventDefault();window._openSide();},{passive:false});
+    btn.addEventListener("click",function(){window._openSide();});
+  }
+});
+}
 
 function renderSideMenu(isO,isE,uc){
 var h='<div class="side-header"><div class="side-title">\uD83C\uDFEA \u0627\u0644\u0628\u0633\u0641\u0648\u0631</div><button class="side-close" onclick="window._closeSide()">\u2715</button></div>';
@@ -593,7 +602,7 @@ var main=[
 main.forEach(function(x){
 h+='<button class="bnav-item'+(S.tab===x.t?" active":"")+'" data-tab="'+x.t+'" onclick="window._tab(this.dataset.tab)"><span class="bnav-icon">'+x.i+'</span>'+x.l+'</button>';
 });
-h+='<button class="bnav-item" onclick="window._openSide()" style="min-width:56px;padding:10px 4px"><span class="bnav-icon" style="font-size:24px">&#9776;</span>\u0623\u0643\u062b\u0631</button>';
+h+='<button class="bnav-item" id="btn-sidemenu" style="min-width:56px;padding:10px 4px"><span class="bnav-icon" style="font-size:24px">&#9776;</span>\u0623\u0643\u062b\u0631</button>';
 }else if(isE){
 var eTabs2=[
 {t:"pos",i:"\uD83D\uDED2",l:"\u0645\u0628\u064a\u0639\u0627\u062a"},
@@ -605,7 +614,7 @@ eTabs2.forEach(function(x){
 var badge=x.t==="notifs"&&uc>0?'<span class="bnav-badge">'+uc+'</span>':"";
 h+='<button class="bnav-item'+(S.tab===x.t?" active":"")+'" data-tab="'+x.t+'" onclick="window._tab(this.dataset.tab)"><span class="bnav-icon">'+x.i+'</span>'+x.l+badge+'</button>';
 });
-h+='<button class="bnav-item" onclick="window._openSide()" style="min-width:56px;padding:10px 4px"><span class="bnav-icon" style="font-size:24px">&#9776;</span>\u0623\u0643\u062b\u0631</button>';
+h+='<button class="bnav-item" id="btn-sidemenu" style="min-width:56px;padding:10px 4px"><span class="bnav-icon" style="font-size:24px">&#9776;</span>\u0623\u0643\u062b\u0631</button>';
 }
 h+='</div>';
 return h;
