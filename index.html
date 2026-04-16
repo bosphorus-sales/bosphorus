@@ -588,26 +588,26 @@ var h='<div class="bottom-nav">';
 if(isO){
 var main=[
 {t:"pos",i:"\uD83D\uDED2",l:"\u0645\u0628\u064a\u0639\u0627\u062a"},
-{t:"wallets",i:"\uD83D\uDCB0",l:"\u0645\u062d\u0627\u0641\u0638"},
+{t:"cashier",i:"\uD83D\uDED2",l:"\u0643\u0627\u0634\u064a\u0631"},
 {t:"report",i:"\uD83D\uDCCA",l:"\u062a\u0642\u0627\u0631\u064a\u0631"},
-{t:"cashier",i:"\uD83D\uDED2",l:"\u0643\u0627\u0634\u064a\u0631"}
+{t:"wallets",i:"\uD83D\uDCB0",l:"\u0645\u062d\u0627\u0641\u0638"},
+{t:"attend",i:"\uD83D\uDCCD",l:"\u062d\u0636\u0648\u0631"}
 ];
 main.forEach(function(x){
 h+='<button class="bnav-item'+(S.tab===x.t?" active":"")+'" data-tab="'+x.t+'" onclick="window._tab(this.dataset.tab)"><span class="bnav-icon">'+x.i+'</span>'+x.l+'</button>';
 });
-h+='<button class="bnav-item" ontouchend="event.preventDefault();window._openSide();" onclick="window._openSide()"><span class="bnav-icon">&#9776;</span>\u0623\u0643\u062b\u0631</button>';
 }else if(isE){
 var eTabs2=[
 {t:"pos",i:"\uD83D\uDED2",l:"\u0645\u0628\u064a\u0639\u0627\u062a"},
-{t:"inventory",i:"\uD83D\uDCE6",l:"\u0645\u0648\u0627\u062f"},
+{t:"mywallet",i:"\uD83D\uDCBC",l:"\u0645\u062d\u0641\u0638\u062a\u064a"},
 {t:"myattend",i:"\uD83D\uDCCD",l:"\u062d\u0636\u0648\u0631\u064a"},
+{t:"inventory",i:"\uD83D\uDCE6",l:"\u0645\u0648\u0627\u062f"},
 {t:"notifs",i:"\uD83D\uDD14",l:"\u0625\u0634\u0639\u0627\u0631"}
 ];
 eTabs2.forEach(function(x){
 var badge=x.t==="notifs"&&uc>0?'<span class="bnav-badge">'+uc+'</span>':"";
 h+='<button class="bnav-item'+(S.tab===x.t?" active":"")+'" data-tab="'+x.t+'" onclick="window._tab(this.dataset.tab)"><span class="bnav-icon">'+x.i+'</span>'+x.l+badge+'</button>';
 });
-h+='<button class="bnav-item" ontouchend="event.preventDefault();window._openSide();" onclick="window._openSide()"><span class="bnav-icon">&#9776;</span>\u0623\u0643\u062b\u0631</button>';
 }
 h+='</div>';
 return h;
@@ -1236,8 +1236,7 @@ async function cashierCompleteSale() {
 
   var hasZeroPrice = cart.some(function(x) { return !x.price || x.price <= 0; });
   if (hasZeroPrice) { alert("\u0623\u062f\u062e\u0644 \u0633\u0639\u0631 \u0644\u0643\u0644 \u0627\u0644\u0645\u0648\u0627\u062f!"); return; }
-
-  var saleType = S._cashierType || "store";
+var saleType = S._cashierType || "store";
   var storeId = S._cashierStore || 1;
   var custName = (document.getElementById("csh-cust-name") || { value: "" }).value.trim();
   var custPhone = (document.getElementById("csh-cust-phone") || { value: "" }).value.trim();
