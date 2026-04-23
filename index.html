@@ -530,12 +530,12 @@ return "<tr style='"+(i%2?"background:#1a1a3a":"")+"'>"
 +"<td style='padding:8px;font-size:11px;color:#8888aa'>"+p.date+"</td>"
 +"<td style='padding:8px;font-weight:700;color:"+(p.currency==="USD"?"#10B981":"#a78bfa")+"'>"+fmt2(p.amount,p.currency)+"</td>"
 +"<td style='padding:8px'>"+(p.note||"")+"</td>"
-+"<td style='padding:8px'><button onclick=\"_delSupPay('"+p.id+"')\" style='background:#ef4444;color:#fff;border:none;border-radius:5px;padding:3px 8px;font-size:11px;cursor:pointer;font-family:inherit'>X</button></td>"
++"<td style='padding:8px'><button onclick=\"window._delSupPay('"+p.id+"')\" style='background:#ef4444;color:#fff;border:none;border-radius:5px;padding:3px 8px;font-size:11px;cursor:pointer;font-family:inherit'>X</button></td>"
 +"</tr>";
 }).join("");
 return "<div class='pos-box'>"
 +"<div style='display:flex;align-items:center;gap:10px;margin-bottom:14px'>"
-+"<button onclick=\"_selSup(null)\" style='background:#2a2a4a;color:#a78bfa;border:none;border-radius:8px;padding:7px 14px;cursor:pointer;font-family:inherit'>&larr; \u0631\u062c\u0648\u0639</button>"
++"<button onclick=\"window._selSup(null)\" style='background:#2a2a4a;color:#a78bfa;border:none;border-radius:8px;padding:7px 14px;cursor:pointer;font-family:inherit'>&larr; \u0631\u062c\u0648\u0639</button>"
 +"<div style='font-size:16px;font-weight:900'>\uD83D\uDCE6 "+sup.name+"</div></div>"
 +"<div style='display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px'>"
 +"<div class='sum-box' style='text-align:center'><div class='sum-lbl'>\u062f\u064a\u0646 USD</div><div class='sum-val' style='color:#EF4444'>$"+(sup.debtUSD||0).toLocaleString()+"</div></div>"
@@ -547,8 +547,8 @@ return "<div class='pos-box'>"
 +"</div>"
 +"<div style='font-size:13px;font-weight:700;margin-bottom:8px'>\u0625\u0636\u0627\u0641\u0629 \u062f\u0641\u0639\u0629</div>"
 +"<div style='display:flex;gap:8px;margin-bottom:8px'>"
-+"<button onclick=\"_setPayType('pay')\" id='pay-type-pay' style='flex:1;padding:8px;border-radius:8px;border:2px solid #10B981;background:#10B98118;color:#10B981;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit'>✅ تسديد</button>"
-+"<button onclick=\"_setPayType('debt')\" id='pay-type-debt' style='flex:1;padding:8px;border-radius:8px;border:2px solid #2a2a4a;background:#0d0d1a;color:#8888aa;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit'>➕ دين</button>"
++"<button onclick=\"window._setPayType('pay')\" id='pay-type-pay' style='flex:1;padding:8px;border-radius:8px;border:2px solid #10B981;background:#10B98118;color:#10B981;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit'>✅ تسديد</button>"
++"<button onclick=\"window._setPayType('debt')\" id='pay-type-debt' style='flex:1;padding:8px;border-radius:8px;border:2px solid #2a2a4a;background:#0d0d1a;color:#8888aa;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit'>➕ دين</button>"
 +"</div>"
 +"<div style='display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px'>"
 +"<input id='pay-amt' type='number' placeholder='\u0627\u0644\u0645\u0628\u0644\u063a' style='padding:9px;border-radius:8px;border:1px solid #2a2a4a;background:#0d0d1a;color:#e8e8f0;font-size:13px;direction:ltr'/>"
@@ -556,8 +556,8 @@ return "<div class='pos-box'>"
 +"</div>"
 +"<input id='pay-note' type='text' placeholder='\u0645\u0644\u0627\u062d\u0638\u0629' style='width:100%;padding:9px;border-radius:8px;border:1px solid #2a2a4a;background:#0d0d1a;color:#e8e8f0;font-size:13px;margin-bottom:8px;box-sizing:border-box'/>"
 +"<div style='display:flex;gap:8px;margin-bottom:16px'>"
-+"<button onclick=\"_addSupPay('"+S.supModal+"')\" class='btn btn-p' style='flex:1'>+ \u062a\u0633\u062c\u064a\u0644 \u062f\u0641\u0639\u0629</button>"
-+"<button onclick=\"_printSupplier('"+S.supModal+"')\" class='btn' style='flex:1;background:linear-gradient(135deg,#6366f1,#4f46e5);color:#fff'>PDF</button>"
++"<button onclick=\"window._addSupPay('"+S.supModal+"')\" class='btn btn-p' style='flex:1'>+ \u062a\u0633\u062c\u064a\u0644 \u062f\u0641\u0639\u0629</button>"
++"<button onclick=\"window._printSupplier('"+S.supModal+"')\" class='btn' style='flex:1;background:linear-gradient(135deg,#6366f1,#4f46e5);color:#fff'>PDF</button>"
 +"</div>"
 +(pays.length>0
 ?"<div style='font-size:13px;font-weight:700;margin-bottom:8px'>\u0633\u062c\u0644 \u0627\u0644\u062f\u0641\u0639\u0627\u062a</div>"
@@ -580,7 +580,7 @@ var paidUSD=pays.filter(function(x){return x.currency==="USD";}).reduce(function
 var paidIQD=pays.filter(function(x){return x.currency==="IQD";}).reduce(function(a,b){return a+b.amount;},0);
 var remUSD=(s.debtUSD||0)-paidUSD,remIQD=(s.debtIQD||0)-paidIQD;
 var settled=remUSD<=0&&remIQD<=0;
-return "<div class='sum-box' style='cursor:pointer;margin-bottom:10px;border-color:"+(settled?"#10B98144":"#EF444444")+"' onclick=\"_selSup('"+s.id+"')\">"
+return "<div class='sum-box' style='cursor:pointer;margin-bottom:10px;border-color:"+(settled?"#10B98144":"#EF444444")+"' onclick=\"window._selSup('"+s.id+"')\">"
 +"<div style='display:flex;justify-content:space-between;align-items:center'>"
 +"<div style='font-weight:900;font-size:15px'>\uD83D\uDCE6 "+s.name+"</div>"
 +"<span style='background:"+(settled?"#10B981":"#EF4444")+";color:#fff;border-radius:20px;padding:3px 10px;font-size:11px'>"+(settled?"\u0645\u0633\u062f\u062f":"\u0645\u062f\u064a\u0648\u0646")+"</span>"
@@ -598,7 +598,7 @@ return "<div class='pos-box'>"
 +"<input id='sup-usd' type='number' placeholder='\u062f\u064a\u0646 USD' style='padding:9px;border-radius:8px;border:1px solid #2a2a4a;background:#0d0d1a;color:#e8e8f0;font-size:13px;direction:ltr'/>"
 +"<input id='sup-iqd' type='number' placeholder='\u062f\u064a\u0646 IQD' style='padding:9px;border-radius:8px;border:1px solid #2a2a4a;background:#0d0d1a;color:#e8e8f0;font-size:13px;direction:ltr'/>"
 +"</div></div>"
-+"<button onclick=\"_addSup()\" class='btn btn-p' style='width:100%;margin-bottom:16px'>+ \u0625\u0636\u0627\u0641\u0629 \u0645\u0648\u0631\u062f</button>"
++"<button onclick=\"window._addSup()\" class='btn btn-p' style='width:100%;margin-bottom:16px'>+ \u0625\u0636\u0627\u0641\u0629 \u0645\u0648\u0631\u062f</button>"
 +list+"</div>";
 }
 
@@ -691,7 +691,7 @@ function render(){const root=document.getElementById("root");if(!root)return;if(
 }
 
 function renderSideMenu(isO,isE,uc){
-var h='<div class="side-header"><div class="side-title">\uD83C\uDFEA \u0627\u0644\u0628\u0633\u0641\u0648\u0631</div><button class="side-close" onclick="_closeSide()">\u2715</button></div>';
+var h='<div class="side-header"><div class="side-title">\uD83C\uDFEA \u0627\u0644\u0628\u0633\u0641\u0648\u0631</div><button class="side-close" onclick="window._closeSide()">\u2715</button></div>';
 var ownerTabs=[
 {t:"pos",i:"\uD83D\uDED2",l:"\u0645\u0628\u064a\u0639\u0627\u062a"},
 {t:"report",i:"\uD83D\uDCCA",l:"\u062a\u0642\u0627\u0631\u064a\u0631"},
@@ -707,7 +707,7 @@ var ownerTabs=[
 ];
 if(isO){
 ownerTabs.forEach(function(x){
-h+='<div class="side-item'+(S.tab===x.t?" active":"")+'" data-tab="'+x.t+'" onclick="_tab(this.dataset.tab)"><span class="side-item-icon">'+x.i+'</span>'+x.l+'</div>';
+h+='<div class="side-item'+(S.tab===x.t?" active":"")+'" data-tab="'+x.t+'" onclick="window._tab(this.dataset.tab)"><span class="side-item-icon">'+x.i+'</span>'+x.l+'</div>';
 });
 }else if(isE){
 var eTabs=[
@@ -721,7 +721,7 @@ var eTabs=[
 ];
 eTabs.forEach(function(x){
 var badge=x.t==="notifs"&&uc>0?'<span class="notif-badge-side">'+uc+'</span>':"";
-h+='<div class="side-item'+(S.tab===x.t?" active":"")+'" data-tab="'+x.t+'" onclick="_tab(this.dataset.tab)"><span class="side-item-icon">'+x.i+'</span>'+x.l+badge+'</div>';
+h+='<div class="side-item'+(S.tab===x.t?" active":"")+'" data-tab="'+x.t+'" onclick="window._tab(this.dataset.tab)"><span class="side-item-icon">'+x.i+'</span>'+x.l+badge+'</div>';
 });
 }
 return h;
@@ -737,7 +737,7 @@ var main=[
 {t:"wallets",i:"\uD83D\uDCB0",l:"\u0645\u062d\u0627\u0641\u0638"}
 ];
 main.forEach(function(x){
-h+='<button class="bnav-item'+(S.tab===x.t?" active":"")+'" data-tab="'+x.t+'" onclick="_tab(this.dataset.tab)"><span class="bnav-icon">'+x.i+'</span>'+x.l+'</button>';
+h+='<button class="bnav-item'+(S.tab===x.t?" active":"")+'" data-tab="'+x.t+'" onclick="window._tab(this.dataset.tab)"><span class="bnav-icon">'+x.i+'</span>'+x.l+'</button>';
 });
 h+='<button class="bnav-item" onclick="var m=document.getElementById(\'side-menu\');var o=document.getElementById(\'side-overlay\');if(m)m.classList.add(\'open\');if(o)o.classList.add(\'open\');"><span class="bnav-icon">&#9776;</span>\u0623\u0643\u062b\u0631</button>';
 }else if(isE){
@@ -749,7 +749,7 @@ var eTabs2=[
 ];
 eTabs2.forEach(function(x){
 var badge=x.t==="notifs"&&uc>0?'<span class="bnav-badge">'+uc+'</span>':"";
-h+='<button class="bnav-item'+(S.tab===x.t?" active":"")+'" data-tab="'+x.t+'" onclick="_tab(this.dataset.tab)"><span class="bnav-icon">'+x.i+'</span>'+x.l+badge+'</button>';
+h+='<button class="bnav-item'+(S.tab===x.t?" active":"")+'" data-tab="'+x.t+'" onclick="window._tab(this.dataset.tab)"><span class="bnav-icon">'+x.i+'</span>'+x.l+badge+'</button>';
 });
 h+='<button class="bnav-item" onclick="var m=document.getElementById(\'side-menu\');var o=document.getElementById(\'side-overlay\');if(m)m.classList.add(\'open\');if(o)o.classList.add(\'open\');"><span class="bnav-icon">&#9776;</span>\u0623\u0643\u062b\u0631</button>';
 }
@@ -815,7 +815,7 @@ return true;
 var totalIn=fTxs.filter(function(x){return x.type==="salary"||x.type==="add"||x.type==="convert";}).reduce(function(a,b){return a+(b.amount||0);},0);
 var totalOut=fTxs.filter(function(x){return x.type==="withdraw";}).reduce(function(a,b){return a+(b.amount||0);},0);
 var txRows=fTxs.length===0?"<tr><td colspan='3' style='text-align:center;padding:20px;color:#555'>\u0644\u0627 \u062a\u0648\u062c\u062f \u0645\u0639\u0627\u0645\u0644\u0627\u062a</td></tr>":fTxs.map(function(x){var isOut=x.type==="withdraw"||x.type==="reset"||(x.type==="points"&&x.amount<0);var cls={salary:"tx-salary",points:"tx-points",withdraw:"tx-withdraw",convert:"tx-convert",add:"tx-add",reset:"tx-reset"}[x.type]||"";return"<tr><td style='color:#8888aa;font-size:11px'>"+(x.date||"")+"</td><td><span class='tx-badge "+cls+"'>"+(x.note||x.type)+"</span></td><td style='font-weight:700;color:"+(isOut?"#EF4444":"#10B981")+"'>"+(isOut?"- ":"+ ")+(x.type==="points"?fmtPts(Math.abs(x.amount||0)):fmt(Math.abs(x.amount||0)))+"</td></tr>";}).join("");
-var pBtns=[{v:"all",l:"\uD83D\uDCCB \u0627\u0644\u0643\u0644"},{v:"today",l:"\uD83D\uDCC5 \u0627\u0644\u064a\u0648\u0645"},{v:"week",l:"\uD83D\uDCC6 \u0627\u0644\u0623\u0633\u0628\u0648\u0639"},{v:"month",l:"\uD83D\uDDD3 \u0627\u0644\u0634\u0647\u0631"},{v:"custom",l:"\uD83D\uDCC5 \u062a\u0627\u0631\u064a\u062e"}].map(function(x){return"<button onclick=\"_stmtPeriod('"+x.v+"')\" style=\"padding:6px 10px;border-radius:8px;border:2px solid "+(sp===x.v?"#a78bfa":"#2a2a4a")+";background:"+(sp===x.v?"#a78bfa":"#0d0d1a")+";color:"+(sp===x.v?"#fff":"#8888aa")+";font-size:11px;font-weight:700;cursor:pointer;font-family:inherit\">"+x.l+"</button>";}).join(" ");
+var pBtns=[{v:"all",l:"\uD83D\uDCCB \u0627\u0644\u0643\u0644"},{v:"today",l:"\uD83D\uDCC5 \u0627\u0644\u064a\u0648\u0645"},{v:"week",l:"\uD83D\uDCC6 \u0627\u0644\u0623\u0633\u0628\u0648\u0639"},{v:"month",l:"\uD83D\uDDD3 \u0627\u0644\u0634\u0647\u0631"},{v:"custom",l:"\uD83D\uDCC5 \u062a\u0627\u0631\u064a\u062e"}].map(function(x){return"<button onclick=\"window._stmtPeriod('"+x.v+"')\" style=\"padding:6px 10px;border-radius:8px;border:2px solid "+(sp===x.v?"#a78bfa":"#2a2a4a")+";background:"+(sp===x.v?"#a78bfa":"#0d0d1a")+";color:"+(sp===x.v?"#fff":"#8888aa")+";font-size:11px;font-weight:700;cursor:pointer;font-family:inherit\">"+x.l+"</button>";}).join(" ");
 var dateRow=sp==="custom"?"<div style='display:flex;gap:8px;align-items:center;margin-top:8px'><input type='date' value='"+sf+"' style='flex:1;padding:7px;border-radius:8px;border:1px solid #2a2a4a;background:#0d0d1a;color:#e8e8f0;font-size:12px' onchange=\"_stmtDate('from',this.value)\"/><span style='color:#8888aa;font-size:12px'>\u2190</span><input type='date' value='"+st2+"' style='flex:1;padding:7px;border-radius:8px;border:1px solid #2a2a4a;background:#0d0d1a;color:#e8e8f0;font-size:12px' onchange=\"_stmtDate('to',this.value)\"/></div>":"";
 var html='<div class="overlay" onclick="if(event.target===this)_closeModal()"><div class="modal" style="max-width:500px">';
 html+='<div style="text-align:center;margin-bottom:12px"><div style="font-size:32px">'+icon+'</div><div style="font-size:16px;font-weight:900;color:'+c2+';margin-top:6px">\u0643\u0634\u0641 \u062d\u0633\u0627\u0628 - '+nm+'</div></div>';
@@ -851,43 +851,43 @@ var storeName=e.store===1?"الجامعة مول":"شارع الربيع";
 return "<div class='sum-box' style='margin-bottom:12px'>"
 +"<div style='display:flex;justify-content:space-between;align-items:center;margin-bottom:10px'>"
 +"<div style='font-size:15px;font-weight:900;color:#a78bfa'>"+e.icon+" "+e.name+"</div>"
-+"<button onclick=\"_delEmp('"+e.name+"')\" style='background:#EF444418;border:1px solid #EF444433;color:#EF4444;border-radius:8px;padding:4px 10px;font-size:12px;cursor:pointer'>حذف</button>"
++"<button onclick=\"window._delEmp('"+e.name+"')\" style='background:#EF444418;border:1px solid #EF444433;color:#EF4444;border-radius:8px;padding:4px 10px;font-size:12px;cursor:pointer'>حذف</button>"
 +"</div>"
 +"<div style='display:grid;grid-template-columns:1fr 1fr;gap:8px'>"
 +"<div style='background:#0d0d1a;border-radius:10px;padding:10px'>"
 +"<div style='font-size:10px;color:#8888aa;margin-bottom:3px'>🏪 الفرع</div>"
 +"<div style='font-size:13px;font-weight:700'>"+storeName+"</div>"
-+"<button onclick=\"_editEmpField('"+e.name+"','store','الفرع (1=جامعة, 3=ربيع)','"+e.store+"')\" style='background:#a78bfa18;border:1px solid #a78bfa44;color:#a78bfa;border-radius:6px;padding:3px 8px;font-size:11px;cursor:pointer;margin-top:4px'>تعديل</button>"
++"<button onclick=\"window._editEmpField('"+e.name+"','store','الفرع (1=جامعة, 3=ربيع)','"+e.store+"')\" style='background:#a78bfa18;border:1px solid #a78bfa44;color:#a78bfa;border-radius:6px;padding:3px 8px;font-size:11px;cursor:pointer;margin-top:4px'>تعديل</button>"
 +"</div>"
 +"<div style='background:#0d0d1a;border-radius:10px;padding:10px'>"
 +"<div style='font-size:10px;color:#8888aa;margin-bottom:3px'>💰 الراتب</div>"
 +"<div style='font-size:13px;font-weight:700'>"+Number(e.salary||0).toLocaleString()+" د.ع</div>"
-+"<button onclick=\"_editEmpField('"+e.name+"','salary','الراتب','"+e.salary+"')\" style='background:#10B98118;border:1px solid #10B98144;color:#10B981;border-radius:6px;padding:3px 8px;font-size:11px;cursor:pointer;margin-top:4px'>تعديل</button>"
++"<button onclick=\"window._editEmpField('"+e.name+"','salary','الراتب','"+e.salary+"')\" style='background:#10B98118;border:1px solid #10B98144;color:#10B981;border-radius:6px;padding:3px 8px;font-size:11px;cursor:pointer;margin-top:4px'>تعديل</button>"
 +"</div>"
 +"<div style='background:#0d0d1a;border-radius:10px;padding:10px'>"
 +"<div style='font-size:10px;color:#8888aa;margin-bottom:3px'>⏰ بداية الدوام</div>"
 +"<div style='font-size:13px;font-weight:700'>"+(e.workStart||"12:00")+"</div>"
-+"<button onclick=\"_editEmpField('"+e.name+"','workStart','وقت البداية','"+e.workStart+"')\" style='background:#F59E0B18;border:1px solid #F59E0B44;color:#F59E0B;border-radius:6px;padding:3px 8px;font-size:11px;cursor:pointer;margin-top:4px'>تعديل</button>"
++"<button onclick=\"window._editEmpField('"+e.name+"','workStart','وقت البداية','"+e.workStart+"')\" style='background:#F59E0B18;border:1px solid #F59E0B44;color:#F59E0B;border-radius:6px;padding:3px 8px;font-size:11px;cursor:pointer;margin-top:4px'>تعديل</button>"
 +"</div>"
 +"<div style='background:#0d0d1a;border-radius:10px;padding:10px'>"
 +"<div style='font-size:10px;color:#8888aa;margin-bottom:3px'>🔔 نهاية الدوام</div>"
 +"<div style='font-size:13px;font-weight:700'>"+(e.workEnd||"22:00")+"</div>"
-+"<button onclick=\"_editEmpField('"+e.name+"','workEnd','وقت النهاية','"+e.workEnd+"')\" style='background:#38bdf818;border:1px solid #38bdf844;color:#38bdf8;border-radius:6px;padding:3px 8px;font-size:11px;cursor:pointer;margin-top:4px'>تعديل</button>"
++"<button onclick=\"window._editEmpField('"+e.name+"','workEnd','وقت النهاية','"+e.workEnd+"')\" style='background:#38bdf818;border:1px solid #38bdf844;color:#38bdf8;border-radius:6px;padding:3px 8px;font-size:11px;cursor:pointer;margin-top:4px'>تعديل</button>"
 +"</div>"
 +"<div style='background:#EF444411;border-radius:10px;padding:10px;border:1px solid #EF444433'>"
 +"<div style='font-size:10px;color:#EF4444;margin-bottom:3px'>⬇️ خصم تأخير /15د</div>"
 +"<div style='font-size:13px;font-weight:700;color:#EF4444'>"+Number(e.lateDeductIn||0).toLocaleString()+" د.ع</div>"
-+"<button onclick=\"_editEmpField('"+e.name+"','lateDeductIn','خصم التأخير كل 15 دقيقة (IQD)','"+e.lateDeductIn+"')\" style='background:#EF444418;border:1px solid #EF444444;color:#EF4444;border-radius:6px;padding:3px 8px;font-size:11px;cursor:pointer;margin-top:4px'>تعديل</button>"
++"<button onclick=\"window._editEmpField('"+e.name+"','lateDeductIn','خصم التأخير كل 15 دقيقة (IQD)','"+e.lateDeductIn+"')\" style='background:#EF444418;border:1px solid #EF444444;color:#EF4444;border-radius:6px;padding:3px 8px;font-size:11px;cursor:pointer;margin-top:4px'>تعديل</button>"
 +"</div>"
 +"<div style='background:#F59E0B11;border-radius:10px;padding:10px;border:1px solid #F59E0B33'>"
 +"<div style='font-size:10px;color:#F59E0B;margin-bottom:3px'>⬆️ خصم خروج مبكر /15د</div>"
 +"<div style='font-size:13px;font-weight:700;color:#F59E0B'>"+Number(e.lateDeductOut||0).toLocaleString()+" د.ع</div>"
-+"<button onclick=\"_editEmpField('"+e.name+"','lateDeductOut','خصم الخروج المبكر كل 15 دقيقة (IQD)','"+e.lateDeductOut+"')\" style='background:#F59E0B18;border:1px solid #F59E0B44;color:#F59E0B;border-radius:6px;padding:3px 8px;font-size:11px;cursor:pointer;margin-top:4px'>تعديل</button>"
++"<button onclick=\"window._editEmpField('"+e.name+"','lateDeductOut','خصم الخروج المبكر كل 15 دقيقة (IQD)','"+e.lateDeductOut+"')\" style='background:#F59E0B18;border:1px solid #F59E0B44;color:#F59E0B;border-radius:6px;padding:3px 8px;font-size:11px;cursor:pointer;margin-top:4px'>تعديل</button>"
 +"</div>"
 +"<div style='background:#0d0d1a;border-radius:10px;padding:10px'>"
 +"<div style='font-size:10px;color:#8888aa;margin-bottom:3px'>🔑 كلمة المرور</div>"
 +"<div style='font-size:13px;font-weight:700'>●".repeat((e.pass||"").length)+"</div>"
-+"<button onclick=\"_editEmpField('"+e.name+"','pass','كلمة المرور','"+e.pass+"')\" style='background:#38bdf818;border:1px solid #38bdf844;color:#38bdf8;border-radius:6px;padding:3px 8px;font-size:11px;cursor:pointer;margin-top:4px'>تعديل</button>"
++"<button onclick=\"window._editEmpField('"+e.name+"','pass','كلمة المرور','"+e.pass+"')\" style='background:#38bdf818;border:1px solid #38bdf844;color:#38bdf8;border-radius:6px;padding:3px 8px;font-size:11px;cursor:pointer;margin-top:4px'>تعديل</button>"
 +"</div>"
 +"</div></div>";
 }).join("");
@@ -908,11 +908,11 @@ var addForm="<div class='pos-box' style='margin-bottom:16px'>"
 +"<option value='1'>🏪 البسفور - الجامعة مول</option>"
 +"<option value='3'>🏪 البسفور - شارع الربيع</option>"
 +"</select>"
-+"<button onclick=\"_addEmp()\" class='btn btn-p' style='width:100%'>➕ إضافة موظف</button>"
++"<button onclick=\"window._addEmp()\" class='btn btn-p' style='width:100%'>➕ إضافة موظف</button>"
 +"</div>";
 
 var recent=Array.from(S.sales).sort(function(a,b){return b.date.localeCompare(a.date)||((b.createdAt&&b.createdAt.seconds)||0)-((a.createdAt&&a.createdAt.seconds)||0);}).slice(0,30);
-var rows=recent.length===0?"<div style='text-align:center;padding:30px;color:#555577'>لا توجد مبيعات</div>":recent.map(function(x){var st=STORES.find(function(s){return s.id===x.store;})||STORES[0];return"<tr><td style='color:#8888aa;font-size:11px'>"+x.date+"<br/>"+(x.time||"")+"</td><td>"+st.icon+" "+st.name+"<br/><span style='color:#8888aa'>"+(x.emp||"—")+"</span></td><td style='font-weight:700;color:"+(x.type==="store"?st.color:"#38bdf8")+"'>"+fmt(x.amount)+"</td><td><button class='btn-edit' onclick=\"_openSaleEdit('"+x.id+"')\">✏️ تعديل</button></td></tr>";}).join("");
+var rows=recent.length===0?"<div style='text-align:center;padding:30px;color:#555577'>لا توجد مبيعات</div>":recent.map(function(x){var st=STORES.find(function(s){return s.id===x.store;})||STORES[0];return"<tr><td style='color:#8888aa;font-size:11px'>"+x.date+"<br/>"+(x.time||"")+"</td><td>"+st.icon+" "+st.name+"<br/><span style='color:#8888aa'>"+(x.emp||"—")+"</span></td><td style='font-weight:700;color:"+(x.type==="store"?st.color:"#38bdf8")+"'>"+fmt(x.amount)+"</td><td><button class='btn-edit' onclick=\"window._openSaleEdit('"+x.id+"')\">✏️ تعديل</button></td></tr>";}).join("");
 
 return "<div style='display:flex;justify-content:space-between;align-items:center;margin-bottom:16px'>"
 +"<div style='font-size:16px;font-weight:900'>⚙️ إعدادات</div>"
@@ -1209,8 +1209,8 @@ var cashUSD=(S.cashEntries||[]).filter(function(x){return x.currency==="USD";}).
 var expIQD=(S.expenses||[]).filter(function(x){return x.currency==="IQD";}).reduce(function(a,b){return a+(b.amount||0);},0);
 var expUSD=(S.expenses||[]).filter(function(x){return x.currency==="USD";}).reduce(function(a,b){return a+(b.amount||0);},0);
 var netIQD=cashIQD-expIQD,netUSD=cashUSD-expUSD;
-var cashRows=(S.cashEntries||[]).slice(0,30).map(function(x,i){return"<tr style='"+(i%2?"background:#ffffff05":"")+"'><td style='padding:8px;font-size:11px;color:#8888aa'>"+(x.date||"")+"</td><td style='padding:8px;font-weight:700;color:#10B981'>"+fmt2c(x.amount,x.currency)+"</td><td style='padding:8px;font-size:12px'>"+(x.note||"")+"</td><td style='padding:8px'><button onclick=\"_delCash('"+x.id+"')\" style='background:#ef444418;color:#ef4444;border:none;border-radius:5px;padding:3px 8px;font-size:11px;cursor:pointer'>X</button></td></tr>";}).join("");
-var expRows=(S.expenses||[]).slice(0,30).map(function(x,i){return"<tr style='"+(i%2?"background:#ffffff05":"")+"'><td style='padding:8px;font-size:11px;color:#8888aa'>"+(x.date||"")+"</td><td style='padding:8px;font-weight:700;color:#EF4444'>"+fmt2c(x.amount,x.currency)+"</td><td style='padding:8px;font-size:12px'>"+(x.desc||"")+"</td><td style='padding:8px'><button onclick=\"_delExp('"+x.id+"')\" style='background:#ef444418;color:#ef4444;border:none;border-radius:5px;padding:3px 8px;font-size:11px;cursor:pointer'>X</button></td></tr>";}).join("");
+var cashRows=(S.cashEntries||[]).slice(0,30).map(function(x,i){return"<tr style='"+(i%2?"background:#ffffff05":"")+"'><td style='padding:8px;font-size:11px;color:#8888aa'>"+(x.date||"")+"</td><td style='padding:8px;font-weight:700;color:#10B981'>"+fmt2c(x.amount,x.currency)+"</td><td style='padding:8px;font-size:12px'>"+(x.note||"")+"</td><td style='padding:8px'><button onclick=\"window._delCash('"+x.id+"')\" style='background:#ef444418;color:#ef4444;border:none;border-radius:5px;padding:3px 8px;font-size:11px;cursor:pointer'>X</button></td></tr>";}).join("");
+var expRows=(S.expenses||[]).slice(0,30).map(function(x,i){return"<tr style='"+(i%2?"background:#ffffff05":"")+"'><td style='padding:8px;font-size:11px;color:#8888aa'>"+(x.date||"")+"</td><td style='padding:8px;font-weight:700;color:#EF4444'>"+fmt2c(x.amount,x.currency)+"</td><td style='padding:8px;font-size:12px'>"+(x.desc||"")+"</td><td style='padding:8px'><button onclick=\"window._delExp('"+x.id+"')\" style='background:#ef444418;color:#ef4444;border:none;border-radius:5px;padding:3px 8px;font-size:11px;cursor:pointer'>X</button></td></tr>";}).join("");
 var h="<div class='pos-box' style='margin-bottom:16px'>";
 h+="<div style='font-size:16px;font-weight:900;margin-bottom:14px'>\uD83C\uDFE6 \u0627\u0644\u0635\u0646\u062f\u0648\u0642 \u0627\u0644\u0631\u0626\u064a\u0633\u064a</div><button onclick='_resetCashbox()' style='background:#EF444418;border:1px solid #EF444433;color:#EF4444;border-radius:10px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit'>\uD83D\uDDD1 \u062a\u0635\u0641\u064a\u0631 \u0627\u0644\u0635\u0646\u062f\u0648\u0642</button></div>";
 h+="<div style='display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px'>";
@@ -1223,14 +1223,14 @@ h+="<div class='sum-box' style='text-align:center;border-color:#10B98144'><div c
 h+="<div style='font-size:13px;font-weight:700;margin-bottom:8px'>\u2795 \u0625\u0636\u0627\u0641\u0629 \u0644\u0644\u0635\u0646\u062f\u0648\u0642</div>";
 h+="<div style='display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px'><input id='cash-amt' type='number' placeholder='\u0627\u0644\u0645\u0628\u0644\u063a' style='padding:9px;border-radius:8px;border:1px solid #2a2a4a;background:#0d0d1a;color:#e8e8f0;font-size:13px;direction:ltr'/><select id='cash-cur' style='padding:9px;border-radius:8px;border:1px solid #2a2a4a;background:#0d0d1a;color:#e8e8f0;font-size:13px'><option value='IQD'>\u062f\u064a\u0646\u0627\u0631</option><option value='USD'>\u062f\u0648\u0644\u0627\u0631</option></select></div>";
 h+="<input id='cash-note' type='text' placeholder='\u0645\u0644\u0627\u062d\u0638\u0629' style='width:100%;padding:9px;border-radius:8px;border:1px solid #2a2a4a;background:#0d0d1a;color:#e8e8f0;font-size:13px;margin-bottom:8px;box-sizing:border-box'/>";
-h+="<button onclick=\"_addCash()\" class='btn btn-green' style='width:100%;margin-bottom:16px'>\u2795 \u0625\u0636\u0627\u0641\u0629 \u0644\u0644\u0635\u0646\u062f\u0648\u0642</button>";
+h+="<button onclick=\"window._addCash()\" class='btn btn-green' style='width:100%;margin-bottom:16px'>\u2795 \u0625\u0636\u0627\u0641\u0629 \u0644\u0644\u0635\u0646\u062f\u0648\u0642</button>";
 h+="<div style='font-size:13px;font-weight:700;margin-bottom:8px'>\u2796 \u0625\u0636\u0627\u0641\u0629 \u0645\u0635\u0631\u0648\u0641</div>";
 h+="<div style='display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px'><input id='exp-amt' type='number' placeholder='\u0627\u0644\u0645\u0628\u0644\u063a' style='padding:9px;border-radius:8px;border:1px solid #2a2a4a;background:#0d0d1a;color:#e8e8f0;font-size:13px;direction:ltr'/><select id='exp-cur' style='padding:9px;border-radius:8px;border:1px solid #2a2a4a;background:#0d0d1a;color:#e8e8f0;font-size:13px'><option value='IQD'>\u062f\u064a\u0646\u0627\u0631</option><option value='USD'>\u062f\u0648\u0644\u0627\u0631</option></select></div>";
 h+="<div style='display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px'><input id='exp-desc' type='text' placeholder='\u0648\u0635\u0641 \u0627\u0644\u0645\u0635\u0631\u0648\u0641' style='padding:9px;border-radius:8px;border:1px solid #2a2a4a;background:#0d0d1a;color:#e8e8f0;font-size:13px'/><input id='exp-date' type='date' value='"+today()+"' style='padding:9px;border-radius:8px;border:1px solid #2a2a4a;background:#0d0d1a;color:#e8e8f0;font-size:13px'/></div>";
-h+="<button onclick=\"_addExp()\" class='btn btn-red' style='width:100%;margin-bottom:16px'>\u2796 \u062a\u0633\u062c\u064a\u0644 \u0645\u0635\u0631\u0648\u0641</button>";
+h+="<button onclick=\"window._addExp()\" class='btn btn-red' style='width:100%;margin-bottom:16px'>\u2796 \u062a\u0633\u062c\u064a\u0644 \u0645\u0635\u0631\u0648\u0641</button>";
 h+="<div style='font-size:13px;font-weight:700;margin-bottom:8px;margin-top:8px'>\uD83D\uDCCB \u062c\u0631\u062f \u0634\u0627\u0645\u0644</div>";
 h+="<div style='display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px'><div><div style='font-size:11px;color:#8888aa;margin-bottom:4px'>\u0645\u0646</div><input id='inv-from' type='date' style='width:100%;padding:9px;border-radius:8px;border:1px solid #2a2a4a;background:#0d0d1a;color:#e8e8f0;font-size:13px'/></div><div><div style='font-size:11px;color:#8888aa;margin-bottom:4px'>\u0625\u0644\u0649</div><input id='inv-to' type='date' style='width:100%;padding:9px;border-radius:8px;border:1px solid #2a2a4a;background:#0d0d1a;color:#e8e8f0;font-size:13px'/></div></div>";
-h+="<div style='display:flex;gap:8px;margin-bottom:12px'><button onclick=\"_showInventory()\" class='btn btn-p' style='flex:1'>\u0639\u0631\u0636 \u0627\u0644\u062c\u0631\u062f</button><button onclick=\"_printInventory()\" class='btn' style='flex:1;background:linear-gradient(135deg,#6366f1,#4f46e5);color:#fff'>PDF</button><button onclick=\"_waInventory()\" class='btn' style='flex:1;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff'>\u0648\u0627\u062a\u0633</button></div>";
+h+="<div style='display:flex;gap:8px;margin-bottom:12px'><button onclick=\"window._showInventory()\" class='btn btn-p' style='flex:1'>\u0639\u0631\u0636 \u0627\u0644\u062c\u0631\u062f</button><button onclick=\"window._printInventory()\" class='btn' style='flex:1;background:linear-gradient(135deg,#6366f1,#4f46e5);color:#fff'>PDF</button><button onclick=\"window._waInventory()\" class='btn' style='flex:1;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff'>\u0648\u0627\u062a\u0633</button></div>";
 h+="<div id='inventory-result'></div></div>";
 h+=(S.cashEntries&&S.cashEntries.length>0?"<div class='pos-box' style='margin-bottom:16px'><div style='font-size:14px;font-weight:700;margin-bottom:10px'>\u0633\u062c\u0644 \u0627\u0644\u0635\u0646\u062f\u0648\u0642</div><table style='width:100%;border-collapse:collapse'><thead><tr><th style='padding:8px;text-align:right;color:#8888aa;font-size:11px'>\u062a\u0627\u0631\u064a\u062e</th><th style='padding:8px;text-align:right;color:#8888aa;font-size:11px'>\u0645\u0628\u0644\u063a</th><th style='padding:8px;text-align:right;color:#8888aa;font-size:11px'>\u0645\u0644\u0627\u062d\u0638\u0629</th><th></th></tr></thead><tbody>"+cashRows+"</tbody></table></div>":"");
 h+=(S.expenses&&S.expenses.length>0?"<div class='pos-box'><div style='font-size:14px;font-weight:700;margin-bottom:10px'>\u0633\u062c\u0644 \u0627\u0644\u0645\u0635\u0627\u0631\u064a\u0641</div><table style='width:100%;border-collapse:collapse'><thead><tr><th style='padding:8px;text-align:right;color:#8888aa;font-size:11px'>\u062a\u0627\u0631\u064a\u062e</th><th style='padding:8px;text-align:right;color:#8888aa;font-size:11px'>\u0645\u0628\u0644\u063a</th><th style='padding:8px;text-align:right;color:#8888aa;font-size:11px'>\u0648\u0635\u0641</th><th></th></tr></thead><tbody>"+expRows+"</tbody></table></div>":"");
