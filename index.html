@@ -451,9 +451,9 @@ return "<div class='sum-box' style='cursor:pointer;margin-bottom:10px;border-col
 +(remUSD!==0?"<span>USD: <b style='color:"+(remUSD>0?"#EF4444":"#10B981")+"'>$"+remUSD.toLocaleString()+"</b></span>":"")
 +(remIQD!==0?"<span>IQD: <b style='color:"+(remIQD>0?"#EF4444":"#10B981")+"'>"+fmt(remIQD)+"</b></span>":"")
 +"</div></div>"
-+"<div style='display:flex;gap:6px;flex-shrink:0'>"
-+"<button onclick=\"event.stopPropagation();window._editSupplier('"+s.id+"','"+s.name+"')\" style='background:#a78bfa;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:inherit;font-weight:600'>✎</button>"
-+"<button onclick=\"event.stopPropagation();window._deleteSupplier('"+s.id+"','"+s.name+"')\" style='background:#ef4444;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:inherit;font-weight:600'>🗑️</button>"
++"<div style='display:flex;gap:6px;flex-shrink:0;margin-left:10px'>"
++"<button class='btn btn-p' style='padding:6px 12px;font-size:12px;width:auto' onclick=\"window._editSupplier('"+s.id+"','"+s.name+"')\">✎ تعديل</button>"
++"<button class='btn btn-red' style='padding:6px 12px;font-size:12px;width:auto' onclick=\"window._deleteSupplier('"+s.id+"','"+s.name+"')\">🗑️ حذف</button>"
 +"</div></div>";
 }).join("");
 return "<div class='pos-box'>"
@@ -740,7 +740,7 @@ var addForm="<div class='pos-box' style='margin-bottom:16px'>"
 +"<option value='1'>\uD83C\uDFEC \u0627\u0644\u0628\u0633\u0641\u0648\u0631 - \u0627\u0644\u062c\u0627\u0645\u0639\u0629 \u0645\u0648\u0644</option>"
 +"<option value='3'>\uD83C\uDFEA \u0627\u0644\u0628\u0633\u0641\u0648\u0631 - \u0634\u0627\u0631\u0639 \u0627\u0644\u0631\u0628\u064a\u0639</option>"
 +"</select>"
-+"<button onclick=\"window._addEmp()\" class='btn btn-p' style='width:100%'>\u2795 \u0625\u0636\u0627\u0641\u0629 \u0645\u0648\u0638\u0641</button>"
++"<button onclick=\"window._addNewEmp()\" class='btn btn-p' style='width:100%'>\u2795 \u0625\u0636\u0627\u0641\u0629 \u0645\u0648\u0638\u0641</button>"
 +"</div>";
 
 // Recent sales (existing settings content)
@@ -1577,7 +1577,11 @@ var storeOpt=STORES.map(function(s){return"<option value='"+s.id+"'"+(e.store===
 return "<div class='pos-box' style='margin-bottom:12px'>"
 +"<div style='display:flex;justify-content:space-between;align-items:center;margin-bottom:12px'>"
 +"<div style='font-size:16px;font-weight:900'>"+e.name+"</div>"
-+(e.id?"<button onclick=\"window._delEmp('"+e.id+"','"+e.name+"')\" style='background:#EF444415;border:1px solid #EF444433;color:#EF4444;border-radius:8px;padding:5px 10px;font-size:12px;cursor:pointer'>\u062d\u0630\u0641</button>":"")
++"<div style='display:flex;gap:6px'>"
++"<button class='btn btn-p' onclick=\"window._editEmpField('"+e.name+"','salary','الراتب',"+e.salary+")\" style='padding:6px 12px;font-size:11px;width:auto'>✎ راتب</button>"
++"<button class='btn btn-p' onclick=\"window._editEmpField('"+e.name+"','workStart','وقت الدوام','"+e.workStart+"')\" style='padding:6px 12px;font-size:11px;width:auto'>✎ ساعات</button>"
++(!e.isStatic?"<button class='btn btn-red' onclick=\"window._deleteEmp('"+e.name+"')\" style='padding:6px 12px;font-size:11px;width:auto'>🗑️ حذف</button>":"")
++"</div></div>"
 +"</div>"
 +"<div style='display:grid;grid-template-columns:1fr 1fr;gap:8px'>"
 
@@ -1904,6 +1908,11 @@ window._deleteSupplier=async function(supId,supName){if(!confirm("هل تريد 
 
 // ==================== دوال تعديل وحذف الدفعات ====================
 window._editSupPay=async function(payId,currentAmt){const newAmt=prompt("المبلغ الجديد:",currentAmt);if(newAmt&&!isNaN(newAmt)&&newAmt>0){try{await updateDoc(doc(db,"sup_payments",payId),{amount:parseInt(newAmt)});alert("✅ تم تحديث مبلغ الدفعة");}catch(e){alert("❌ خطأ: "+e.message);}}};
+
+// ==================== دوال الموظفين (تعديل، حذف، إضافة) ====================
+window._editEmpField=async function(name,field,label,currentVal){const newVal=prompt(label+": "+name,currentVal);if(newVal===null)return;const trimmedVal=newVal.trim();if(!trimmedVal)return;try{const upd={};if(field==="salary")upd.salary=parseFloat(trimmedVal)||0;else if(field==="store")upd.store=parseInt(trimmedVal)||1;else upd[field]=trimmedVal;await updateDoc(doc(db,"emp_settings",name),upd);alert("✅ تم التعديل");render();}catch(e){alert("❌ خطأ: "+e.message);}};
+window._deleteEmp=async function(name){if(!confirm("هل تريد حذف الموظف: "+name+"؟"))return;try{await deleteDoc(doc(db,"emp_settings",name));alert("✅ تم حذف الموظف");render();}catch(e){alert("❌ خطأ: "+e.message);}};
+window._addNewEmp=async function(){const name=(document.getElementById("new-emp-name")||{value:""}).value.trim();const pass=(document.getElementById("new-emp-pass")||{value:""}).value.trim();const salary=parseFloat((document.getElementById("new-emp-salary")||{value:"0"}).value)||0;const store=parseInt((document.getElementById("new-emp-store")||{value:"1"}).value)||1;const workStart=(document.getElementById("new-emp-work")||{value:"12:00"}).value||"12:00";if(!name){alert("اكتب اسم الموظف");return;}if(!pass){alert("اكتب كلمة المرور");return;}if(S.empSettings.find(e=>e.name===name)){alert("الموظف موجود مسبقاً");return;}try{await setDoc(doc(db,"emp_settings",name),{name:name,icon:"👤",pass:pass,salary:salary,store:store,workStart:workStart,color:"#a78bfa"});const wRef=doc(db,"wallets",name);const wSnap=await getDoc(wRef);if(!wSnap.exists())await setDoc(wRef,{name:name,balance:0,points:0,createdAt:serverTimestamp()});alert("✅ تم إضافة "+name);document.getElementById("new-emp-name").value="";document.getElementById("new-emp-pass").value="";document.getElementById("new-emp-salary").value="";document.getElementById("new-emp-store").value="1";document.getElementById("new-emp-work").value="12:00";render();}catch(e){alert("❌ خطأ: "+e.message);}};
 
 render();};
 </script>
