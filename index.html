@@ -385,7 +385,10 @@ return "<tr style='"+(i%2?"background:#1a1a3a":"")+"'>"
 +"<td style='padding:8px;font-size:11px;color:#666666'>"+p.date+"</td>"
 +"<td style='padding:8px;font-weight:700;color:"+(p.currency==="USD"?"#10B981":"#FF6B35")+"'>"+fmt2(p.amount,p.currency)+"</td>"
 +"<td style='padding:8px'>"+(p.note||"")+"</td>"
-+"<td style='padding:8px'><button onclick=\"window._delSupPay('"+p.id+"')\" style='background:#ef4444;color:#fff;border:none;border-radius:5px;padding:3px 8px;font-size:11px;cursor:pointer;font-family:inherit'>X</button></td>"
++"<td style='padding:8px;display:flex;gap:4px'>"
++"<button onclick=\"window._editSupPay('"+p.id+"',"+p.amount+")\" style='background:#FF6B35;color:#fff;border:none;border-radius:5px;padding:4px 8px;font-size:11px;cursor:pointer;font-family:inherit'>✎</button>"
++"<button onclick=\"window._delSupPay('"+p.id+"')\" style='background:#ef4444;color:#fff;border:none;border-radius:5px;padding:4px 8px;font-size:11px;cursor:pointer;font-family:inherit'>X</button>"
++"</td>"
 +"</tr>";
 }).join("");
 return "<div class='pos-box'>"
@@ -435,14 +438,19 @@ var paidUSD=pays.filter(function(x){return x.currency==="USD";}).reduce(function
 var paidIQD=pays.filter(function(x){return x.currency==="IQD";}).reduce(function(a,b){return a+b.amount;},0);
 var remUSD=(s.debtUSD||0)-paidUSD,remIQD=(s.debtIQD||0)-paidIQD;
 var settled=remUSD<=0&&remIQD<=0;
-return "<div class='sum-box' style='cursor:pointer;margin-bottom:10px;border-color:"+(settled?"#10B98144":"#EF444444")+"' onclick=\"window._selSup('"+s.id+"')\">"
+return "<div class='sum-box' style='cursor:pointer;margin-bottom:10px;border-color:"+(settled?"#10B98144":"#EF444444")+";display:flex;justify-content:space-between;align-items:center;gap:10px'>"
++"<div style='flex:1;cursor:pointer' onclick=\"window._selSup('"+s.id+"')\">"
 +"<div style='display:flex;justify-content:space-between;align-items:center'>"
-+"<div style='font-weight:900;font-size:15px'>\uD83D\uDCE6 "+s.name+"</div>"
-+"<span style='background:"+(settled?"#10B981":"#EF4444")+";color:#fff;border-radius:20px;padding:3px 10px;font-size:11px'>"+(settled?"\u0645\u0633\u062f\u062f":"\u0645\u062f\u064a\u0648\u0646")+"</span>"
++"<div style='font-weight:900;font-size:15px'>📦 "+s.name+"</div>"
++"<span style='background:"+(settled?"#10B981":"#EF4444")+";color:#fff;border-radius:20px;padding:3px 10px;font-size:11px'>"+(settled?"مسدد":"مديون")+"</span>"
 +"</div>"
 +"<div style='display:flex;gap:16px;margin-top:8px;font-size:12px'>"
 +(remUSD!==0?"<span>USD: <b style='color:"+(remUSD>0?"#EF4444":"#10B981")+"'>$"+remUSD.toLocaleString()+"</b></span>":"")
 +(remIQD!==0?"<span>IQD: <b style='color:"+(remIQD>0?"#EF4444":"#10B981")+"'>"+fmt(remIQD)+"</b></span>":"")
++"</div></div>"
++"<div style='display:flex;gap:6px;flex-shrink:0'>"
++"<button class='btn btn-p' onclick=\"event.stopPropagation();window._editSupplier('"+s.id+"','"+s.name+"')\" style='padding:6px 12px;font-size:12px;width:auto'>✎</button>"
++"<button class='btn btn-red' onclick=\"event.stopPropagation();window._deleteSupplier('"+s.id+"','"+s.name+"')\" style='padding:6px 12px;font-size:12px;width:auto'>🗑️</button>"
 +"</div></div>";
 }).join("");
 return "<div class='pos-box'>"
@@ -1899,6 +1907,11 @@ window._editSupplier=async function(supId,currentName){const newName=prompt("ا�
 
 window._deleteSupplier=async function(supId,supName){if(!confirm("هل تريد حذف المورد: "+supName+"؟"))return;try{await deleteDoc(doc(db,"suppliers",supId));const pays=S.supPayments.filter(x=>x.supId===supId);for(let p of pays)await deleteDoc(doc(db,"sup_payments",p.id));alert("✅ تم الحذف");render();}catch(e){alert("❌ خطأ: "+e.message);}};
 
+window._editSupPay=async function(payId,currentAmt){const newAmt=prompt("المبلغ الجديد:",currentAmt);if(newAmt&&!isNaN(newAmt)&&newAmt>0){try{await updateDoc(doc(db,"sup_payments",payId),{amount:parseInt(newAmt)});alert("✅ تم التعديل");render();}catch(e){alert("❌ خطأ: "+e.message);}}};
+
+// ==================== دوال الموردين والموظفين ====================
+window._editSupplier=async function(supId,currentName){const newName=prompt("اسم المورد الجديد:",currentName);if(newName&&newName.trim()&&newName!==currentName){try{await updateDoc(doc(db,"suppliers",supId),{name:newName.trim()});alert("✅ تم التعديل");render();}catch(e){alert("❌ خطأ: "+e.message);}}};
+window._deleteSupplier=async function(supId,supName){if(!confirm("هل تريد حذف المورد: "+supName+"؟"))return;try{await deleteDoc(doc(db,"suppliers",supId));const pays=S.supPayments.filter(x=>x.supId===supId);for(let p of pays)await deleteDoc(doc(db,"sup_payments",p.id));alert("✅ تم الحذف");render();}catch(e){alert("❌ خطأ: "+e.message);}};
 window._editSupPay=async function(payId,currentAmt){const newAmt=prompt("المبلغ الجديد:",currentAmt);if(newAmt&&!isNaN(newAmt)&&newAmt>0){try{await updateDoc(doc(db,"sup_payments",payId),{amount:parseInt(newAmt)});alert("✅ تم التعديل");render();}catch(e){alert("❌ خطأ: "+e.message);}}};
 
 render();};
